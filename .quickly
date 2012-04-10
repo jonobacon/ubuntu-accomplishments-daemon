@@ -1,0 +1,3 @@
+project = accomplishments-daemon
+version = 12.03
+template = ubuntu-cli
