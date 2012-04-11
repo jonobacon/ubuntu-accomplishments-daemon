@@ -13,6 +13,16 @@ Package: accomplishments-daemon
 Architecture: all
 XB-Python-Version: ${python:Versions}
 Depends: ${misc:Depends},
- ${python:Depends}
+ ${python:Depends},
+ python-xdg,
+ gir1.2-gtk-3.0,
+ python-dbus,
+ python-ubuntuone-client,
+ ubuntuone-couch,
+ python-twisted-core,
+ python-notify,
+ python-gobject-2,
+ python-distutils-extra,
+ python-gpgme
 Description: UNKNOWN
  UNKNOWN

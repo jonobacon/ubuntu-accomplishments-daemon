@@ -1,29 +1,28 @@
-#!/usr/bin/python
-# -*- Mode: Python; coding: utf-8; indent-tabs-mode: nil; tab-width: 4 -*-
-### BEGIN LICENSE
-# This file is in the public domain
-### END LICENSE
-
-import os
+#!/usr/bin/twistd
+"""
+Run the Accomplishments daemon!
+"""
 import sys
 
-# Add project root directory (enable symlink, and trunk execution).
-PROJECT_ROOT_DIRECTORY = os.path.abspath(
-    os.path.dirname(os.path.dirname(os.path.realpath(sys.argv[0]))))
+from twisted.internet import glib2reactor
+glib2reactor.install()
 
-python_path = []
-if os.path.abspath(__file__).startswith('/opt'):
-    syspath = sys.path[:] # copy to avoid infinite loop in pending objects
-    for path in syspath:
-        opt_path = path.replace('/usr', '/opt/extras.ubuntu.com/accomplishments-daemon')
-        python_path.insert(0, opt_path)
-        sys.path.insert(0, opt_path)
-if (os.path.exists(os.path.join(PROJECT_ROOT_DIRECTORY, 'accomplishments_daemon'))
-    and PROJECT_ROOT_DIRECTORY not in sys.path):
-    python_path.insert(0, PROJECT_ROOT_DIRECTORY)
-    sys.path.insert(0, PROJECT_ROOT_DIRECTORY)
-if python_path:
-    os.putenv('PYTHONPATH', "%s:%s" % (os.getenv('PYTHONPATH', ''), ':'.join(python_path))) # for subprocesses    os.putenv('PYTHONPATH', PROJECT_ROOT_DIRECTORY) # for subprocesses
+import dbus
+from dbus.mainloop.glib import DBusGMainLoop
 
-import accomplishments_daemon
-accomplishments_daemon.main()
+from accomplishments.daemon import app
+
+
+# PYTHONPATH mangling
+sys.path.insert(0, ".")
+
+dbus_loop = DBusGMainLoop(set_as_default=True)
+application = app.applicationFactory(
+    app_name="Ubuntu Accomplishments",
+    bus_name="org.ubuntu.accomplishments",
+    main_loop=dbus_loop,
+    session_bus=dbus.SessionBus(mainloop=dbus_loop),
+    object_path="/",
+    # Let's execute the timer service every 15 minutes
+    update_interval=15 * 60,
+    gpg_key="./data/daemon/validation-key.pub")
