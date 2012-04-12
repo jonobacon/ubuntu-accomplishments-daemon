@@ -1,4 +1,4 @@
-#!/usr/bin/twistd
+#!/usr/bin/twistd -noy
 """
 Run the Accomplishments daemon!
 """
