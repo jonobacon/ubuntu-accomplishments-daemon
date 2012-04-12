@@ -63,9 +63,7 @@ DistUtilsExtra.auto.setup(
     #description='UI for managing …',
     #long_description='Here a longer description',
     #url='https://launchpad.net/accomplishments-daemon',
-    cmdclass={'install': InstallAndUpdateDataDirectory}
-    data_files=[
-        ('share/accomplishments-daemon', ['data/daemon/validation-key.pub'])
-        ],   
+    cmdclass={'install': InstallAndUpdateDataDirectory},
+    data_files=[('share/accomplishments-daemon', ['data/daemon/validation-key.pub'])]
     )
 
