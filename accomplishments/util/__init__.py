@@ -60,10 +60,10 @@ def get_data_path():
     """
 
     # Get pathname absolute or relative.
-    path = os.path.join(
-        os.path.dirname(accomplishments.__path__[0]),
-        config.__ubuntu_accomplishments_daemon_data_directory__)
+    path = os.path.join(accomplishments.__path__[0], config.__accomplishments_daemon_data_directory__)
     abs_data_path = os.path.abspath(path)
+    log.msg("ABS_DATA_PATH:")
+    log.msg(abs_data_path)
     if not os.path.exists(abs_data_path):
         msg = "Could not find the project data directory."
         raise exceptions.PathNotFound(msg)

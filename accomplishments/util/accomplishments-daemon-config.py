@@ -16,7 +16,7 @@ __all__ = [
 
 # Where your project will look for your data (for instance, images and ui
 # files). By default, this is ../data, relative your trunk layout
-__test_app_data_directory__ = '../data/'
+__accomplishments_daemon_data_directory__ = '../data/'
 __license__ = ''
 __version__ = '0.1'
 
@@ -44,13 +44,13 @@ def get_data_path():
     """Retrieve test-app data path
 
     This path is by default <test_app_lib_path>/../data/ in trunk
-    and /usr/share/test-app in an installed version but this path
+    and /usr/share/accomplishments-daemon in an installed version but this path
     is specified at installation time.
     """
 
     # Get pathname absolute or relative.
     path = os.path.join(
-        os.path.dirname(__file__), __test_app_data_directory__)
+        os.path.dirname(__file__), __accomplishments_daemon_data_directory__)
 
     abs_data_path = os.path.abspath(path)
     if not os.path.exists(abs_data_path):

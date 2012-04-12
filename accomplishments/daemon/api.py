@@ -343,11 +343,14 @@ class Accomplishments(object):
 
 
     def get_media_file(self, media_file_name):
-        media_filename = get_data_file(media_dir.split("/")[1], '%s' % (media_file_name,))
-        log.msg("MEDIA_FILE_NAME")
+        log.msg("MEDIA_FILE_NAME:")
         log.msg(media_file_name)
-        log.msg(media_filename)
+        log.msg("MEDIA_DIR:")
         log.msg(media_dir)
+        media_filename = get_data_file(media_dir.split("/")[1], '%s' % (media_file_name,))
+        log.msg("MEDIA_FILENAME:")
+        log.msg(media_filename)
+
         if not os.path.exists(media_filename):
             media_filename = None
 
