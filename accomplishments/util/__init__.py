@@ -62,6 +62,8 @@ def get_data_path():
     # Get pathname absolute or relative.
     path = os.path.join(accomplishments.__path__[0], config.__accomplishments_daemon_data_directory__)
     abs_data_path = os.path.abspath(path)
+    log.msg("MODULE DIR")
+    log.msg(accomplishments.__path__[0])
     log.msg("ABS_DATA_PATH:")
     log.msg(abs_data_path)
     if not os.path.exists(abs_data_path):

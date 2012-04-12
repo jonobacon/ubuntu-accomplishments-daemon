@@ -57,12 +57,13 @@ class InstallAndUpdateDataDirectory(DistUtilsExtra.auto.install_auto):
 DistUtilsExtra.auto.setup(
     name='accomplishments-daemon',
     version='0.1',
-    #license='GPL-3',
-    #author='Your Name',
-    #author_email='email@ubuntu.com',
-    #description='UI for managing …',
-    #long_description='Here a longer description',
-    #url='https://launchpad.net/accomplishments-daemon',
+    license='GPL-3',
+    author='Jono Bacon',
+    author_email='jono@ubuntu.com',
+    description='Background daemon for running the Ubuntu Accomplishments system.',
+    long_description='This is the background daemon process that is required to run the Ubuntu Accomplishments system.',
+
+    url='https://launchpad.net/ubuntu-accomplishments-daemon',
     cmdclass={'install': InstallAndUpdateDataDirectory},
     data_files=[('share/accomplishments-daemon', ['data/daemon/validation-key.pub'])]
     )

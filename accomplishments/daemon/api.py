@@ -347,14 +347,16 @@ class Accomplishments(object):
         log.msg(media_file_name)
         log.msg("MEDIA_DIR:")
         log.msg(media_dir)
-        media_filename = get_data_file(media_dir.split("/")[1], '%s' % (media_file_name,))
+        #media_filename = get_data_file(media_dir.split, '%s' % (media_file_name,))
+        media_filename = os.path.join(media_dir, media_file_name)
         log.msg("MEDIA_FILENAME:")
         log.msg(media_filename)
 
         if not os.path.exists(media_filename):
             media_filename = None
 
-        return "file:///" + media_filename
+        final = "file:///" + media_filename
+        return final
 
     def show_unlocked_accomplishments(self):
         """

@@ -5,7 +5,7 @@ Build-Depends: cdbs (>= 0.4.43),
  debhelper (>= 6),
  python (>= 2.6.6-3~),
  python-distutils-extra (>= 2.10)
-Maintainer: UNKNOWN <UNKNOWN>
+Maintainer: Jono Bacon <jono@ubuntu.com>
 Standards-Version: 3.8.3
 XS-Python-Version: current
 
@@ -24,5 +24,6 @@ Depends: ${misc:Depends},
  python-gobject-2,
  python-distutils-extra,
  python-gpgme
-Description: UNKNOWN
- UNKNOWN
+Description: Background daemon for running the Ubuntu Accomplishments system.
+ This is the background daemon process that is required to run the Ubuntu
+ Accomplishments system.

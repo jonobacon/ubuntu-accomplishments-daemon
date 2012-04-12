@@ -1,8 +1,10 @@
 Format-Specification: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=135
 Name: accomplishments-daemon
-Maintainer: UNKNOWN <UNKNOWN>
-Source: UNKNOWN
+Maintainer: Jono Bacon <jono@ubuntu.com>
+Source: https://launchpad.net/ubuntu-accomplishments-daemon
 
 Files: *
 Copyright: (C) YYYY <Your Name> <Your E-mail>
-License: UNKNOWN
+License: GPL-3
+ The full text of the GPL is distributed in
+ /usr/share/common-licenses/GPL-3 on Debian systems.

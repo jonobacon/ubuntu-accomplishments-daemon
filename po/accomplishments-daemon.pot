@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-11 17:23-0700\n"
+"POT-Creation-Date: 2012-04-11 20:01-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,14 +17,14 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../accomplishments/util/__init__.py:88
+#: ../accomplishments/util/__init__.py:90
 msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
 msgstr ""
 
-#: ../accomplishments/util/__init__.py:91
+#: ../accomplishments/util/__init__.py:93
 msgid "Clear your trophies collection"
 msgstr ""
 
-#: ../accomplishments/daemon/api.py:102 ../accomplishments/daemon/api.py:735
+#: ../accomplishments/daemon/api.py:102 ../accomplishments/daemon/api.py:740
 msgid "You have accomplished something!"
 msgstr ""
