@@ -1,4 +1,4 @@
-# Danish translation for ubuntu-accomplishments-daemon
+# German translation for ubuntu-accomplishments-daemon
 # Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the ubuntu-accomplishments-daemon package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: ubuntu-accomplishments-daemon\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-04-11 20:01-0700\n"
-"PO-Revision-Date: 2012-04-09 21:58+0000\n"
-"Last-Translator: Sune Keller <Unknown>\n"
-"Language-Team: Danish <da@li.org>\n"
+"PO-Revision-Date: 2012-04-12 12:11+0000\n"
+"Last-Translator: Eduard Gotwig <eduardgotwig@gmail.com>\n"
+"Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,12 +20,13 @@ msgstr ""
 #: ../accomplishments/util/__init__.py:90
 msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
 msgstr ""
-"Vis fejlretningsmeddelelser (-vv fejlretter også accomplishments_daemon_lib)"
+"Zeige Debug Nachrichten an (identisch mit -vv debugs "
+"accomplishments_daemon_lib)"
 
 #: ../accomplishments/util/__init__.py:93
 msgid "Clear your trophies collection"
-msgstr "Ryd din trofæsamling"
+msgstr "Trophäen Sammlung löschen"
 
 #: ../accomplishments/daemon/api.py:102 ../accomplishments/daemon/api.py:740
 msgid "You have accomplished something!"
-msgstr "Du har bedrevet noget!"
+msgstr "Sie haben etwas erreicht!"
