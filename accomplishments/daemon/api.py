@@ -181,7 +181,10 @@ class AsyncAPI(object):
     @defer.inlineCallbacks
     def run_scripts_for_user(self, uid):
         # The following avoids running multiple instances of this function,
-        # which might get very messy and cause a lot of trouble.
+        # which might get very messy and cause a lot of trouble. Simulatnously
+        # run scripts would be the case if user recieves several .asc files
+        # within a short time, the scripts take extraordinary time to run,
+        # or for various other reasons.
         # NOTE: detailed explanation of scripts_state mechanism is included
         # near it's initialisation in Accomplishments.__init__(...).
         if uid in self.parent.scripts_state:
