@@ -50,6 +50,10 @@ MATRIX_USERNAME = "openiduser155707"
 LOCAL_USERNAME = getpass.getuser()
 SCRIPT_DELAY = 900
 
+#flags used for scripts_state
+NOT_RUNNING = 0
+RUNNING = 1
+NEEDS_RE_RUNNING = 2
 
 # XXX the source code needs to be updated to use Twisted async calls better:
 # grep the source code for any *.asyncapi.* references, and if they return
@@ -105,6 +109,7 @@ class AsyncAPI(object):
         if self.parent.scriptrun_total == len(self.parent.scriptrun_results):
             self.parent.show_unlocked_accomplishments()
 
+        self.parent.run_scripts(0)
         self.wait_until_a_sig_file_arrives()
         #reload_trophy_corresponding_to_sig_file(path)
 
@@ -175,6 +180,27 @@ class AsyncAPI(object):
     # XXX let's rewrite this to use deferreds explicitly
     @defer.inlineCallbacks
     def run_scripts_for_user(self, uid):
+        # The following avoids running multiple instances of this function,
+        # which might get very messy and cause a lot of trouble.
+        # NOTE: detailed explanation of scripts_state mechanism is included
+        # near it's initialisation in Accomplishments.__init__(...).
+        if uid in self.parent.scripts_state:
+            if self.parent.scripts_state[uid] is RUNNING:
+                log.msg("Aborting running scripts, execution already in progress. Will re-do this when current run ends.")
+                # scripts are already being run for that user, but since something
+                # called that function, maybe we need to re-run them because
+                # something has changed since last call, so let's schedule the
+                # re-running immidiatelly after finishing this run, and abort
+                self.parent.scripts_state[uid] = NEEDS_RE_RUNNING
+                return
+            elif self.parent.scripts_state[uid] is NEEDS_RE_RUNNING:
+                log.msg("Aborting running scripts, execution already in progress. Re-runing scripts has already been scheduled.")
+                # already scheduled, so just aborting
+                return
+        # if above conditions failed, that means the scripts are not being run
+        # this user, so we can continue normally, marking the scripts as running...
+        self.parent.scripts_state[uid] = RUNNING
+            
         log.msg("--- Starting Running Scripts ---")
         timestart = time.time()
         self.parent.service.scriptrunner_start()
@@ -191,6 +217,7 @@ class AsyncAPI(object):
             # user does not have gnome-session running or isn't logged in at
             # all
             log.msg("No gnome-session process for user %s" % username)
+            self.parent.scripts_state[uid] = NOT_RUNNING #unmarking to avoid dead-lock
             return
         # XXX this is a blocking call and can't be here if we want to take
         # advantage of deferreds; instead, rewrite this so that the blocking
@@ -204,6 +231,7 @@ class AsyncAPI(object):
             # user does not have gnome-session running or isn't logged in at
             # all
             log.msg("No gnome-session environment for user %s" % username)
+            self.parent.scripts_state[uid] = NOT_RUNNING #unmarking to avoid dead-lock
             return
         fp.close()
 
@@ -275,6 +303,15 @@ class AsyncAPI(object):
         log.msg(
             "--- Completed Running Scripts in %.2f seconds---" % timefinal)
         self.parent.service.scriptrunner_finish()
+        
+        # checking whether this function was called while script execution was in progress...
+        rerun = (self.parent.scripts_state[uid] is NEEDS_RE_RUNNING)
+        # unsetting the lock
+        self.parent.scripts_state[uid] = NOT_RUNNING
+        # re-running scripts if needed
+        if rerun:
+            log.msg("Re-running scripts as intended...")
+            self.run_scripts_for_user(uid)
 
 
 class Accomplishments(object):
@@ -303,6 +340,25 @@ class Accomplishments(object):
         self.depends = []
         self.processing_unlocked = False
         self.asyncapi = AsyncAPI(self)
+
+        # The following dictionary represents state of scripts.
+        # It's a dictionary and not a single variable, because scripts may be run
+        # for each user independently. For each user, the state can be either
+        # RUNNING, NOT_RUNNING or NEEDS_RE_RUNNING. If an entry for a
+        # particular UID does not exist, it should be treated as NOT_RUNNING.
+        # The use of this flag is to aviod running several instances of 
+        # run_scripts_for_user, which might result in undefined, troubleful
+        # behavior. The flags are NOT_RUNNING by default, and are set to
+        # RUNNING when the run_scripts_for_user starts. However, if it has been
+        # already set to RUNNING, the function will abort, and will instead set the
+        # flag to NEEDS_RE_RUNNING, in order to mark that the scripts have to
+        # be run once more, because something might have changed since we run
+        # them the last time (as the run_scripts_for_user was called while 
+        # scripts were being executed). Setting the flag to NEEDS_RE_RUNNING 
+        # will cause run_scripts_for_user to redo everything after having
+        # finished it's current task in progress. Otherwise it will eventually
+        # set the flag back to NOT_RUNNING.
+        self.scripts_state = {}
 
         # create config / data dirs if they don't exist
         self.dir_config = os.path.join(
