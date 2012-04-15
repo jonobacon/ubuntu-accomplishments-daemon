@@ -11,13 +11,23 @@ glib2reactor.install()
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 
+# Importing from accomplishments.paths would fail, if the path is set wrongly.
+# We need to ensure that the script will load the correct version of
+# accomplishment.* that is installed with this script.
+if __file__[0] is '/':
+    #the program is run using obsolete path, so that's the file's real location!
+    scriptpath = __file__
+else:
+    scriptpath = os.path.join(os.getcwd(),__file__)
+# basepaths shall be equal to prefix used while installing - if the application is run from source, it does not really matter.
+basepath = os.path.split(os.path.split(scriptpath)[0])[0]
+sys.path.insert(0, basepath)
+sys.path.insert(0, basepath + "/lib/python2.7")
+sys.path.insert(0, basepath + "/lib/python2.7/site-packages")
+
 from accomplishments.daemon import app
 
 from accomplishments.util import paths
-
-if paths.runs_in_branch:
-    # PYTHONPATH mangling
-    sys.path.insert(0, ".")
 
 dbus_loop = DBusGMainLoop(set_as_default=True)
 application = app.applicationFactory(
