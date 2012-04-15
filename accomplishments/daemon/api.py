@@ -15,7 +15,6 @@ import gobject
 import gpgme
 import json
 import os
-import sys
 import pwd
 import subprocess
 import time
