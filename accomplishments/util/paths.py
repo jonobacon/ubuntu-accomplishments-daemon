@@ -1,6 +1,4 @@
 import os
-from accomplishments.util import get_data_path
-
 
 if __file__[0] is '/':
     #the script run with absolute path
