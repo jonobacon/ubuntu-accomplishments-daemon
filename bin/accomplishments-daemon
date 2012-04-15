@@ -24,6 +24,7 @@ basepath = os.path.split(os.path.split(scriptpath)[0])[0]
 sys.path.insert(0, basepath)
 sys.path.insert(0, basepath + "/lib/python2.7")
 sys.path.insert(0, basepath + "/lib/python2.7/site-packages")
+sys.path.insert(0, basepath + "/lib/python2.7/dist-packages")
 
 from accomplishments.daemon import app
 
