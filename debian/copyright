@@ -4,6 +4,7 @@ Maintainer: Jono Bacon <jono@ubuntu.com>
 Source: https://launchpad.net/ubuntu-accomplishments-daemon
 
 Files: *
+Copyright: (C) 2012 Rosetta Contributors and Canonical Ltd 2012
 Copyright: (C) YYYY <Your Name> <Your E-mail>
 License: GPL-3
  The full text of the GPL is distributed in

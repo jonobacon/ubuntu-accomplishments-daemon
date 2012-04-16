@@ -38,13 +38,18 @@ except ImportError:
 from ubuntuone.platform.tools import SyncDaemonTool
 from ubuntuone.couch import auth
 
-os.environ["PYTHONPATH"] = "$PYTHONPATH:."
-
 import accomplishments
 from accomplishments import exceptions
 from accomplishments.daemon import dbusapi
 from accomplishments.util import get_data_file, SubprocessReturnCodeProtocol
-from accomplishments.util.paths import media_dir
+from accomplishments.util.paths import media_dir, module_dir1, module_dir2, installed
+
+os.environ["PYTHONPATH"] = "$PYTHONPATH:."
+# The directories with accomplishment.* modules, that are being used by scripts,
+# may happen to be in a completelly different directory, if the daemon was
+# installed using a non-default prefix.
+if installed:
+    os.environ["PYTHONPATH"] = module_dir1 + ":" + module_dir2 + ":" + os.environ["PYTHONPATH"]
 
 MATRIX_USERNAME = "openiduser155707"
 LOCAL_USERNAME = getpass.getuser()

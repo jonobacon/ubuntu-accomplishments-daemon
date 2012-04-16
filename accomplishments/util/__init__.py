@@ -52,6 +52,9 @@ def set_up_logging(opts):
 
 
 def get_data_path():
+    # XXX: NOTE: This function will most likely work incorrectly when daemon is installed in non-default path.
+    # Luckily, this function is no longer used anywhere.
+    # If you feel you need to get this path, please refer to utils/paths.py instead.
     """Retrieve accomplishments-daemon data path
 
     This path is by default <accomplishments_daemon_lib_path>/../data/ in trunk
