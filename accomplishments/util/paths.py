@@ -1,11 +1,6 @@
 import os
 
-if __file__[0] is '/':
-    #the script run with absolute path
-    scriptpath = __file__
-else:
-    scriptpath = os.path.join(os.getcwd(),__file__)
-    
+scriptpath = os.path.abspath(__file__)
 # okay, so as we have the full path, we're ready to analise it...    
 
 # start by looking 2 levels higher. This is either the branch directory,
@@ -29,10 +24,18 @@ if installed:
     # finally, setting these significant data directories...
     systemdata_dir = os.path.join(basepath, 'share/accomplishments-daemon')
     media_dir      = os.path.join(basepath, 'share/accomplishments-daemon/media')
+    
     # these two may need to be set for the accomplismhents scripts, so that they
     # can use OUR accomplishments module, using this installation.
     module_dir1    = os.path.join(basepath, 'lib/python2.7/site-packages') 
     module_dir2    = os.path.join(basepath, 'lib/python2.7/dist-packages')
+    
+    # that's where the daemon launcher is present
+    daemon_exec_dir= os.path.join(basepath, 'bin/accomplishments-daemon')
+    
+    # locale files directory
+    locale_dir= os.path.join(basepath, 'share/locale')
+    
 else:
     # using branch root directory as the base path
     basepath = branchpath
@@ -43,3 +46,13 @@ else:
     media_dir      = os.path.join(basepath, 'data/media')
     module_dir1    = None # always using default
     module_dir2    = None # always using default
+    
+    # that's where the daemon launcher is present
+    daemon_exec_dir= os.path.join(basepath, 'bin/accomplishments-daemon')
+    
+    # If the application has not been installed, the .po files has not been
+    # complied to .gmo, and thus gettext will be unable to use translated
+    # strings. In this case it does not matter where it will look for locales,
+    # but if it's left to default there is some small chance that they are
+    # present int /usr/share/locale, used by an another installation.
+    locale_dir = None
