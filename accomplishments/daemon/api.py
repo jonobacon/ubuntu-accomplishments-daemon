@@ -42,7 +42,10 @@ import accomplishments
 from accomplishments import exceptions
 from accomplishments.daemon import dbusapi
 from accomplishments.util import get_data_file, SubprocessReturnCodeProtocol
-from accomplishments.util.paths import media_dir, module_dir1, module_dir2, installed
+from accomplishments.util.paths import media_dir, module_dir1, module_dir2, installed, locale_dir
+
+gettext.bindtextdomain('accomplishments-daemon',locale_dir)
+gettext.textdomain('accomplishments-daemon')
 
 os.environ["PYTHONPATH"] = "$PYTHONPATH:."
 # The directories with accomplishment.* modules, that are being used by scripts,
