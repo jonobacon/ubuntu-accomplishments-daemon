@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-17 12:33-0700\n"
+"POT-Creation-Date: 2012-04-21 14:52-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,6 +25,18 @@ msgstr ""
 msgid "Clear your trophies collection"
 msgstr ""
 
-#: ../accomplishments/daemon/api.py:111 ../accomplishments/daemon/api.py:804
+#: ../accomplishments/daemon/api.py:112 ../accomplishments/daemon/api.py:801
 msgid "You have accomplished something!"
+msgstr ""
+
+#. trophy_icon_path = "file://%s" % os.path.realpath(
+#. os.path.join(
+#. os.path.split(__file__)[0], "trophy-accomplished.svg")
+#: ../accomplishments/daemon/api.py:445
+#, python-format
+msgid "You have unlocked %s new accomplishment."
+msgstr ""
+
+#: ../accomplishments/daemon/api.py:447
+msgid "Accomplishments Unlocked!"
 msgstr ""
