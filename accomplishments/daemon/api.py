@@ -5,6 +5,7 @@ to enumerate achieved and unachieved accomplishments.
 """
 import gettext
 from gettext import gettext as _
+from gettext import ngettext as N_
 import ConfigParser
 import Image, ImageEnhance
 from StringIO import StringIO
@@ -441,13 +442,9 @@ class Accomplishments(object):
                 #trophy_icon_path = "file://%s" % os.path.realpath(
                 #    os.path.join(
                 #        os.path.split(__file__)[0], "trophy-accomplished.svg")
-                if unlocked == 1:
-                    message = "You have unlocked one new accomplishment."
-                else:
-                    message = "You have unlocked %s new accomplishments." % (
-                        str(unlocked))
+                message = (N_("You have unlocked %s new accomplishment.","You have unlocked %s new accomplishments.",unlocked) % str(unlocked))
                 n = pynotify.Notification(
-                    "Accomplishments Unlocked!", message,
+                    _("Accomplishments Unlocked!"), message,
                     self.get_media_file("unlocked.png"))
                 n.show()
 
