@@ -11,6 +11,7 @@ glib2reactor.install()
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 
+
 # Importing from accomplishments.paths would fail, if the path is set wrongly.
 # We need to ensure that the script will load the correct version of
 # accomplishment.* that is installed with this script.
@@ -21,6 +22,14 @@ sys.path.insert(0, basepath)
 sys.path.insert(0, basepath + "/lib/python2.7")
 sys.path.insert(0, basepath + "/lib/python2.7/site-packages")
 sys.path.insert(0, basepath + "/lib/python2.7/dist-packages")
+
+
+# Ensure the sync daemon is running. The following command can be run in the
+# background (&), because it would block the daemon from running for few
+# seconds, while the syncdaemon will not be needed immediatelly after
+# accomplishments daemon startups.
+os.system("u1sdtool --start &")
+
 
 from accomplishments.daemon import app
 
