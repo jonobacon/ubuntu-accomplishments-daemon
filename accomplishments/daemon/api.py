@@ -935,7 +935,7 @@ class Accomplishments(object):
                 if infoconfig.has_option("description",self.lang):
                     desc = infoconfig.get("description", self.lang)
                 elif infoconfig.has_option("description", deflang):
-                    label = infoconfig.get("description", deflang)
+                    desc = infoconfig.get("description", deflang)
                 else:
                     desc = infoconfig.get("description", "en")
                     
