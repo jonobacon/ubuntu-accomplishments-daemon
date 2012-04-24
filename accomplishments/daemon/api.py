@@ -849,7 +849,8 @@ class Accomplishments(object):
             if config.get('config', 'has_verif'):
                 self.has_verif = config.getboolean('config', 'has_verif')
         else:
-            accompath = os.path.join(homedir, "accomplishments")
+            # setting accomplishments path to the system default
+            accompath = "/usr/share/accomplishments"
             log.msg("Configuration file not found...creating it!")
 
             self.has_verif = False
@@ -857,6 +858,7 @@ class Accomplishments(object):
             log.msg(
                 "...setting accomplishments path to: "
                 + self.accomplishments_path)
+            log.msg("You can set this to a different location in your config file.")
             self.trophies_path = os.path.join(self.dir_data, "trophies")
             log.msg("...setting trophies path to: " + self.trophies_path)
             self.scripts_path = os.path.join(accompath, "scripts")
