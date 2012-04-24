@@ -434,19 +434,12 @@ class Accomplishments(object):
         notify-osd bubble.
         """
 
-        print "_______________________________________________"
-        print app
-        print item
         files = self.get_accom_dependencies(app, item)
-        print files
         unlocked = len(files)
 
         if unlocked is not 0:
             if self.show_notifications == True and pynotify and (
             pynotify.is_initted() or pynotify.init("icon-summary-body")):
-                #trophy_icon_path = "file://%s" % os.path.realpath(
-                #    os.path.join(
-                #        os.path.split(__file__)[0], "trophy-accomplished.svg")
                 message = (N_("You have unlocked %s new accomplishment.","You have unlocked %s new accomplishments.",unlocked) % str(unlocked))
                 n = pynotify.Notification(
                     _("Accomplishments Unlocked!"), message,
