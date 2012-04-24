@@ -117,14 +117,11 @@ class AsyncAPI(object):
                     _("You have accomplished something!"), data[0]["title"], iconpath)
                 n.show()
 
-            uid = os.getuid()
-            #if self.parent.scriptrun_total == len(self.parent.scriptrun_results):
-            if self.parent.scripts_state[uid] == NOT_RUNNING:
-                self.parent.show_unlocked_accomplishments()
-
+            # check to see if there are any unlocked accomplishments
+            self.parent.show_unlocked_accomplishments(app, item)
+            
             self.parent.run_scripts(0)
             self.wait_until_a_sig_file_arrives()
-            #reload_trophy_corresponding_to_sig_file(path)
 
     # XXX let's rewrite this to use deferreds explicitly
     @defer.inlineCallbacks
@@ -413,6 +410,7 @@ class Accomplishments(object):
         self.asyncapi.wait_until_a_sig_file_arrives()
         self.generate_all_trophies()
 
+        self.get_accom_dependencies("ubuntu-community", "report-first-bug")
 
     def get_media_file(self, media_file_name):
         log.msg("MEDIA_FILE_NAME:")
@@ -430,18 +428,18 @@ class Accomplishments(object):
         final = "file:///" + media_filename
         return final
 
-    def show_unlocked_accomplishments(self):
+    def show_unlocked_accomplishments(self, app, item):
         """
         Determine if accomplishments have been unlocked and display a
         notify-osd bubble.
         """
-        unlocked = 0
-        it = 0
-        for dep in self.depends:
-            for res in self.scriptrun_results:
-                if dep.values()[0] == res:
-                    unlocked = unlocked + 1
-            it = it + 1
+
+        print "_______________________________________________"
+        print app
+        print item
+        files = self.get_accom_dependencies(app, item)
+        print files
+        unlocked = len(files)
 
         if unlocked is not 0:
             if self.show_notifications == True and pynotify and (
@@ -663,6 +661,26 @@ class Accomplishments(object):
                     img.save(filecore + "-locked" + filetype)
                 except Exception, (msg):
                     log.msg(msg)
+
+    def get_accom_dependencies(self, app, accom):
+        """Gets a list of all the dependencies for a given accomplishments.
+        This is returned as a list. An empty set will return an empty list."""
+
+        files = self._get_accomplishments_files_list()
+                
+        depterm = app + "/" + accom
+        results = []
+        
+        for f in files:
+            config = ConfigParser.ConfigParser()
+            config.read(f)
+
+            if config.has_option("accomplishment", "depends"):
+                item = config.get("accomplishment", "depends")
+                if item == depterm:
+                    results.append(f)
+
+        return results
 
     def verifyU1Account(self):
         # check if this machine has an Ubuntu One account
