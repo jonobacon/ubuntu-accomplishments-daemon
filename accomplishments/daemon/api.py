@@ -93,34 +93,38 @@ class AsyncAPI(object):
         log.msg("Trophy signature recieved...")
         accomname = os.path.splitext(os.path.splitext(
             os.path.split(path)[1])[0])[0]
-        data = self.parent.listAccomplishmentInfo(accomname)
-        iconpath = os.path.join(
-            self.parent.accomplishments_path,
-            data[0]["application"],
-            "trophyimages",
-            data[0]["icon"])
+        
+        valid = self.parent.validate_trophy(path)
+        
+        if valid == True:
+            item = os.path.split(path)[1][:-11]
+            app = os.path.split(os.path.split(path)[0])[1]
+            data = self.parent.listAccomplishmentInfo(item)
+            iconpath = os.path.join(
+                self.parent.accomplishments_path,
+                data[0]["application"],
+                "trophyimages",
+                data[0]["icon"])
 
-        item = os.path.split(path)[1][:-11]
-        app = os.path.split(os.path.split(path)[0])[1]
-        data = self.parent.listAccomplishmentInfo(item)
+            self.parent.service.trophy_received("foo")
+            if self.parent.show_notifications == True and pynotify and (
+            pynotify.is_initted() or pynotify.init("icon-summary-body")):
+                trophy_icon_path = "file://%s" % os.path.realpath(
+                    os.path.join(
+                        os.path.split(__file__)[0],
+                        "trophy-accomplished.svg"))
+                n = pynotify.Notification(
+                    _("You have accomplished something!"), data[0]["title"], iconpath)
+                n.show()
 
-        self.parent.service.trophy_received("foo")
-        if self.parent.show_notifications == True and pynotify and (
-        pynotify.is_initted() or pynotify.init("icon-summary-body")):
-            trophy_icon_path = "file://%s" % os.path.realpath(
-                os.path.join(
-                    os.path.split(__file__)[0],
-                    "trophy-accomplished.svg"))
-            n = pynotify.Notification(
-                _("You have accomplished something!"), data[0]["title"], iconpath)
-            n.show()
+            uid = os.getuid()
+            #if self.parent.scriptrun_total == len(self.parent.scriptrun_results):
+            if self.parent.scripts_state[uid] == NOT_RUNNING:
+                self.parent.show_unlocked_accomplishments()
 
-        if self.parent.scriptrun_total == len(self.parent.scriptrun_results):
-            self.parent.show_unlocked_accomplishments()
-
-        self.parent.run_scripts(0)
-        self.wait_until_a_sig_file_arrives()
-        #reload_trophy_corresponding_to_sig_file(path)
+            self.parent.run_scripts(0)
+            self.wait_until_a_sig_file_arrives()
+            #reload_trophy_corresponding_to_sig_file(path)
 
     # XXX let's rewrite this to use deferreds explicitly
     @defer.inlineCallbacks
