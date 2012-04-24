@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-21 15:04-0700\n"
+"POT-Creation-Date: 2012-04-23 22:25-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,26 +17,26 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../accomplishments/util/__init__.py:93
+#: ../accomplishments/util/__init__.py:94
 msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
 msgstr ""
 
-#: ../accomplishments/util/__init__.py:96
+#: ../accomplishments/util/__init__.py:97
 msgid "Clear your trophies collection"
 msgstr ""
 
-#: ../accomplishments/daemon/api.py:112 ../accomplishments/daemon/api.py:801
+#: ../accomplishments/daemon/api.py:117 ../accomplishments/daemon/api.py:808
 msgid "You have accomplished something!"
 msgstr ""
 
 #. trophy_icon_path = "file://%s" % os.path.realpath(
 #. os.path.join(
 #. os.path.split(__file__)[0], "trophy-accomplished.svg")
-#: ../accomplishments/daemon/api.py:445
+#: ../accomplishments/daemon/api.py:452
 #, python-format
 msgid "You have unlocked %s new accomplishment."
 msgstr ""
 
-#: ../accomplishments/daemon/api.py:447
+#: ../accomplishments/daemon/api.py:454
 msgid "Accomplishments Unlocked!"
 msgstr ""
