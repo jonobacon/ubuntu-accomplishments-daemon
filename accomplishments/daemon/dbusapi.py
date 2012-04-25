@@ -1,7 +1,15 @@
-# A stupid Python-specific wrapper for the libaccomplishments-daemon D-Bus API
-# This should not be a Python library. It should be a
-# GObject-introspection-capable C thing so anyone can use it. But someone else
-# needs to write that because I'm crap at Vala.
+"""
+(c) 2012, Jono Bacon, and the Ubuntu Accomplishments community.
+
+This is the core Ubuntu Accomplishments daemon API as exposed via DBUS.
+
+This file is licensed under the GNU Public License version 3.
+
+If you are interested in contributing improvements or changes to this
+program, please see http://wiki.ubuntu.com/Accomplishments for how to
+get involved.
+"""
+
 import dbus
 
 from twisted.python import log
@@ -62,38 +70,38 @@ class AccomplishmentsDBusService(service.DBusExportService):
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="aa{sv}")
-    def listAllAccomplishments(self):
-        return self.api.listAllAccomplishments()
+    def get_all_accomplishments(self):
+        return self.api.get_all_accomplishments()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="aa{sv}")
-    def listAllAccomplishmentsAndStatus(self):
-        return self.api.listAllAccomplishmentsAndStatus()
+    def get_all_accomplishments_and_status(self):
+        return self.api.get_all_accomplishments_and_status()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="aa{sv}")
-    def listAllAvailableAccomplishmentsWithScripts(self):
-        return self.api.listAllAvailableAccomplishmentsWithScripts()
+    def get_all_available_accomplishments_with_scripts(self):
+        return self.api.list_all_available_accomplishments_with_scripts()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="aa{sv}")
-    def getAllExtraInformationRequired(self):
-        return self.api.getAllExtraInformationRequired()
+    def get_all_extra_information_required(self):
+        return self.api.get_all_extra_information_required()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="aa{sv}")
-    def getAllExtraInformation(self):
-        return self.api.getAllExtraInformation()
+    def get_all_extra_information(self):
+        return self.api.get_all_extra_information()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="aa{sv}")
-    def listAccomplishmentInfo(self, accomplishment):
-        return self.api.listAccomplishmentInfo(accomplishment)
+    def get_accomplishment_information(self, accomplishment):
+        return self.api.get_accomplishment_information(accomplishment)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="aa{sv}")
-    def listTrophyInfo(self, trophy):
-        return self.api.listTrophyInfo(trophy)
+    def get_trophy_information(self, trophy):
+        return self.api.get_trophy_information(trophy)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="b", out_signature="")
@@ -102,18 +110,18 @@ class AccomplishmentsDBusService(service.DBusExportService):
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="aa{sv}")
-    def getExtraInformation(self, app, info):
-        return self.api.getExtraInformation(app, info)
+    def get_extra_information(self, app, info):
+        return self.api.get_extra_information(app, info)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="")
-    def createExtraInformationFile(self, app, item, data):
-        return self.api.createExtraInformationFile(app, item, data)
+    def create_extra_information_file(self, app, item, data):
+        return self.api.create_extra_information_file(app, item, data)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="")
-    def saveExtraInformationFile(self, app, item, data):
-        return self.api.saveExtraInformationFile(app, item, data)
+    def write_extra_information_file(self, app, item, data):
+        return self.api.write_extra_information_file(app, item, data)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="ss", out_signature="")
@@ -127,28 +135,28 @@ class AccomplishmentsDBusService(service.DBusExportService):
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="vv", out_signature="v")
-    def getConfigValue(self, section, item):
-        return self.api.getConfigValue(section, item)
+    def get_config_value(self, section, item):
+        return self.api.get_config_value(section, item)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="")
-    def invalidateExtraInformation(self, extrainfo):
-        return self.api.invalidateExtraInformation(extrainfo)
+    def invalidate_extra_information(self, extrainfo):
+        return self.api.invalidate_extra_information(extrainfo)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="vvv", out_signature="")
-    def setConfigValue(self, section, item, value):
-        return self.api.setConfigValue(section, item, value)
+    def write_config_file_item(self, section, item, value):
+        return self.api.write_config_file_item(section, item, value)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="b")
-    def verifyU1Account(self):
-        return self.api.verifyU1Account()
+    def verify_ubuntu_one_account(self):
+        return self.api.verify_ubuntu_one_account()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="s")
-    def getApplicationFullName(self,app):
-        return self.api.getApplicationFullName(app)
+    def get_application_full_name(self,app):
+        return self.api.get_application_full_name(app)
         
     # XXX this looks like an unintentional duplicate of the "other"
     # trophy_received... I've moved them here together so that someone in the

@@ -1,8 +1,15 @@
-"""The libaccomplishments daemon
-
-Provides a D-Bus API to record accomplishments as achieved (trophies) and
-to enumerate achieved and unachieved accomplishments.
 """
+(c) 2012, Jono Bacon, and the Ubuntu Accomplishments community.
+
+This is the core Ubuntu Accomplishments daemon API.
+
+This file is licensed under the GNU Public License version 3.
+
+If you are interested in contributing improvements or changes to this
+program, please see http://wiki.ubuntu.com/Accomplishments for how to
+get involved.
+"""
+
 import gettext
 from gettext import gettext as _
 from gettext import ngettext as N_
@@ -99,7 +106,7 @@ class AsyncAPI(object):
         if valid == True:
             item = os.path.split(path)[1][:-11]
             app = os.path.split(os.path.split(path)[0])[1]
-            data = self.parent.listAccomplishmentInfo(item)
+            data = self.parent.get_accomplishment_information(item)
             iconpath = os.path.join(
                 self.parent.accomplishments_path,
                 data[0]["application"],
@@ -273,7 +280,7 @@ class AsyncAPI(object):
         # XXX all parent calls should be refactored out of the AsyncAPI class
         # to keep the code cleaner and the logic more limited to one particular
         # task
-        accoms = self.parent.listAllAvailableAccomplishmentsWithScripts()
+        accoms = self.parent.get_all_available_accomplishments_with_scripts()
                 
         totalscripts = len(accoms)
         self.parent.scriptrun_total = totalscripts
@@ -394,7 +401,7 @@ class Accomplishments(object):
             "------------------- Ubuntu Accomplishments Daemon Log - %s "
             "-------------------", str(datetime.datetime.now()))
 
-        self._loadConfigFile()
+        self._load_config_file()
 
         log.msg("Accomplishments path: " + self.accomplishments_path)
         log.msg("Scripts path: " + self.scripts_path)
@@ -408,7 +415,7 @@ class Accomplishments(object):
         # deferred-returning function that has a callback which fires off
         # generate_all_trophis and schedule_run_scripts...
         self.asyncapi.wait_until_a_sig_file_arrives()
-        self.generate_all_trophies()
+        self._create_all_trophy_icons()
 
         self.get_accom_dependencies("ubuntu-community", "report-first-bug")
 
@@ -451,7 +458,8 @@ class Accomplishments(object):
         self.depends = []
 
     def _get_accomplishments_files_list(self):
-               
+        """Return a list of all accomplishments files on the system."""
+        
         # get list of accomplishments sets
         sets = os.listdir(self.accomplishments_path)
                 
@@ -513,6 +521,10 @@ class Accomplishments(object):
         return finalpaths
 
     def _get_trophies_files_list(self):
+        """Return a list of all trophy files. Please note: these are
+        raw .trophy files and for machine-verifiable accomplishments
+        some of these files may have not been verified."""
+        
         log.msg("Looking for trophies files in "
                      + self.trophies_path)
         trphy_files = os.path.join(self.trophies_path,
@@ -574,14 +586,18 @@ class Accomplishments(object):
         data["accomplishment"] = os.path.splitext(os.path.split(f)[1])[0]
         return data
 
-    def listAllAccomplishments(self):
+    def get_all_accomplishments(self):
         log.msg("List all accomplishments")
         log.msg(files)
         fs = [self._load_accomplishment_file(f) for f in
             self._get_accomplishments_files_list()]
         return fs
 
-    def generate_all_trophies(self):
+    def _create_all_trophy_icons(self):
+        """Iterate through each of the accomplishments on the system
+        and generate all of the required icons that we provide to
+        clients."""
+        
         paths = []
         final = []
         files = self._get_accomplishments_files_list()
@@ -612,11 +628,12 @@ class Accomplishments(object):
 
             # now generate our trophy images
             lock_image_path = os.path.join(media_dir, "lock.png")
-            self.generate_trophy_images(
+            self._create_trophy_icons(
                 app_trophyimagespath, cache_trophyimagespath, lock_image_path)
 
-    def reduce_trophy_opacity(self, im, opacity):
+    def _create_reduced_opacity_trophy_icon(self, im, opacity):
         """Returns an image with reduced opacity."""
+        
         assert opacity >= 0 and opacity <= 1
         if im.mode != 'RGBA':
             im = im.convert('RGBA')
@@ -627,7 +644,9 @@ class Accomplishments(object):
         im.putalpha(alpha)
         return im
 
-    def generate_trophy_images(self, infolder, outfolder, watermark):
+    def _create_trophy_icons(self, infolder, outfolder, watermark):
+        """Generate a set of trophy icons for a given accomplishment
+        set."""
         mark = Image.open(watermark)
         for root, dirs, files in os.walk(infolder):
             for name in files:
@@ -641,7 +660,7 @@ class Accomplishments(object):
 
                     # Opacity set to 1.0 until we figure out a better way of
                     # showing opportunities
-                    reduced = self.reduce_trophy_opacity(im, 1.0)
+                    reduced = self._create_reduced_opacity_trophy_icon(im, 1.0)
                     reduced.save(filecore + "-opportunity" + filetype)
 
                     if im.mode != 'RGBA':
@@ -656,7 +675,7 @@ class Accomplishments(object):
                     log.msg(msg)
 
     def get_accom_dependencies(self, app, accom):
-        """Gets a list of all the dependencies for a given accomplishments.
+        """Return a list of all the dependencies for a given accomplishment.
         This is returned as a list. An empty set will return an empty list."""
 
         files = self._get_accomplishments_files_list()
@@ -675,7 +694,7 @@ class Accomplishments(object):
 
         return results
 
-    def verifyU1Account(self):
+    def verify_ubuntu_one_account(self):
         # check if this machine has an Ubuntu One account
         log.msg("Check if this machine has an Ubuntu One account...")
         u1auth_response = auth.request(
@@ -696,7 +715,7 @@ class Accomplishments(object):
             self.has_u1 = True
             return True
 
-    def getConfigValue(self, section, item):
+    def get_config_value(self, section, item):
         """Return a configuration value from the .accomplishments file"""
         log.msg(
             "Returning configuration values for: %s, %s", section, item)
@@ -715,7 +734,7 @@ class Accomplishments(object):
             item = config.get(section, item)
             return item
 
-    def setConfigValue(self, section, item, value):
+    def write_config_file_item(self, section, item, value):
         """Set a configuration value in the .accomplishments file"""
         log.msg(
             "Set configuration file value in '%s': %s = %s", section, item,
@@ -734,9 +753,13 @@ class Accomplishments(object):
         with open(cfile, 'wb') as configfile:
             config.write(configfile)
 
-        self._loadConfigFile()
+        self._load_config_file()
 
-    def _writeConfigFile(self):
+    def _write_config_file(self):
+        """Write the values held in various configuration state variables
+        to the main daemon configuration file, which should be located
+        in ~/.config/accomplishments/.accomplishments."""
+        
         log.msg("Writing the configuration file")
         homedir = os.getenv("HOME")
         config = ConfigParser.RawConfigParser()
@@ -758,6 +781,12 @@ class Accomplishments(object):
         log.msg("...done.")
 
     def accomplish(self, app, accomplishment_name):
+        """Mark a file as accomplished and create the .trophy file in the
+        trophies directory. If this is a machine-verifiable accomplishment,
+        this .trophy file should be automatically synced to the verification
+        server to be validated. This method purely generates the .trophy
+        file with information about the accomplishment."""
+        
         log.msg(self.accomlangs)
         for l in self.accomlangs:
             if app in l:
@@ -778,7 +807,7 @@ class Accomplishments(object):
                 needsinfolist.append(data[k])
 
         for n in needsinfolist:
-            values = self.getExtraInformation(app, n)
+            values = self.get_extra_information(app, n)
             data[n] = values[0][n]
 
         if "depends" in data:
@@ -826,12 +855,16 @@ class Accomplishments(object):
             
         return self._load_trophy_file(trophy_file)
 
-    def _loadConfigFile(self):
+    def _load_config_file(self):
+        """Load the main configuration file for the daemon. This should be
+        located in ~/.config/accomplishments/.accomplishments and it provides
+        a ConfigParser INI-style list of values."""
+        
         homedir = os.environ["HOME"]
         config = ConfigParser.RawConfigParser()
         cfile = os.path.join(self.dir_config, ".accomplishments")
 
-        u1ver = self.verifyU1Account()
+        u1ver = self.verify_ubuntu_one_account()
 
         if u1ver is False:
             self.has_u1 = False
@@ -878,9 +911,9 @@ class Accomplishments(object):
             if not os.path.exists(self.trophies_path):
                 os.makedirs(self.trophies_path)
 
-            self._writeConfigFile()
+            self._write_config_file()
 
-    def getAllExtraInformation(self):
+    def get_all_extra_information(self):
         """
         Return a dictionary of all information for the accomplishments
         to authticate. Returns {application, needs-information, label,
@@ -992,16 +1025,16 @@ class Accomplishments(object):
 
         return final
 
-    def getAllExtraInformationRequired(self):
+    def get_all_extra_information_required(self):
         """
         Return a dictionary of all information required for the accomplishments
         to authticate that has not been set yet. Returns {application,
         needs-information, label, description} Returns only these, which value is not set.
         """
         #fetch a full list of ExtraInformation
-        data = self.getAllExtraInformation()
+        data = self.get_all_extra_information()
         #now we need to unsort the data just to output these entries, that have value == ""
-        #this way we can return a list of ExtraInformation fields, that have not been setConfigValue
+        #this way we can return a list of ExtraInformation fields, that have not been write_config_file_item
         result = []
         for i in data: #for each ExtraInformation in the full list
             if not i['value']: #if the value string is empty, so this ExtraInformation field have not been yet set
@@ -1011,7 +1044,7 @@ class Accomplishments(object):
             
         return result
 
-    def listAllAccomplishmentsAndStatus(self):
+    def get_all_accomplishments_and_status(self):
         """
         Provide a list of all accomplishments and whether they have been
         accomplished or not, including validating the trophies. Returns a list
@@ -1117,9 +1150,9 @@ class Accomplishments(object):
                 #   icondir, (iconname + "-opportunity" + iconext))
         return things.values()
 
-    def listAllAvailableAccomplishmentsWithScripts(self):
+    def get_all_available_accomplishments_with_scripts(self):
         log.msg("List all accomplishments with scripts")
-        available = [accom for accom in self.listAllAccomplishmentsAndStatus()
+        available = [accom for accom in self.get_all_accomplishments_and_status()
             if not accom["accomplished"] and not accom["locked"]]
         withscripts = []
         for accom in available:
@@ -1137,7 +1170,9 @@ class Accomplishments(object):
                 withscripts.append(accom)
         return withscripts
 
-    def listAccomplishmentInfo(self, accomplishment):
+    def get_accomplishment_information(self, accomplishment):
+        """Returns information for the given accomplishment."""
+        
         log.msg("Getting accomplishment info for " + accomplishment)
         search = "/" + accomplishment + ".accomplishment"
         files = self._get_accomplishments_files_list()
@@ -1154,7 +1189,7 @@ class Accomplishments(object):
         data.append(dict(config._sections["accomplishment"]))
         return data
 
-    def listTrophyInfo(self, trophy):
+    def get_trophy_information(self, trophy):
         log.msg("Getting trophy info for " + trophy)
         search = "/" + trophy + ".trophy"
         files = self._get_trophies_files_list()
@@ -1186,10 +1221,11 @@ class Accomplishments(object):
             log.msg("Run scripts for user")
             self.asyncapi.run_scripts_for_user(uid)
 
-    def createExtraInformationFile(self, app, item, data):
-        """Does exactly the same as saveExtraInformationFile(), but it does not
+    def create_extra_information_file(self, app, item, data):
+        """Does exactly the same as write_extra_information_file(), but it does not
            overwrite any existing data"""
-        # XXX this should be removed as we are using saveExtraInformationFile
+           
+        # XXX this should be removed as we are using write_extra_information_file
         log.msg(
             "Creating Extra Information file: %s, %s, %s", app, item, data)
         extrainfodir = os.path.join(self.trophies_path, ".extrainformation/")
@@ -1204,7 +1240,7 @@ class Accomplishments(object):
             f.write(data)
             f.close()
             
-    def saveExtraInformationFile(self, app, item, data):
+    def write_extra_information_file(self, app, item, data):
 
         log.msg(
             "Saving Extra Information file: %s, %s, %s", app, item, data)
@@ -1221,7 +1257,7 @@ class Accomplishments(object):
             #file would be empty, remove it instead
             os.remove(os.path.join(extrainfodir, item))
             
-    def invalidateExtraInformation(self,extrainfo):
+    def invalidate_extra_information(self,extrainfo):
         """Removes all trophies that use this extra-info. This is useful
         for re-authorizing trophies when extra-information changes."""
         trophylist = self._get_trophies_files_list()
@@ -1240,7 +1276,7 @@ class Accomplishments(object):
                     except IOError:
                         pass
             
-    def getExtraInformation(self, app, item):
+    def get_extra_information(self, app, item):
         extrainfopath = os.path.join(self.trophies_path, ".extrainformation/")
         authfile = os.path.join(extrainfopath, item)
         label = None
@@ -1270,7 +1306,7 @@ class Accomplishments(object):
             final = [{item : False, "label" : ""}]
         return final
     
-    def getApplicationFullName(self,app):
+    def get_application_full_name(self,app):
         appaboutpath = os.path.join( os.path.join(self.accomplishments_path, app) , "ABOUT")
         aboutcfg = ConfigParser.RawConfigParser()
         aboutcfg.read(appaboutpath)
