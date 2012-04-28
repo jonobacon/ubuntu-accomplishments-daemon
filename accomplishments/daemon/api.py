@@ -447,9 +447,9 @@ class Accomplishments(object):
         if unlocked is not 0:
             if self.show_notifications == True and pynotify and (
             pynotify.is_initted() or pynotify.init("icon-summary-body")):
-                message = (N_("You have unlocked %s new accomplishment.","You have unlocked %s new accomplishments.",unlocked) % str(unlocked))
+                message = (N_("You have unlocked %s new opportunity.","You have unlocked %s new opportunities.",unlocked) % str(unlocked))
                 n = pynotify.Notification(
-                    _("Accomplishments Unlocked!"), message,
+                    _("Opportunities Unlocked!"), message,
                     self.get_media_file("unlocked.png"))
                 n.show()
 
