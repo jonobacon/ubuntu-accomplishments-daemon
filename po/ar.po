@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ubuntu-accomplishments-daemon\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-04-23 22:25-0700\n"
+"POT-Creation-Date: 2012-04-28 14:56-0700\n"
 "PO-Revision-Date: 2012-04-10 01:58+0000\n"
 "Last-Translator: hanynowsky <Unknown>\n"
 "Language-Team: Arabic <ar@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-25 05:25+0000\n"
-"X-Generator: Launchpad (build 15139)\n"
+"X-Launchpad-Export-Date: 2012-04-29 05:24+0000\n"
+"X-Generator: Launchpad (build 15149)\n"
 
 #: ../accomplishments/util/__init__.py:94
 msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
@@ -25,18 +25,15 @@ msgstr "عرض رسائل التصحيح (أيضا vv debugs accomplishments_dae
 msgid "Clear your trophies collection"
 msgstr "إمسح مجموعات كأوسك"
 
-#: ../accomplishments/daemon/api.py:117 ../accomplishments/daemon/api.py:808
+#: ../accomplishments/daemon/api.py:124 ../accomplishments/daemon/api.py:848
 msgid "You have accomplished something!"
 msgstr "لقد انجزت شيئاً!"
 
-#. trophy_icon_path = "file://%s" % os.path.realpath(
-#. os.path.join(
-#. os.path.split(__file__)[0], "trophy-accomplished.svg")
-#: ../accomplishments/daemon/api.py:452
+#: ../accomplishments/daemon/api.py:450
 #, python-format
-msgid "You have unlocked %s new accomplishment."
+msgid "You have unlocked %s new opportunity."
 msgstr ""
 
-#: ../accomplishments/daemon/api.py:454
-msgid "Accomplishments Unlocked!"
+#: ../accomplishments/daemon/api.py:452
+msgid "Opportunities Unlocked!"
 msgstr ""
