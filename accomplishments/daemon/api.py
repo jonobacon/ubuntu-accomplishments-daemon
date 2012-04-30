@@ -813,9 +813,16 @@ class Accomplishments(object):
         if "depends" in data:
             for dependency in data["depends"].split(","):
                 dapp, dname = dependency.split("/")
+                #XXX: It is checked only if the .trophy file exists, to enable
+                # local accomplishments support. It would be better to check if
+                # this accom needs-signing, and then check for .asc file, but
+                # if such file does not exist or is invalid, the .trophy will be
+                # deleted anyway, so checking for .trophy is good enough.
+                # However, ideally here a new API function should be used, that
+                # does the above in a convenient manner.
                 dtrophy_file = os.path.join(
                     self.trophies_path, dapp,
-                    "%s.trophy.asc" % dname)
+                    "%s.trophy" % dname)
                 if not os.path.exists(dtrophy_file):
                     raise exceptions.AccomplishmentLocked()
 
@@ -839,7 +846,7 @@ class Accomplishments(object):
         fp.close()
         
         if data.has_key("needs-signing") == False or data["needs-signing"] is False:
-            #self.service.trophy_received()
+            self.service.trophy_received("foo")
             if self.show_notifications is True and pynotify and (
             pynotify.is_initted() or pynotify.init("icon-summary-body")):
                 # XXX: need to fix loading the right icon
@@ -848,6 +855,13 @@ class Accomplishments(object):
                 n = pynotify.Notification(_("You have accomplished something!"),
                     data["title"], trophy_icon_path)
                 n.show()
+            # Because something new has been accomplished and it does not
+            # require to wait for .asc file, scripts have to be re-run to check
+            # if something that has been just unlocked hasn't been already
+            # achieved. Because this function is usually called from
+            # scriptrunner, the following will schedule scripts for re-running.
+            self.run_scripts(0)
+            
         else:
             # if the trophy needs signing we wait for wait_until_a_sig_file_arrives
             # to display the notification
@@ -1090,9 +1104,19 @@ class Accomplishments(object):
                 self.trophies_path, app, "%s.trophy" % name)
                 
             trophysigned = str(trophy_file) + ".asc"
+            
+            acc_file_cfg = ConfigParser.RawConfigParser()
+            acc_file_cfg.read(accomplishment_file)
+            acc_data = dict(acc_file_cfg._sections["accomplishment"])
+            if(acc_data.has_key("needs-signing") and acc_data["needs-signing"] == True):
+                # this trophy needs to be signed in order to be validated
+                valid = self.validate_trophy(trophysigned)
+            else:
+                # this trophy does not require signature
+                valid = os.path.exists(trophy_file)
 
-            # validate all files that have been signed
-            if self.validate_trophy(trophysigned) == True:
+
+            if valid:
                 data["accomplished"] = True
                 data["locked"] = False
                 data.update(self._load_trophy_file(trophy_file))
