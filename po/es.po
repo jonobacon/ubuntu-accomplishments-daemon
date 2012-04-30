@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: ubuntu-accomplishments-daemon\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-04-28 14:56-0700\n"
-"PO-Revision-Date: 2012-04-28 22:57+0000\n"
-"Last-Translator: Luciano Facchinelli <facchinelli.luciano@gmail.com>\n"
+"PO-Revision-Date: 2012-04-29 06:26+0000\n"
+"Last-Translator: Paco Molinero <paco@byasl.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-29 05:25+0000\n"
-"X-Generator: Launchpad (build 15149)\n"
+"X-Launchpad-Export-Date: 2012-04-30 05:20+0000\n"
+"X-Generator: Launchpad (build 15171)\n"
 
 #: ../accomplishments/util/__init__.py:94
 msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
@@ -25,7 +25,7 @@ msgstr ""
 
 #: ../accomplishments/util/__init__.py:97
 msgid "Clear your trophies collection"
-msgstr "Despejar su colección de trofeos"
+msgstr "Limpiar su colección de trofeos"
 
 #: ../accomplishments/daemon/api.py:124 ../accomplishments/daemon/api.py:848
 msgid "You have accomplished something!"
@@ -34,8 +34,8 @@ msgstr "Ha conseguido algo"
 #: ../accomplishments/daemon/api.py:450
 #, python-format
 msgid "You have unlocked %s new opportunity."
-msgstr "Has desbloqueado %s nuevas oportunidades"
+msgstr "Ha desbloqueado %s nuevas oportunidades."
 
 #: ../accomplishments/daemon/api.py:452
 msgid "Opportunities Unlocked!"
-msgstr "Oportunidades deslboqueadas !"
+msgstr "Oportunidades desbloqueadas"
