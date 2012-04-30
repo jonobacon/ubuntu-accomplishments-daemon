@@ -1,4 +1,4 @@
-# Italian translation for ubuntu-accomplishments-daemon
+# Russian translation for ubuntu-accomplishments-daemon
 # Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the ubuntu-accomplishments-daemon package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: ubuntu-accomplishments-daemon\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-04-28 14:56-0700\n"
-"PO-Revision-Date: 2012-04-29 09:30+0000\n"
-"Last-Translator: Matteo Giachino <Unknown>\n"
-"Language-Team: Italian <it@li.org>\n"
+"PO-Revision-Date: 2012-04-29 01:37+0000\n"
+"Last-Translator: Alexander Semyonov <Unknown>\n"
+"Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,22 +20,22 @@ msgstr ""
 #: ../accomplishments/util/__init__.py:94
 msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
 msgstr ""
-"Mostra i messaggi di debug (-vv esegue anche il debug di "
+"Показывать сообщения отладки (-vv показывает также сообщения "
 "accomplishments_daemon_lib)"
 
 #: ../accomplishments/util/__init__.py:97
 msgid "Clear your trophies collection"
-msgstr "Cancella la vostra collezione di trofei"
+msgstr "Очистить вашу коллекцию трофеев"
 
 #: ../accomplishments/daemon/api.py:124 ../accomplishments/daemon/api.py:848
 msgid "You have accomplished something!"
-msgstr "Avete realizzato qualcosa!"
+msgstr "Вы что уже совершили!"
 
 #: ../accomplishments/daemon/api.py:450
 #, python-format
 msgid "You have unlocked %s new opportunity."
-msgstr "Hai sbloccato %s nuove opportunità"
+msgstr "Вы разблокировали новую возможность %s."
 
 #: ../accomplishments/daemon/api.py:452
 msgid "Opportunities Unlocked!"
-msgstr "Opportunità sbloccate!"
+msgstr "Возможности разблокированы!"
