@@ -813,17 +813,27 @@ class Accomplishments(object):
         if "depends" in data:
             for dependency in data["depends"].split(","):
                 dapp, dname = dependency.split("/")
-                #XXX: It is checked only if the .trophy file exists, to enable
-                # local accomplishments support. It would be better to check if
-                # this accom needs-signing, and then check for .asc file, but
-                # if such file does not exist or is invalid, the .trophy will be
-                # deleted anyway, so checking for .trophy is good enough.
-                # However, ideally here a new API function should be used, that
-                # does the above in a convenient manner.
+                #XXX: Below application's default language should be used
+                # instead of "en", but this will work well in most cases,
+                # and implementing this properli will be much much easier
+                # in the new API.
+                dpath = os.path.join(self.accomplishments_path, dapp, "en",
+            "%s.accomplishment" % dname)
+                dcp = ConfigParser.RawConfigParser()
+                dcp.read(dpath)
+                dacc_data = dict(dcp._sections["accomplishment"])
                 dtrophy_file = os.path.join(
                     self.trophies_path, dapp,
                     "%s.trophy" % dname)
-                if not os.path.exists(dtrophy_file):
+                dtrophysigned = dtrophy_file + ".asc"
+                if(dacc_data.has_key("needs-signing") and (dacc_data["needs-signing"] == True or dacc_data["needs-signing"] == "True" or dacc_data["needs-signing"] == "true")):
+                    # the dependent accom needs to be signed
+                    dvalid = self.validate_trophy(dtrophysigned)
+                else:
+                    # this dependency trophy does not require signature
+                    dvalid = os.path.exists(dtrophy_file)
+                
+                if not dvalid:
                     raise exceptions.AccomplishmentLocked()
 
         cp = ConfigParser.RawConfigParser()
@@ -1108,7 +1118,7 @@ class Accomplishments(object):
             acc_file_cfg = ConfigParser.RawConfigParser()
             acc_file_cfg.read(accomplishment_file)
             acc_data = dict(acc_file_cfg._sections["accomplishment"])
-            if(acc_data.has_key("needs-signing") and acc_data["needs-signing"] == True):
+            if(acc_data.has_key("needs-signing") and (acc_data["needs-signing"] == True or acc_data["needs-signing"] == "True" or acc_data["needs-signing"] == "true")):
                 # this trophy needs to be signed in order to be validated
                 valid = self.validate_trophy(trophysigned)
             else:
@@ -1124,7 +1134,7 @@ class Accomplishments(object):
             else:
                 if os.path.exists(trophysigned):
                     os.remove(trophysigned)
-                    os.remove(trophy_file)
+                    # os.remove(trophy_file)
                 data["accomplished"] = False
                 data["iconpath"] = os.path.join(icondir, (
                     iconname + "-opportunity" + iconext))
