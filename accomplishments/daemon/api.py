@@ -857,13 +857,19 @@ class Accomplishments(object):
         
         if data.has_key("needs-signing") == False or data["needs-signing"] is False:
             self.service.trophy_received("foo")
+            iconpath = os.path.join(
+                self.accomplishments_path,
+                data["application"],
+                "trophyimages",
+                data["icon"])
+                
             if self.show_notifications is True and pynotify and (
             pynotify.is_initted() or pynotify.init("icon-summary-body")):
                 # XXX: need to fix loading the right icon
                 trophy_icon_path = "file://%s" % os.path.realpath(
                     os.path.join(media_dir, "unlocked.png"))
                 n = pynotify.Notification(_("You have accomplished something!"),
-                    data["title"], trophy_icon_path)
+                    data["title"], iconpath)
                 n.show()
             # Because something new has been accomplished and it does not
             # require to wait for .asc file, scripts have to be re-run to check
