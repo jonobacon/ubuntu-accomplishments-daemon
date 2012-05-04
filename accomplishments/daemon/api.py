@@ -871,6 +871,8 @@ class Accomplishments(object):
                 n = pynotify.Notification(_("You have accomplished something!"),
                     data["title"], iconpath)
                 n.show()
+                
+            self.show_unlocked_accomplishments(app,accomplishment_name)
             # Because something new has been accomplished and it does not
             # require to wait for .asc file, scripts have to be re-run to check
             # if something that has been just unlocked hasn't been already
