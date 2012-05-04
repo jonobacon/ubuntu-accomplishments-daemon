@@ -102,6 +102,8 @@ class AsyncAPI(object):
             os.path.split(path)[1])[0])[0]
         
         valid = self.parent.validate_trophy(path)
+        if not valid:
+            log.msg("WARNING: invalid .asc signature recieved from the server!")
         
         if valid == True:
             item = os.path.split(path)[1][:-11]
@@ -127,8 +129,8 @@ class AsyncAPI(object):
             # check to see if there are any unlocked accomplishments
             self.parent.show_unlocked_accomplishments(app, item)
             
-            self.parent.run_scripts(0)
-            self.wait_until_a_sig_file_arrives()
+        self.parent.run_scripts(0)
+        self.wait_until_a_sig_file_arrives()
 
     # XXX let's rewrite this to use deferreds explicitly
     @defer.inlineCallbacks
