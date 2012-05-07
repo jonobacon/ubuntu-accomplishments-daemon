@@ -102,6 +102,8 @@ class AsyncAPI(object):
             os.path.split(path)[1])[0])[0]
         
         valid = self.parent.validate_trophy(path)
+        if not valid:
+            log.msg("WARNING: invalid .asc signature recieved from the server!")
         
         if valid == True:
             item = os.path.split(path)[1][:-11]
@@ -127,8 +129,8 @@ class AsyncAPI(object):
             # check to see if there are any unlocked accomplishments
             self.parent.show_unlocked_accomplishments(app, item)
             
-            self.parent.run_scripts(0)
-            self.wait_until_a_sig_file_arrives()
+        self.parent.run_scripts(0)
+        self.wait_until_a_sig_file_arrives()
 
     # XXX let's rewrite this to use deferreds explicitly
     @defer.inlineCallbacks
@@ -813,10 +815,27 @@ class Accomplishments(object):
         if "depends" in data:
             for dependency in data["depends"].split(","):
                 dapp, dname = dependency.split("/")
+                #XXX: Below application's default language should be used
+                # instead of "en", but this will work well in most cases,
+                # and implementing this properli will be much much easier
+                # in the new API.
+                dpath = os.path.join(self.accomplishments_path, dapp, "en",
+            "%s.accomplishment" % dname)
+                dcp = ConfigParser.RawConfigParser()
+                dcp.read(dpath)
+                dacc_data = dict(dcp._sections["accomplishment"])
                 dtrophy_file = os.path.join(
                     self.trophies_path, dapp,
-                    "%s.trophy.asc" % dname)
-                if not os.path.exists(dtrophy_file):
+                    "%s.trophy" % dname)
+                dtrophysigned = dtrophy_file + ".asc"
+                if(dacc_data.has_key("needs-signing") and (dacc_data["needs-signing"] == True or dacc_data["needs-signing"] == "True" or dacc_data["needs-signing"] == "true")):
+                    # the dependent accom needs to be signed
+                    dvalid = self.validate_trophy(dtrophysigned)
+                else:
+                    # this dependency trophy does not require signature
+                    dvalid = os.path.exists(dtrophy_file)
+                
+                if not dvalid:
                     raise exceptions.AccomplishmentLocked()
 
         cp = ConfigParser.RawConfigParser()
@@ -839,15 +858,30 @@ class Accomplishments(object):
         fp.close()
         
         if data.has_key("needs-signing") == False or data["needs-signing"] is False:
-            #self.service.trophy_received()
+            self.service.trophy_received("foo")
+            iconpath = os.path.join(
+                self.accomplishments_path,
+                data["application"],
+                "trophyimages",
+                data["icon"])
+                
             if self.show_notifications is True and pynotify and (
             pynotify.is_initted() or pynotify.init("icon-summary-body")):
                 # XXX: need to fix loading the right icon
                 trophy_icon_path = "file://%s" % os.path.realpath(
                     os.path.join(media_dir, "unlocked.png"))
                 n = pynotify.Notification(_("You have accomplished something!"),
-                    data["title"], trophy_icon_path)
+                    data["title"], iconpath)
                 n.show()
+                
+            self.show_unlocked_accomplishments(app,accomplishment_name)
+            # Because something new has been accomplished and it does not
+            # require to wait for .asc file, scripts have to be re-run to check
+            # if something that has been just unlocked hasn't been already
+            # achieved. Because this function is usually called from
+            # scriptrunner, the following will schedule scripts for re-running.
+            self.run_scripts(0)
+            
         else:
             # if the trophy needs signing we wait for wait_until_a_sig_file_arrives
             # to display the notification
@@ -1090,9 +1124,19 @@ class Accomplishments(object):
                 self.trophies_path, app, "%s.trophy" % name)
                 
             trophysigned = str(trophy_file) + ".asc"
+            
+            acc_file_cfg = ConfigParser.RawConfigParser()
+            acc_file_cfg.read(accomplishment_file)
+            acc_data = dict(acc_file_cfg._sections["accomplishment"])
+            if(acc_data.has_key("needs-signing") and (acc_data["needs-signing"] == True or acc_data["needs-signing"] == "True" or acc_data["needs-signing"] == "true")):
+                # this trophy needs to be signed in order to be validated
+                valid = self.validate_trophy(trophysigned)
+            else:
+                # this trophy does not require signature
+                valid = os.path.exists(trophy_file)
 
-            # validate all files that have been signed
-            if self.validate_trophy(trophysigned) == True:
+
+            if valid:
                 data["accomplished"] = True
                 data["locked"] = False
                 data.update(self._load_trophy_file(trophy_file))
@@ -1100,7 +1144,7 @@ class Accomplishments(object):
             else:
                 if os.path.exists(trophysigned):
                     os.remove(trophysigned)
-                    os.remove(trophy_file)
+                    # os.remove(trophy_file)
                 data["accomplished"] = False
                 data["iconpath"] = os.path.join(icondir, (
                     iconname + "-opportunity" + iconext))
