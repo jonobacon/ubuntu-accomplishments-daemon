@@ -98,6 +98,7 @@ class AsyncAPI(object):
             info: path.startswith(self.parent.trophies_path)
             and path.endswith(".asc"))
         log.msg("Trophy signature recieved...")
+        time.sleep(2)
         accomname = os.path.splitext(os.path.splitext(
             os.path.split(path)[1])[0])[0]
         
