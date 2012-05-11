@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ubuntu-accomplishments-daemon\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-04-28 14:56-0700\n"
+"POT-Creation-Date: 2012-05-02 21:23+0200\n"
 "PO-Revision-Date: 2012-05-06 12:20+0000\n"
 "Last-Translator: Wang Dianjin <Unknown>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-07 05:14+0000\n"
-"X-Generator: Launchpad (build 15195)\n"
+"X-Launchpad-Export-Date: 2012-05-11 06:09+0000\n"
+"X-Generator: Launchpad (build 15225)\n"
 
 #: ../accomplishments/util/__init__.py:94
 msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
@@ -25,7 +25,7 @@ msgstr "显示调试信息(-vv 也可以调试 accomplishments_daemon_lib)"
 msgid "Clear your trophies collection"
 msgstr "清理您的奖杯合集"
 
-#: ../accomplishments/daemon/api.py:124 ../accomplishments/daemon/api.py:848
+#: ../accomplishments/daemon/api.py:124 ../accomplishments/daemon/api.py:871
 msgid "You have accomplished something!"
 msgstr "您已有所作为！"
 
