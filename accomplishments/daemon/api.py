@@ -391,21 +391,21 @@ class Accomplishments(object):
         if not os.path.exists(self.dir_cache):
             os.makedirs(self.dir_cache)
 
-        log.msg(
-            "------------------- Ubuntu Accomplishments Daemon Log - %s "
-            "-------------------", str(datetime.datetime.now()))
+        print str("------------------- Ubuntu Accomplishments Daemon Log"
+            "- "+ str(datetime.datetime.now()) +" -------------------")
 
         self._load_config_file()
 
-        log.msg("Accomplishments path: " + self.accomplishments_path)
-        log.msg("Scripts path: " + self.scripts_path)
-        log.msg("Trophies path: " + self.trophies_path)
+        print str("Accomplishments path: " + self.accomplishments_path)
+        print str("Scripts path: " + self.scripts_path)
+        print str("Trophies path: " + self.trophies_path)
 
         self.show_notifications = show_notifications
         log.msg("Connecting to Ubuntu One")
         self.sd = SyncDaemonTool()
 
         self.reload_accom_database()
+        print self.list_unlocked_not_completed()
 		
         # XXX this wait-until thing should go away; it should be replaced by a
         # deferred-returning function that has a callback which fires off
@@ -470,41 +470,6 @@ class Accomplishments(object):
         data["accomplishment"] = os.path.splitext(os.path.split(f)[1])[0]
         return data
 
-    def validate_trophy(self, filename):
-        """
-        Validated a trophy file to ensure it has not been tampered with.
-        Returns True for valid or False for invalid (missing file, bad sig
-        etc).
-        """
-        log.msg("Validate trophy: " + str(filename))
-
-        if os.path.exists(filename):
-            # the .asc signed file exists, so let's verify that it is correctly
-            # signed by the Matrix
-            trophysigned = open(filename, "r")
-            trophy = open(filename[:-4], "r")
-            c = gpgme.Context()
-
-            signed = StringIO(trophysigned.read())
-            plaintext = StringIO(trophy.read())
-            sig = c.verify(signed, None, plaintext)
-
-            if len(sig) != 1:
-                log.msg("...No Sig")
-                return False
-
-            if sig[0].status is not None:
-                log.msg("...Bad Sig")
-                return False
-            else:
-                result = {'timestamp': sig[0].timestamp, 'signer': sig[0].fpr}
-                log.msg("...Verified!")
-                return True
-        else:
-            log.msg(".asc does not exist for this trophy")
-            return False
-
-        log.msg("Verifying trophy signature")
 
     def _load_trophy_file(self, f):
         log.msg("Load trophy file: " + f)
@@ -1279,14 +1244,9 @@ class Accomplishments(object):
             #print "No data."
             final = [{item : False, "label" : ""}]
         return final
-    
-    def get_application_full_name(self,app):
-        appaboutpath = os.path.join( os.path.join(self.accomplishments_path, app) , "ABOUT")
-        aboutcfg = ConfigParser.RawConfigParser()
-        aboutcfg.read(appaboutpath)
-        name = aboutcfg.get("general","name")
-        return name
 		
+        
+        
     def reload_accom_database(self):
     
     # First, clear the database.
@@ -1297,7 +1257,6 @@ class Accomplishments(object):
         paths = pathlist.split(":")
         for path in paths:
             # Look for all accomplishment collections in this path
-            print "AAAAAAA Looking in " + path
             installpath = os.path.join(path,'accomplishments')
             if not os.path.exists(installpath):
                 continue
@@ -1305,7 +1264,7 @@ class Accomplishments(object):
             collections = os.listdir(installpath)
             for collection in collections:
                 # For each collection...
-                if self.accDB.has_key(collection):
+                if collection in self.accDB:
                     # This collection has already been loaded from another install path!
                     continue
                 
@@ -1363,6 +1322,7 @@ class Accomplishments(object):
                         setdir = os.path.join(langdefaultpath,accomset)
                         accomfiles = os.listdir(setdir)
                         for accomfile in accomfiles:
+                            # For each accomplishment in this set...
                             accompath = os.path.join(langdefaultpath,os.path.join(accomset,accomfile))
                             accomcfg = ConfigParser.RawConfigParser()
                             # check if there is a translated version...
@@ -1393,5 +1353,131 @@ class Accomplishments(object):
                 # Store data about this colection
                 collectiondata = {'langdefault':langdefault,'name':collectionname, 'acc_num':accno, 'type':"collection"}
                 self.accDB[collection] = collectiondata
+          
+        # Uncomment following for debugging
+        # print self.accDB
+        
+    # ======= Access functions =======
+        
+    def get_acc_data(self,accomID):
+        return self.accDB[accomID]
+        
+    def get_acc_exists(self,accomID):
+        return accomID in self.accDB
+        
+    def get_acc_title(self,accomID):
+        return self.accDB[accomID]['title']
+        
+    def get_acc_description(self,accomID):
+        return self.accDB[accomID]['description']
+        
+    def get_acc_needs_signing(self,accomID):
+        if not 'needs-signing' in self.accDB[accomID]:
+            return False
+        elif (self.accDB[accomID][needs-signing] == "false" or self.accDB[accomID][needs-signing] == "False" or self.accDB[accomID][needs-signing] == "no"):
+            return False
+        else:
+            return True
+    
+    def get_acc_depends(self,accomID):
+        if 'depends' in self.accDB[accomID]:
+            return self.accDB[accomID]['depends']
+        else:
+            return
+    
+    def get_acc_is_unlocked(self,accomID):
+        dependency = self.get_acc_depends(accomID)
+        if not dependency:
+            return True
+        else:
+            return self.get_acc_is_completed(dependency)
+    
+    def get_trophy_path(self,accomID):
+        if not self.get_acc_exists(accomID):
+            # hopefully an empty path will break something...
+            return ""
+        else:
+            return os.path.join(self.trophies_path,accomID + ".trophy")
+
+    def get_acc_is_completed(self,accomID):
+        trophypath = self.get_trophy_path(accomID)
+        if not os.path.exists(trophypath):
+            return False
+        if not self.get_acc_needs_signing(accomID):
+            return True
+        else:
+            return self._get_is_asc_correct(trophypath + ".asc")
+        
+    def get_acc_script_path(self,accomID):
+        return self.accDB[accomID]['script-path']
+        
+    def get_acc_icon(self,accomID):
+        return self.accDB[accomID]['icon']
+        
+    def get_acc_icon_path(self,accomID):
+        return os.path.join(self.accDB[accomID]['base-path'], os.path.join('trophyimages',self.get_acc_icon(accomID)))
+    
+    def get_trophy_data(self,accomID):
+        if not self.get_acc_is_completed(accomID):
+            return
+        else:
+            cfg = ConfigParser.RawConfigParser()
+            cfg.read(self.get_trophy_path(accomID))
+            return dict(accomcfg._sections["trophy"])
+    
+    def get_collection_name(self,collection):
+        return self.accDB[collection]['name']
+        
+    # ====== Listing functions ======
+    
+    def list_accomplishments(self):
+        return [acc for acc in self.accomslist()]
+        
+    def list_trophies(self):
+        return [acc for acc in self.accomslist() if self.get_acc_is_completed(acc)]
+        
+    def list_opportunitues(self):
+        return [acc for acc in self.accomslist() if not self.get_acc_is_completed(acc)]
+        
+    def list_depending_on(self,accomID):
+        return [acc for acc in self.accomslist() if self.get_acc_depends(acc) == accomID]
+        
+    def list_unlocked(self):
+        return [acc for acc in self.accomslist() if self.get_acc_is_unlocked(acc)]
+        
+    def list_unlocked_not_completed(self):
+        return [acc for acc in self.accomslist() if self.get_acc_is_unlocked(acc) and not self.get_acc_is_completed(acc)]        
+    
+    # ================================
+    
+    def accomslist(self):
+    for k in self.accDB:
+        if self.accDB[k]['type'] is "accomplishment":
+            yield k
             
-        print self.accDB
+    def _get_is_asc_correct(self,filepath):
+        if os.path.exists(filepath):
+            # the .asc signed file exists, so let's verify that it is correctly
+            # signed by the Matrix
+            trophysigned = open(filepath, "r")
+            trophy = open(filepath[:-4], "r")
+            c = gpgme.Context()
+
+            signed = StringIO(trophysigned.read())
+            plaintext = StringIO(trophy.read())
+            sig = c.verify(signed, None, plaintext)
+
+            if len(sig) != 1:
+                # No Sig
+                return False
+
+            if sig[0].status is not None:
+                # Bad Sig
+                return False
+            else:
+                # Correct!
+                # result = {'timestamp': sig[0].timestamp, 'signer': sig[0].fpr}
+                return True
+        else:
+            log.msg("Cannot check if signature is correct, because file %s does not exist", filepath)
+            return False
