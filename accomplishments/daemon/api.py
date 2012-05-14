@@ -405,13 +405,13 @@ class Accomplishments(object):
         log.msg("Connecting to Ubuntu One")
         self.sd = SyncDaemonTool()
 
+        self.reload_accom_database()
+		
         # XXX this wait-until thing should go away; it should be replaced by a
         # deferred-returning function that has a callback which fires off
         # generate_all_trophis and schedule_run_scripts...
         self.asyncapi.wait_until_a_sig_file_arrives()
         self._create_all_trophy_icons()
-
-        self.get_accom_dependencies("ubuntu-community/report-first-bug")
 
     def get_media_file(self, media_file_name):
         log.msg("MEDIA_FILE_NAME:")
@@ -448,69 +448,6 @@ class Accomplishments(object):
                 n.show()
 
         self.depends = []
-
-    def _get_accomplishments_files_list(self):
-        """Return a list of all accomplishments files on the system."""
-        
-        # get list of accomplishments sets
-        sets = os.listdir(self.accomplishments_path)
-                
-        setpaths = []
-        
-        self.accomlangs = []
-        
-        log.msg("Checking accomplishment sets for language support:")
-        for s in sets:
-            log.msg("...checking: " + s)
-            langs = os.listdir(os.path.join(self.accomplishments_path, s))
-            langs.remove("trophyimages")
-            langs.remove("extrainformation")
-            langs.remove("ABOUT")
-            if self.lang in langs:
-                log.msg("......found system language: " + self.lang)
-                # here the system language matches a translation in the set
-                setpaths.append(
-                    os.path.join(self.accomplishments_path, s, self.lang, "*.accomplishment"))
-                self.accomlangs.append({ s : self.lang })
-                pass
-            elif self.lang[:2] in langs:
-                log.msg("......found general system language: " + self.lang[:2])
-                # here the first letters (e.g. en) are in the accom set
-                setpaths.append(
-                    os.path.join(
-                        os.path.join(
-                            os.path.join(self.accomplishments_path, s),
-                        self.lang[:2]),
-                    "*.accomplishment"))
-                self.accomlangs.append({ s : self.lang[:2] })
-                pass
-            elif self.lang not in langs:
-                # here nothing is found so check the default from the
-                # ABOUT file in the set
-                log.msg("......accomplishment set not found in: " + self.lang)
-                aboutfile = os.path.join(
-                    os.path.join(self.accomplishments_path, s), "ABOUT")
-                config = ConfigParser.RawConfigParser()
-                config.read(aboutfile)
-                lang = config.get("general", "langdefault")
-                log.msg("......loading the set's default language: " + lang)
-                setpaths.append(
-                    os.path.join(
-                        os.path.join(
-                            os.path.join(self.accomplishments_path, s),
-                        lang),
-                    "*.accomplishment"))
-                self.accomlangs.append({ s : lang })
-                
-        finalpaths = []
-        
-        for p in setpaths:
-            log.msg("Looking for accomplishments files in "
-                         + os.path.split(p)[0])
-            finalpaths = finalpaths + glob.glob(p)
-
-        log.msg(setpaths)
-        return finalpaths
 
     def _get_trophies_files_list(self):
         """Return a list of all trophy files. Please note: these are
@@ -1349,4 +1286,112 @@ class Accomplishments(object):
         aboutcfg.read(appaboutpath)
         name = aboutcfg.get("general","name")
         return name
+		
+    def reload_accom_database(self):
     
+    # First, clear the database.
+        self.accDB = {}
+        # Get the list of all paths where accomplishments may be
+        # installed...
+        pathlist = self.get_config_value("config","accompath")
+        paths = pathlist.split(":")
+        for path in paths:
+            # Look for all accomplishment collections in this path
+            print "AAAAAAA Looking in " + path
+            installpath = os.path.join(path,'accomplishments')
+            if not os.path.exists(installpath):
+                continue
+            
+            collections = os.listdir(installpath)
+            for collection in collections:
+                # For each collection...
+                if self.accDB.has_key(collection):
+                    # This collection has already been loaded from another install path!
+                    continue
+                
+                collpath = os.path.join(installpath,collection)
+                aboutpath = os.path.join(collpath,'ABOUT')
+                
+                # Load data from ABOUT file
+                cfg = ConfigParser.RawConfigParser()
+                cfg.read(aboutpath)
+                
+                if not (cfg.has_option("general","langdefault") and cfg.has_option("general","name")):
+                    print aboutpath
+                    raise LookupError("Accomplishment collection with invalid ABOUT file ")
+                
+                langdefault = cfg.get("general","langdefault")
+                collectionname = cfg.get("general","name")
+                
+                langdefaultpath = os.path.join(collpath,langdefault)
+                setsslist = os.listdir(langdefaultpath)
+                accno = 0
+                for accomset in setsslist:
+                    if accomset[-15:] == '.accomplishment':
+                        # this is an ungroped accomplishment file
+                        accompath = os.path.join(langdefaultpath,accomset)
+                        accomcfg = ConfigParser.RawConfigParser()
+                        # check if there is a translated version...
+                        translatedpath = os.path.join(os.path.join(collpath,self.lang),accomset)
+                        if os.path.exists(translatedpath):
+                            # yes, so use the translated file
+                            accomcfg.read(translatedpath)
+                            langused = self.lang
+                        else:
+                            # no. maybe there is a shorter language code?
+                            translatedpath = os.path.join(os.path.join(collpath,self.lang.split("_")[0]),accomset)
+                            if os.path.exists(translatedpath):
+                                accomcfg.read(translatedpath)
+                                langused = self.lang.split("_")[0]
+                            else:
+                                # no. fallback to default one
+                                accomcfg.read(accompath)
+                                langused = langdefault
+                        accomdata = dict(accomcfg._sections["accomplishment"])
+                        accomID = collection + "/" + accomset[:-15]
+                        accomdata['type'] = "accomplishment"
+                        accomdata['lang'] = langused
+                        accomdata['base-path'] = collpath
+                        accomdata['script-path'] = os.path.join(path,os.path.join('scripts',os.path.join(collection,accomset[:-15] + ".py")))
+                        self.accDB[accomID] = accomdata
+                        accno = accno + 1
+                    else:
+                        # this is indeed a set!
+                        setID = collection + "/" + accomset
+                        setdata = {'type':"set",'name':accomset}
+                        self.accDB[setID] = setdata
+                        setdir = os.path.join(langdefaultpath,accomset)
+                        accomfiles = os.listdir(setdir)
+                        for accomfile in accomfiles:
+                            accompath = os.path.join(langdefaultpath,os.path.join(accomset,accomfile))
+                            accomcfg = ConfigParser.RawConfigParser()
+                            # check if there is a translated version...
+                            translatedpath = os.path.join(os.path.join(collpath,self.lang),os.path.join(accomset,accomfile))
+                            if os.path.exists(translatedpath):
+                                # yes, so use the translated file
+                                accomcfg.read(translatedpath)
+                                langused = self.lang
+                            else:
+                                # no. maybe there is a shorter language code?
+                                translatedpath = os.path.join(os.path.join(collpath,self.lang.split("_")[0]),os.path.join(accomset,accomfile))
+                                if os.path.exists(translatedpath):
+                                    accomcfg.read(translatedpath)
+                                    langused = self.lang.split("_")[0]
+                                else:
+                                    # no. fallback to default one
+                                    accomcfg.read(accompath)
+                                    langused = langdefault
+                            accomdata = dict(accomcfg._sections["accomplishment"])
+                            accomID = collection + "/" + accomset + "/" + accomfile[:-15]
+                            accomdata['type'] = "accomplishment"
+                            accomdata['lang'] = langused
+                            accomdata['base-path'] = collpath
+                            accomdata['script-path'] = os.path.join(path,os.path.join('scripts',os.path.join(collection,os.path.join(accomset,accomfile[:-15] + ".py"))))
+                            self.accDB[accomID] = accomdata
+                            accno = accno + 1
+                            
+                # Store data about this colection
+                collectiondata = {'langdefault':langdefault,'name':collectionname, 'acc_num':accno, 'type':"collection"}
+                self.accDB[collection] = collectiondata
+            
+        print self.accDB
