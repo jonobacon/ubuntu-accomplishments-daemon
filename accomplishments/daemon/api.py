@@ -109,6 +109,7 @@ class AsyncAPI(object):
         if valid == True:
             item = os.path.split(path)[1][:-11]
             app = os.path.split(os.path.split(path)[0])[1]
+            accomID = app + "/" + item
             data = self.parent.get_accomplishment_information(item)
             iconpath = os.path.join(
                 self.parent.accomplishments_path,
@@ -116,7 +117,7 @@ class AsyncAPI(object):
                 "trophyimages",
                 data[0]["icon"])
 
-            self.parent.service.trophy_received("foo")
+            self.parent.service.trophy_received(accomID)
             if self.parent.show_notifications == True and pynotify and (
             pynotify.is_initted() or pynotify.init("icon-summary-body")):
                 trophy_icon_path = "file://%s" % os.path.realpath(
@@ -128,7 +129,7 @@ class AsyncAPI(object):
                 n.show()
 
             # check to see if there are any unlocked accomplishments
-            self.parent.show_unlocked_accomplishments(app, item)
+            self.parent.show_unlocked_accomplishments(accomID)
             
         self.parent.run_scripts(0)
         self.wait_until_a_sig_file_arrives()
@@ -286,7 +287,6 @@ class AsyncAPI(object):
         accoms = self.parent.get_all_available_accomplishments_with_scripts()
                 
         totalscripts = len(accoms)
-        self.parent.scriptrun_total = totalscripts
         log.msg("Need to run (%d) scripts" % totalscripts)
 
         scriptcount = 1
@@ -295,23 +295,16 @@ class AsyncAPI(object):
             log.msg(msg)
             exitcode = yield self.run_a_subprocess([accom["_script"]])
             if exitcode == 0:
-                self.parent.scriptrun_results.append(
-                    str(accom["application"]) + "/"
-                    + str(accom["accomplishment"]))
                 self.parent.accomplish(
                     accom["application"], accom["accomplishment"])
                 log.msg("...Accomplished")
             elif exitcode == 1:
-                self.parent.scriptrun_results.append(None)
                 log.msg("...Not Accomplished")
             elif exitcode == 2:
-                self.parent.scriptrun_results.append(None)
                 log.msg("....Error")
             elif exitcode == 4:
-                self.parent.scriptrun_results.append(None)
                 log.msg("...Could not get launchpad email")
             else:
-                self.parent.scriptrun_results.append(None)
                 log.msg("...Error code %d" % exitcode)
             scriptcount = scriptcount + 1
 
@@ -358,8 +351,6 @@ class Accomplishments(object):
         self.dir_config = None
         self.dir_data = None
         self.dir_cache = None
-        self.scriptrun_total = 0
-        self.scriptrun_results = []
         self.depends = []
         self.processing_unlocked = False
         self.asyncapi = AsyncAPI(self)
@@ -420,7 +411,7 @@ class Accomplishments(object):
         self.asyncapi.wait_until_a_sig_file_arrives()
         self._create_all_trophy_icons()
 
-        self.get_accom_dependencies("ubuntu-community", "report-first-bug")
+        self.get_accom_dependencies("ubuntu-community/report-first-bug")
 
     def get_media_file(self, media_file_name):
         log.msg("MEDIA_FILE_NAME:")
@@ -438,13 +429,13 @@ class Accomplishments(object):
         final = "file:///" + media_filename
         return final
 
-    def show_unlocked_accomplishments(self, app, item):
+    def show_unlocked_accomplishments(self, accomID):
         """
         Determine if accomplishments have been unlocked and display a
         notify-osd bubble.
         """
 
-        files = self.get_accom_dependencies(app, item)
+        files = self.get_accom_dependencies(accomID)
         unlocked = len(files)
 
         if unlocked is not 0:
@@ -456,8 +447,6 @@ class Accomplishments(object):
                     self.get_media_file("unlocked.png"))
                 n.show()
 
-        self.scriptrun_total = 0
-        self.scriptrun_results = []
         self.depends = []
 
     def _get_accomplishments_files_list(self):
@@ -677,13 +666,13 @@ class Accomplishments(object):
                 except Exception, (msg):
                     log.msg(msg)
 
-    def get_accom_dependencies(self, app, accom):
+    def get_accom_dependencies(self, accomID):
         """Return a list of all the dependencies for a given accomplishment.
         This is returned as a list. An empty set will return an empty list."""
 
         files = self._get_accomplishments_files_list()
                 
-        depterm = app + "/" + accom
+        depterm = accomID
         results = []
         
         for f in files:
@@ -783,7 +772,7 @@ class Accomplishments(object):
             self.accomplishments_path, "accomplishments")
         log.msg("...done.")
 
-    def accomplish(self, app, accomplishment_name):
+    def accomplish(self, accomID):
         """Mark a file as accomplished and create the .trophy file in the
         trophies directory. If this is a machine-verifiable accomplishment,
         this .trophy file should be automatically synced to the verification
@@ -795,7 +784,8 @@ class Accomplishments(object):
             if app in l:
                 lang = l[app]
         log.msg(
-            "Accomplishing something: %s, %s", app, accomplishment_name)
+            "Accomplishing something: %s", accomID)
+        app, accomplishment_name = accomID.split("/")
         accom_file = os.path.join(self.accomplishments_path, app, lang,
             "%s.accomplishment" % accomplishment_name)
         try:
@@ -875,7 +865,7 @@ class Accomplishments(object):
                     data["title"], iconpath)
                 n.show()
                 
-            self.show_unlocked_accomplishments(app,accomplishment_name)
+            self.show_unlocked_accomplishments(accomID)
             # Because something new has been accomplished and it does not
             # require to wait for .asc file, scripts have to be re-run to check
             # if something that has been just unlocked hasn't been already
@@ -1266,13 +1256,13 @@ class Accomplishments(object):
             log.msg("Run scripts for user")
             self.asyncapi.run_scripts_for_user(uid)
 
-    def create_extra_information_file(self, app, item, data):
+    def create_extra_information_file(self, collection, item, data):
         """Does exactly the same as write_extra_information_file(), but it does not
            overwrite any existing data"""
            
         # XXX this should be removed as we are using write_extra_information_file
         log.msg(
-            "Creating Extra Information file: %s, %s, %s", app, item, data)
+            "Creating Extra Information file: %s, %s, %s", collection, item, data)
         extrainfodir = os.path.join(self.trophies_path, ".extrainformation/")
 
         if not os.path.isdir(extrainfodir):

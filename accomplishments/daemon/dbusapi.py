@@ -110,23 +110,23 @@ class AccomplishmentsDBusService(service.DBusExportService):
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="aa{sv}")
-    def get_extra_information(self, app, info):
-        return self.api.get_extra_information(app, info)
+    def get_extra_information(self, info):
+        return self.api.get_extra_information(info)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="")
-    def create_extra_information_file(self, app, item, data):
-        return self.api.create_extra_information_file(app, item, data)
+    def create_extra_information_file(self, item, data):
+        return self.api.create_extra_information_file(item, data)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="")
-    def write_extra_information_file(self, app, item, data):
-        return self.api.write_extra_information_file(app, item, data)
+    def write_extra_information_file(self, item, data):
+        return self.api.write_extra_information_file(item, data)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="ss", out_signature="")
-    def accomplish(self, app, accomplishment_name):
-        trophy = self.api.accomplish(app, accomplishment_name)
+    def accomplish(self, accomID):
+        trophy = self.api.accomplish(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="b")
