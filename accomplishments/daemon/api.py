@@ -296,7 +296,7 @@ class AsyncAPI(object):
             exitcode = yield self.run_a_subprocess([accom["_script"]])
             if exitcode == 0:
                 self.parent.accomplish(
-                    accom["application"], accom["accomplishment"])
+                    accom["application"] + "/" + accom["accomplishment"])
                 log.msg("...Accomplished")
             elif exitcode == 1:
                 log.msg("...Not Accomplished")
@@ -779,13 +779,15 @@ class Accomplishments(object):
         server to be validated. This method purely generates the .trophy
         file with information about the accomplishment."""
         
+        app, accomplishment_name = accomID.split("/")
+        
         log.msg(self.accomlangs)
         for l in self.accomlangs:
             if app in l:
                 lang = l[app]
         log.msg(
             "Accomplishing something: %s", accomID)
-        app, accomplishment_name = accomID.split("/")
+            
         accom_file = os.path.join(self.accomplishments_path, app, lang,
             "%s.accomplishment" % accomplishment_name)
         try:
@@ -1256,13 +1258,13 @@ class Accomplishments(object):
             log.msg("Run scripts for user")
             self.asyncapi.run_scripts_for_user(uid)
 
-    def create_extra_information_file(self, collection, item, data):
+    def create_extra_information_file(self, item, data):
         """Does exactly the same as write_extra_information_file(), but it does not
            overwrite any existing data"""
            
         # XXX this should be removed as we are using write_extra_information_file
         log.msg(
-            "Creating Extra Information file: %s, %s, %s", collection, item, data)
+            "Creating Extra Information file: %s, %s", item, data)
         extrainfodir = os.path.join(self.trophies_path, ".extrainformation/")
 
         if not os.path.isdir(extrainfodir):
@@ -1275,10 +1277,10 @@ class Accomplishments(object):
             f.write(data)
             f.close()
             
-    def write_extra_information_file(self, app, item, data):
+    def write_extra_information_file(self, item, data):
 
         log.msg(
-            "Saving Extra Information file: %s, %s, %s", app, item, data)
+            "Saving Extra Information file: %s, %s", item, data)
         extrainfodir = os.path.join(self.trophies_path, ".extrainformation/")
 
         if not os.path.isdir(extrainfodir):
