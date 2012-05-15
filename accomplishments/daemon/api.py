@@ -606,8 +606,8 @@ class Accomplishments(object):
         to authticate. Returns {application, needs-information, label,
         description, value}.
         """
-        # get a list of all accomplishment files
-        accomplishments_files = self._get_accomplishments_files_list()
+        # get a list of all accomplishments
+        accomplishments = self.list_accomplishments()
         
         infoneeded = []
         # and prepend the path to the directory, where all extra-information 
@@ -621,87 +621,52 @@ class Accomplishments(object):
             os.makedirs(trophyextrainfo)
 
         # now, for each accomplishment file that is available...
-        for f in accomplishments_files:
+        for acc in accomplishments:
             # get the path to the directory of accomplishments set's
             # "extrainformation" dir - it is useful, because it contains
             # translated labels and descriptions
-            accomextrainfo = os.path.join(
-                os.path.split(f)[0], "../extrainformation")
+            accomextrainfo = os.path.join(self.accDB[acc]['base-path']
+                , "extrainformation")
                 
             # a temporary variable, representing a single entry of the list this function returns
             d = {}
             
-            # prepare a ConfigParser, that will read the .accomplishment file
-            accomconfig = ConfigParser.RawConfigParser()
-            accomconfig.read(f)
+            # Get collection name from accomOD
+            collection = self._coll_from_accomID(acc)
             
-            # proceed only if the accomplishment file has 'needs-information'
-            # key [in other case we can skip it, as it does not require any ExtraInformation]
-            config_args = ("accomplishment", "needs-information")
-            if accomconfig.has_option(*config_args) == True:
+            ei = self.get_acc_needs_info(acc)
+            if len(ei) is not 0:
             
-                # prepare the path to accomplishment set's extrainformation file
-                # [e.g. [...]accomplishments/ubuntu-community/extrainformation/launchpad-email]
-                infofile = os.path.join(accomextrainfo, accomconfig.get(*config_args))
-                
-                # and then read that file with a config parser
-                infoconfig = ConfigParser.RawConfigParser()
-                infoconfig.read(infofile)
-                
-                # we need the set's ABOUT file, to determine the default language.
-                # let's read it with a config parser too
-                aboutset_path = os.path.join(os.path.split(f)[0], "../ABOUT")
-                aboutconfig = ConfigParser.RawConfigParser()
-                aboutconfig.read(aboutset_path)
-                
-                # this will store the set's default language in deflang
-                deflang = aboutconfig.get("general","langdefault")
-                
-                # if the item's label in user's language is present, get it;
-                # otherwise get the label in default language
-                
-                if infoconfig.has_option("label", self.lang):
-                    label = infoconfig.get("label", self.lang)
-                elif infoconfig.has_option("label", deflang):
-                    label = infoconfig.get("label", deflang)
-                else:
-                    label = infoconfig.get("label", "en")
-                    
-                # similarly, get the item's description, use default language
-                # in case it's not translated to user's language
-                if infoconfig.has_option("description",self.lang):
-                    desc = infoconfig.get("description", self.lang)
-                elif infoconfig.has_option("description", deflang):
-                    desc = infoconfig.get("description", deflang)
-                else:
-                    desc = infoconfig.get("description", "en")
-                    
-                # we also need to know whether user has already set this item's value.
-                # to do this, simply check whether trophies/.extrainformation/<item> file exists.
-                try:
-                    valuefile = open(trophyextrainfo + str(accomconfig.get(*config_args)))
-                    # if we got here without an exception, it means that the file exists
-                    # so, we can read it's value
-                    value = valuefile.readline()
-                    value = value.rstrip() # get rid of the tailing newline
-                    # and build up the dictionary of all data for a single ExtraInformation field
-                    d = {
-                        "application" : accomconfig.get("accomplishment", "application"),
-                        "needs-information" : accomconfig.get(*config_args),
-                        "label" : label,
-                        "description" : desc,
-                        "value" : value}
-                except IOError as e:
-                    # we got an exception, so it seems that the file is not present - we'll use "" as the value, to indicate that it's empty
-                    d = {
-                        "application" : accomconfig.get("accomplishment", "application"),
-                        "needs-information" : accomconfig.get(*config_args),
-                        "label" : label,
-                        "description" : desc,
-                        "value" : ""}
+                # For each needed piece of information:
+                for i in ei:
+                    label = self.accDB[collection]['extra-information'][i]['label']
+                    desc = self.accDB[collection]['extra-information'][i]['description']
+                    # we also need to know whether user has already set this item's value.
+                    # to do this, simply check whether trophies/.extrainformation/<item> file exists.
+                    try:
+                        valuefile = open(os.path.join(trophyextrainfo,i))
+                        # if we got here without an exception, it means that the file exists
+                        # so, we can read it's value
+                        value = valuefile.readline()
+                        value = value.rstrip() # get rid of the tailing newline
+                        # and build up the dictionary of all data for a single ExtraInformation field
+                        d = {
+                            "collection" : collection,
+                            "needs-information" : i,
+                            "label" : label,
+                            "description" : desc,
+                            "value" : value}
+                    except IOError as e:
+                        # we got an exception, so it seems that the file is not present - we'll use "" as the value, to indicate that it's empty
+                        d = {
+                            "collection" : collection,
+                            "needs-information" : i,
+                            "label" : label,
+                            "description" : desc,
+                            "value" : ""}
 
-                # since the collected all data related to this particular ExtraInformation field, append it to the list
-                infoneeded.append(d)
+                    # since the collected all data related to this particular ExtraInformation field, append it to the list
+                    infoneeded.append(d)
 
         # at this moment the infoneeded list will be ready, but full of duplicates,
         # for the items have been added multiple times, if they are mentioned in more then one .accomplishment file
@@ -1158,4 +1123,3 @@ class Accomplishments(object):
             log.msg("Cannot check if signature is correct, because file %s does not exist" % filepath)
             return False
             
-    
