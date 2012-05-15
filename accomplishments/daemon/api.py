@@ -336,8 +336,7 @@ class Accomplishments(object):
     No D-Bus required, so that it can be used for testing.
     """
     def __init__(self, service, show_notifications=None):
-        self.accomplishments_path = None
-        self.scripts_path = None
+        self.accomplishments_installpaths = None
         self.trophies_path = None
         self.has_u1 = None
         self.has_verif = None
@@ -396,8 +395,7 @@ class Accomplishments(object):
 
         self._load_config_file()
 
-        print str("Accomplishments path: " + self.accomplishments_path)
-        print str("Scripts path: " + self.scripts_path)
+        print str("Accomplishments install paths: " + self.accomplishments_installpaths)
         print str("Trophies path: " + self.trophies_path)
 
         self.show_notifications = show_notifications
@@ -406,6 +404,7 @@ class Accomplishments(object):
 
         self.reload_accom_database()
         print self.list_unlocked_not_completed()
+        self._display_unlocked_bubble("ubuntu-community/infrastructure/registered-on-launchpad")
 		
         # XXX this wait-until thing should go away; it should be replaced by a
         # deferred-returning function that has a callback which fires off
@@ -663,15 +662,13 @@ class Accomplishments(object):
 
         config.set('config', 'has_u1', self.has_u1)
         config.set('config', 'has_verif', self.has_verif)
-        config.set('config', 'accompath', self.accomplishments_path)
+        config.set('config', 'accompath', self.accomplishments_installpaths)
         config.set('config', 'trophypath', self.trophies_path)
 
         with open(cfile, 'wb') as configfile:
         # Writing our configuration file to 'example.cfg'
             config.write(configfile)
 
-        self.accomplishments_path = os.path.join(
-            self.accomplishments_path, "accomplishments")
         log.msg("...done.")
 
     def accomplish(self, accomID):
@@ -690,8 +687,9 @@ class Accomplishments(object):
         log.msg(
             "Accomplishing something: %s", accomID)
             
-        accom_file = os.path.join(self.accomplishments_path, app, lang,
-            "%s.accomplishment" % accomplishment_name)
+        #BROKEN:
+        #accom_file = os.path.join(self.accomplishments_path, app, lang,
+        #    "%s.accomplishment" % accomplishment_name)
         try:
             data = self._load_accomplishment_file(accom_file)
         except KeyError:
@@ -714,8 +712,10 @@ class Accomplishments(object):
                 # instead of "en", but this will work well in most cases,
                 # and implementing this properli will be much much easier
                 # in the new API.
-                dpath = os.path.join(self.accomplishments_path, dapp, "en",
-            "%s.accomplishment" % dname)
+                
+                #BROKEN
+                #dpath = os.path.join(self.accomplishments_path, dapp, "en",
+            #"%s.accomplishment" % dname)
                 dcp = ConfigParser.RawConfigParser()
                 dcp.read(dpath)
                 dacc_data = dict(dcp._sections["accomplishment"])
@@ -754,11 +754,12 @@ class Accomplishments(object):
         
         if data.has_key("needs-signing") == False or data["needs-signing"] is False:
             self.service.trophy_received("foo")
-            iconpath = os.path.join(
-                self.accomplishments_path,
-                data["application"],
-                "trophyimages",
-                data["icon"])
+            #BROKEN:
+            #iconpath = os.path.join(
+            #    self.accomplishments_path,
+            #    data["application"],
+            #    "trophyimages",
+            #    data["icon"])
                 
             if self.show_notifications is True and pynotify and (
             pynotify.is_initted() or pynotify.init("icon-summary-body")):
@@ -803,15 +804,10 @@ class Accomplishments(object):
         if config.read(cfile):
             log.msg("Loading configuration file: " + cfile)
             if config.get('config', 'accompath'):
-                self.accomplishments_path = os.path.join(
-                    config.get('config', 'accompath'), "accomplishments/")
+                self.accomplishments_installpaths = config.get('config', 'accompath')
                 log.msg(
-                    "...setting accomplishments path to: "
-                    + self.accomplishments_path)
-                self.scripts_path = os.path.split(
-                    os.path.split(self.accomplishments_path)[0])[0] + "/scripts"
-                log.msg(
-                    "...setting scripts path to: " + self.scripts_path)
+                    "...setting accomplishments install paths to: "
+                    + self.accomplishments_installpaths)
             if config.get('config', 'trophypath'):
                 log.msg(
                     "...setting trophies path to: "
@@ -827,15 +823,13 @@ class Accomplishments(object):
             log.msg("Configuration file not found...creating it!")
 
             self.has_verif = False
-            self.accomplishments_path = accompath
+            self.accomplishments_installpaths = accompath
             log.msg(
-                "...setting accomplishments path to: "
-                + self.accomplishments_path)
-            log.msg("You can set this to a different location in your config file.")
+                "...setting accomplishments install paths to: "
+                + self.accomplishments_installpaths)
+            log.msg("You can set this to different locations in your config file.")
             self.trophies_path = os.path.join(self.dir_data, "trophies")
             log.msg("...setting trophies path to: " + self.trophies_path)
-            self.scripts_path = os.path.join(accompath, "scripts")
-            log.msg("...setting scripts path to: " + self.scripts_path)
 
             if not os.path.exists(self.trophies_path):
                 os.makedirs(self.trophies_path)
@@ -1004,8 +998,10 @@ class Accomplishments(object):
 
             # find the human readable name of the application and add it to the
             # dict
-            accompath = os.path.join(
-                self.accomplishments_path, data["application"])
+            
+            #BROKEN:
+            #accompath = os.path.join(
+            #    self.accomplishments_path, data["application"])
             infofile = os.path.join(accompath, "ABOUT")
             config = ConfigParser.RawConfigParser()
             config.read(infofile)
@@ -1065,9 +1061,10 @@ class Accomplishments(object):
                             if dapp in l:
                                 dapplang = l[dapp]
 
-                        daccomplishment_file = os.path.join(
-                            self.accomplishments_path, dapp, dapplang,
-                            "%s.accomplishment" % dname)
+                        #BROKEN:
+                        #daccomplishment_file = os.path.join(
+                        #    self.accomplishments_path, dapp, dapplang,
+                        #    "%s.accomplishment" % dname)
                         daccomplishment_data = things[daccomplishment_file]
                         if daccomplishment_data["accomplished"] == False:
                             # update the list of dependencies
@@ -1224,7 +1221,8 @@ class Accomplishments(object):
             if app in l:
                 lang = l[app]
         
-        appdir = os.path.join(self.accomplishments_path, app)
+        #BROKEN:
+        #appdir = os.path.join(self.accomplishments_path, app)
         extrad = os.path.join(appdir, "extrainformation")
         itempath = os.path.join(extrad, item)
         cfg = ConfigParser.RawConfigParser()
@@ -1253,22 +1251,21 @@ class Accomplishments(object):
         self.accDB = {}
         # Get the list of all paths where accomplishments may be
         # installed...
-        pathlist = self.get_config_value("config","accompath")
-        paths = pathlist.split(":")
-        for path in paths:
+        installpaths = self.accomplishments_installpaths.split(":")
+        for installpath in installpaths:
             # Look for all accomplishment collections in this path
-            installpath = os.path.join(path,'accomplishments')
-            if not os.path.exists(installpath):
+            path = os.path.join(installpath,'accomplishments')
+            if not os.path.exists(path):
                 continue
             
-            collections = os.listdir(installpath)
+            collections = os.listdir(path)
             for collection in collections:
                 # For each collection...
                 if collection in self.accDB:
                     # This collection has already been loaded from another install path!
                     continue
                 
-                collpath = os.path.join(installpath,collection)
+                collpath = os.path.join(path,collection)
                 aboutpath = os.path.join(collpath,'ABOUT')
                 
                 # Load data from ABOUT file
@@ -1311,7 +1308,7 @@ class Accomplishments(object):
                         accomdata['type'] = "accomplishment"
                         accomdata['lang'] = langused
                         accomdata['base-path'] = collpath
-                        accomdata['script-path'] = os.path.join(path,os.path.join('scripts',os.path.join(collection,accomset[:-15] + ".py")))
+                        accomdata['script-path'] = os.path.join(installpath,os.path.join('scripts',os.path.join(collection,accomset[:-15] + ".py")))
                         self.accDB[accomID] = accomdata
                         accno = accno + 1
                     else:
@@ -1346,7 +1343,7 @@ class Accomplishments(object):
                             accomdata['type'] = "accomplishment"
                             accomdata['lang'] = langused
                             accomdata['base-path'] = collpath
-                            accomdata['script-path'] = os.path.join(path,os.path.join('scripts',os.path.join(collection,os.path.join(accomset,accomfile[:-15] + ".py"))))
+                            accomdata['script-path'] = os.path.join(installpath,os.path.join('scripts',os.path.join(collection,os.path.join(accomset,accomfile[:-15] + ".py"))))
                             self.accDB[accomID] = accomdata
                             accno = accno + 1
                             
@@ -1355,7 +1352,7 @@ class Accomplishments(object):
                 self.accDB[collection] = collectiondata
           
         # Uncomment following for debugging
-        # print self.accDB
+        print self.accDB
         
     # ======= Access functions =======
         
@@ -1450,10 +1447,31 @@ class Accomplishments(object):
     
     # ================================
     
+    def _display_accomplished_bubble(self,accomID):
+        if self.show_notifications == True and pynotify and (
+            pynotify.is_initted() or pynotify.init("icon-summary-body")):
+            n = pynotify.Notification(
+                _("You have accomplished something!"),
+                self.get_acc_title(accomID),
+                self.get_acc_icon_path(accomID) )
+            n.show()
+    
+    def _display_unlocked_bubble(self,accomID):
+        unlocked = len(self.list_depending_on(accomID))
+        if unlocked is not 0:
+            if self.show_notifications == True and pynotify and (
+                pynotify.is_initted() or pynotify.init("icon-summary-body")):
+                message = (N_("You have unlocked %s new opportunity.","You have unlocked %s new opportunities.",unlocked) % str(unlocked))
+                n = pynotify.Notification(
+                    _("Opportunities Unlocked!"), message,
+                    self.get_media_file("unlocked.png"))
+                n.show()
+    
+    
     def accomslist(self):
-    for k in self.accDB:
-        if self.accDB[k]['type'] is "accomplishment":
-            yield k
+        for k in self.accDB:
+            if self.accDB[k]['type'] is "accomplishment":
+                yield k
             
     def _get_is_asc_correct(self,filepath):
         if os.path.exists(filepath):
