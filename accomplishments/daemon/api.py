@@ -1040,7 +1040,7 @@ class Accomplishments(object):
         # Prepare extra-info
         needsinformation = self.get_acc_needs_info(accomID)
         for i in needsinformation:
-            accdata[i] = self.get_extra_information(coll,i)
+            accdata[i] = self.get_extra_information(coll,i)[0][i]
             
         # Create .trophy file
         cp = ConfigParser.RawConfigParser()
@@ -1050,6 +1050,10 @@ class Accomplishments(object):
             cp.set("trophy", i, v)
         now = datetime.datetime.now()
         cp.set("trophy", "date-accomplished", now.strftime("%Y-%m-%d %H:%M"))
+        cp.remove_option("trophy","type")
+        cp.remove_option("trophy","script-path")
+        cp.remove_option("trophy","base-path")
+        cp.remove_option("trophy","lang")
         trophypath = self.get_trophy_path(accomID)
         dirpath = os.path.split(trophypath)[0]
         if not os.path.exists(dirpath):
@@ -1064,7 +1068,7 @@ class Accomplishments(object):
             self.service.trophy_received("accomID")
             self._display_accomplished_bubble(accomID)
             self._display_unlocked_bubble(accomID)
-            self.run_all_scripts()
+            self.run_scripts(0)
             
         return True
     
