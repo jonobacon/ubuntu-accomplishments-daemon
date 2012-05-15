@@ -268,14 +268,15 @@ class AsyncAPI(object):
         accoms = self.parent.list_unlocked_not_completed()
                 
         totalscripts = len(accoms)
-        log.msg("Need to run (%d) scripts" % totalscripts)
+        log.msg("Need to run (%d) scripts:" % totalscripts)
+        log.msg(str(accoms))
 
         scriptcount = 1
         for accomID in accoms:
             scriptpath = self.parent.get_acc_script_path(accomID)
             msg = "%s/%s: %s" % (scriptcount, totalscripts, scriptpath)
             log.msg(msg)
-            exitcode = yield self.run_a_subprocess(scriptpath)
+            exitcode = yield self.run_a_subprocess([scriptpath])
             if exitcode == 0:
                 self.parent.accomplish(accomID)
                 log.msg("...Accomplished")
@@ -328,11 +329,6 @@ class Accomplishments(object):
         #self.lang = "pt_BR"
         self.accomlangs = []
         self.service = service
-        self.dir_config = None
-        self.dir_data = None
-        self.dir_cache = None
-        self.depends = []
-        self.processing_unlocked = False
         self.asyncapi = AsyncAPI(self)
 
         # The following dictionary represents state of scripts.
@@ -384,8 +380,6 @@ class Accomplishments(object):
         self.sd = SyncDaemonTool()
 
         self.reload_accom_database()
-        print self.list_unlocked_not_completed()
-        print self.get_acc_data("ubuntu-community/infrastructure/registered-on-launchpad")
 		
         # XXX this wait-until thing should go away; it should be replaced by a
         # deferred-returning function that has a callback which fires off
@@ -794,27 +788,19 @@ class Accomplishments(object):
         """
         pass;
             
-    def get_extra_information(self, app, item):
+    def get_extra_information(self, coll, item):
+        """
+        This function is particularly sensitive.
+        It is used by all global accomplishment scripts.
+        """
         extrainfopath = os.path.join(self.trophies_path, ".extrainformation/")
         authfile = os.path.join(extrainfopath, item)
-        label = None
         
-        for l in self.accomlangs:
-            if app in l:
-                lang = l[app]
+        if not self.get_collection_exists(coll):
+            log.msg("No such collection:" + coll)
+            return None
         
-        #BROKEN:
-        #appdir = os.path.join(self.accomplishments_path, app)
-        extrad = os.path.join(appdir, "extrainformation")
-        itempath = os.path.join(extrad, item)
-        cfg = ConfigParser.RawConfigParser()
-        cfg.read(itempath)
-        if cfg.has_option("label", self.lang):
-            label = cfg.get("label", self.lang)
-        else:
-            label = cfg.get("label", "en")
-        
-        log.msg("The authfile is %s" % authfile)
+        label = self.accDB[coll]['extra-information'][item]['label']
         
         try:
             f = open(authfile, "r")
@@ -822,7 +808,7 @@ class Accomplishments(object):
             final = [{item : data, "label" : label}]
         except IOError as e:
             #print "No data."
-            final = [{item : False, "label" : ""}]
+            final = [{item : None, "label" : ""}]
         return final
 		
     # =================================================================
@@ -931,8 +917,32 @@ class Accomplishments(object):
                             self.accDB[accomID] = accomdata
                             accno = accno + 1
                             
+                            
+                # Look for extrainformation dir
+                extrainfodir = os.path.join(collpath,"extrainformation")
+                extrainfolist = os.listdir(extrainfodir)
+                extrainfo = {}
+                for extrainfofile in extrainfolist:
+                    extrainfopath = os.path.join(extrainfodir,extrainfofile)
+                    eicfg = ConfigParser.RawConfigParser()
+                    eicfg.read(extrainfopath)
+                    if eicfg.has_option("label",self.lang):
+                        label = eicfg.get("label",self.lang)
+                    elif eicfg.has_option("label",self.lang.split("_")[0]):
+                        label = eicfg.get("label",self.lang.split("_")[0])
+                    else:
+                        label = eicfg.get("label",langdefault)
+                    if eicfg.has_option("description",self.lang):
+                        description = eicfg.get("description",self.lang)
+                    elif eicfg.has_option("description",self.lang.split("_")[0]):
+                        description = eicfg.get("description",self.lang.split("_")[0])
+                    else:
+                        description = eicfg.get("description",langdefault)
+                        
+                    extrainfo[extrainfofile] = {'label':label,'description':description}
+                
                 # Store data about this colection
-                collectiondata = {'langdefault':langdefault,'name':collectionname, 'acc_num':accno, 'type':"collection", 'base-path': collpath}
+                collectiondata = {'langdefault':langdefault,'name':collectionname, 'acc_num':accno, 'type':"collection", 'base-path': collpath, 'extra-information': extrainfo}
                 self.accDB[collection] = collectiondata
           
         # Uncomment following for debugging
@@ -955,7 +965,7 @@ class Accomplishments(object):
     def get_acc_needs_signing(self,accomID):
         if not 'needs-signing' in self.accDB[accomID]:
             return False
-        elif (self.accDB[accomID][needs-signing] == "false" or self.accDB[accomID][needs-signing] == "False" or self.accDB[accomID][needs-signing] == "no"):
+        elif (self.accDB[accomID]['needs-signing'] == "false" or self.accDB[accomID]['needs-signing'] == "False" or self.accDB[accomID]['needs-signing'] == "no"):
             return False
         else:
             return True
@@ -1013,6 +1023,9 @@ class Accomplishments(object):
     
     def get_collection_name(self,collection):
         return self.accDB[collection]['name']
+        
+    def get_collection_exists(self,collection):
+        return collection in self.list_collections()
         
     # ====== Listing functions ======
     
@@ -1074,11 +1087,11 @@ class Accomplishments(object):
         cp.write(fp)
         fp.close()
         
-        if not self.get_acc_needs_signing():
+        if not self.get_acc_needs_signing(accomID):
             # The accomplishment does not need signing!
             self.service.trophy_received("accomID")
-            self._display_accomplished_bubble("accomID")
-            self._display_unlocked_bubble("accomID")
+            self._display_accomplished_bubble(accomID)
+            self._display_unlocked_bubble(accomID)
             self.run_all_scripts()
             
         return True
