@@ -410,7 +410,7 @@ class Accomplishments(object):
         # deferred-returning function that has a callback which fires off
         # generate_all_trophis and schedule_run_scripts...
         self.asyncapi.wait_until_a_sig_file_arrives()
-        self._create_all_trophy_icons()
+        #self._create_all_trophy_icons()
 
     def get_media_file(self, media_file_name):
         log.msg("MEDIA_FILE_NAME:")
@@ -1450,3 +1450,5 @@ class Accomplishments(object):
         else:
             log.msg("Cannot check if signature is correct, because file %s does not exist", filepath)
             return False
+            
+    

@@ -5,6 +5,7 @@ from twisted.application.service import Application
 
 from accomplishments.daemon import dbusapi
 from accomplishments.daemon import service
+from accomplishments.daemon import api
 
 
 # XXX these won't work with twistd; we need to write a twistd plugin to support
@@ -43,5 +44,5 @@ def applicationFactory(app_name="", bus_name="", main_loop=None,
     timer_service = service.ScriptRunnerService(
         update_interval, dbus_export_service.api)
     timer_service.setServiceParent(top_level_service)
-
+    
     return application
