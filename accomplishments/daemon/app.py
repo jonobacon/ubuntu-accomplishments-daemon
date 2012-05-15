@@ -13,9 +13,8 @@ def parse_options():
     parser = OptionParser()
     parser.set_defaults(suppress_notifications=False)
     parser.add_option("--trophies-path", dest="trophies_path", default=None)
-    parser.add_option("--accomplishments-path", dest="accomplishments_path",
+    parser.add_option("--accomplishments-path", dest="accomplishments_installpaths",
                       default=None)
-    parser.add_option("--scripts-path", dest="scripts_path", default=None)
     parser.add_option("--suppress-notifications", action="store_true",
                       dest="suppress_notifications")
     return parser.parse_args()

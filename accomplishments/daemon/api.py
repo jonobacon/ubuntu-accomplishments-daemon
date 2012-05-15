@@ -404,7 +404,7 @@ class Accomplishments(object):
 
         self.reload_accom_database()
         print self.list_unlocked_not_completed()
-        self._display_unlocked_bubble("ubuntu-community/infrastructure/registered-on-launchpad")
+        print self.get_acc_data("ubuntu-community/infrastructure/registered-on-launchpad")
 		
         # XXX this wait-until thing should go away; it should be replaced by a
         # deferred-returning function that has a callback which fires off
@@ -671,119 +671,6 @@ class Accomplishments(object):
 
         log.msg("...done.")
 
-    def accomplish(self, accomID):
-        """Mark a file as accomplished and create the .trophy file in the
-        trophies directory. If this is a machine-verifiable accomplishment,
-        this .trophy file should be automatically synced to the verification
-        server to be validated. This method purely generates the .trophy
-        file with information about the accomplishment."""
-        
-        app, accomplishment_name = accomID.split("/")
-        
-        log.msg(self.accomlangs)
-        for l in self.accomlangs:
-            if app in l:
-                lang = l[app]
-        log.msg(
-            "Accomplishing something: %s", accomID)
-            
-        #BROKEN:
-        #accom_file = os.path.join(self.accomplishments_path, app, lang,
-        #    "%s.accomplishment" % accomplishment_name)
-        try:
-            data = self._load_accomplishment_file(accom_file)
-        except KeyError:
-            raise exceptions.NoSuchAccomplishment()
-
-        needsinfolist = []
-
-        for k in data:
-            if "needs-information" in k:
-                needsinfolist.append(data[k])
-
-        for n in needsinfolist:
-            values = self.get_extra_information(app, n)
-            data[n] = values[0][n]
-
-        if "depends" in data:
-            for dependency in data["depends"].split(","):
-                dapp, dname = dependency.split("/")
-                #XXX: Below application's default language should be used
-                # instead of "en", but this will work well in most cases,
-                # and implementing this properli will be much much easier
-                # in the new API.
-                
-                #BROKEN
-                #dpath = os.path.join(self.accomplishments_path, dapp, "en",
-            #"%s.accomplishment" % dname)
-                dcp = ConfigParser.RawConfigParser()
-                dcp.read(dpath)
-                dacc_data = dict(dcp._sections["accomplishment"])
-                dtrophy_file = os.path.join(
-                    self.trophies_path, dapp,
-                    "%s.trophy" % dname)
-                dtrophysigned = dtrophy_file + ".asc"
-                if(dacc_data.has_key("needs-signing") and (dacc_data["needs-signing"] == True or dacc_data["needs-signing"] == "True" or dacc_data["needs-signing"] == "true")):
-                    # the dependent accom needs to be signed
-                    dvalid = self.validate_trophy(dtrophysigned)
-                else:
-                    # this dependency trophy does not require signature
-                    dvalid = os.path.exists(dtrophy_file)
-                
-                if not dvalid:
-                    raise exceptions.AccomplishmentLocked()
-
-        cp = ConfigParser.RawConfigParser()
-        cp.add_section("trophy")
-        del data["_filename"]
-        cp.set("trophy", "accomplishment", "%s/%s" % (
-            app, accomplishment_name))
-        for o, v in data.items():
-            cp.set("trophy", o, v)
-        now = datetime.datetime.now()
-        cp.set("trophy", "date-accomplished", now.strftime("%Y-%m-%d %H:%M"))
-        try:
-            os.makedirs(os.path.join(self.trophies_path, app))
-        except OSError:
-            pass # already exists
-        trophy_file = os.path.join(self.trophies_path, app,
-            "%s.trophy" % accomplishment_name)
-        fp = open(trophy_file, "w")
-        cp.write(fp)
-        fp.close()
-        
-        if data.has_key("needs-signing") == False or data["needs-signing"] is False:
-            self.service.trophy_received("foo")
-            #BROKEN:
-            #iconpath = os.path.join(
-            #    self.accomplishments_path,
-            #    data["application"],
-            #    "trophyimages",
-            #    data["icon"])
-                
-            if self.show_notifications is True and pynotify and (
-            pynotify.is_initted() or pynotify.init("icon-summary-body")):
-                # XXX: need to fix loading the right icon
-                trophy_icon_path = "file://%s" % os.path.realpath(
-                    os.path.join(media_dir, "unlocked.png"))
-                n = pynotify.Notification(_("You have accomplished something!"),
-                    data["title"], iconpath)
-                n.show()
-                
-            self.show_unlocked_accomplishments(accomID)
-            # Because something new has been accomplished and it does not
-            # require to wait for .asc file, scripts have to be re-run to check
-            # if something that has been just unlocked hasn't been already
-            # achieved. Because this function is usually called from
-            # scriptrunner, the following will schedule scripts for re-running.
-            self.run_scripts(0)
-            
-        else:
-            # if the trophy needs signing we wait for wait_until_a_sig_file_arrives
-            # to display the notification
-            pass
-            
-        return self._load_trophy_file(trophy_file)
 
     def _load_config_file(self):
         """Load the main configuration file for the daemon. This should be
@@ -1243,7 +1130,7 @@ class Accomplishments(object):
             final = [{item : False, "label" : ""}]
         return final
 		
-        
+    # =================================================================
         
     def reload_accom_database(self):
     
@@ -1305,6 +1192,7 @@ class Accomplishments(object):
                                 langused = langdefault
                         accomdata = dict(accomcfg._sections["accomplishment"])
                         accomID = collection + "/" + accomset[:-15]
+                        del accomdata['__name__']
                         accomdata['type'] = "accomplishment"
                         accomdata['lang'] = langused
                         accomdata['base-path'] = collpath
@@ -1341,6 +1229,7 @@ class Accomplishments(object):
                             accomdata = dict(accomcfg._sections["accomplishment"])
                             accomID = collection + "/" + accomset + "/" + accomfile[:-15]
                             accomdata['type'] = "accomplishment"
+                            del accomdata['__name__']
                             accomdata['lang'] = langused
                             accomdata['base-path'] = collpath
                             accomdata['script-path'] = os.path.join(installpath,os.path.join('scripts',os.path.join(collection,os.path.join(accomset,accomfile[:-15] + ".py"))))
@@ -1414,6 +1303,11 @@ class Accomplishments(object):
     def get_acc_icon_path(self,accomID):
         return os.path.join(self.accDB[accomID]['base-path'], os.path.join('trophyimages',self.get_acc_icon(accomID)))
     
+    def get_acc_needs_info(self,accomID):
+        if not 'needs-information' in self.accDB[accomID]:
+            return []
+        return self.accDB[accomID]['needs-information'].split(" ")
+    
     def get_trophy_data(self,accomID):
         if not self.get_acc_is_completed(accomID):
             return
@@ -1447,6 +1341,64 @@ class Accomplishments(object):
     
     # ================================
     
+    def accomplish(self,accomID):
+        log.msg("Accomplishing: %s", accomID)
+        if not self.get_acc_exists(accomID):
+            log.msg("There is no such accomplishment.")
+            return False
+            
+        coll = self._coll_from_accomID(accomID)
+        accdata = self.get_acc_data(accomID)
+        
+        # Check if this accomplishment is unlocked
+        if not self.get_acc_is_unlocked(accomID):
+            log.msg("This accomplishment cannot be completed; it's locked.")
+            return False
+        
+        # Prepare extra-info
+        needsinformation = self.get_acc_needs_info(accomID)
+        for i in needsinformation:
+            accdata[i] = self.get_extra_information(coll,i)
+            
+        # Create .trophy file
+        cp = ConfigParser.RawConfigParser()
+        cp.add_section("trophy")
+        cp.set("trophy", "accomplishment", accomID)
+        for i, v in accdata.items():
+            cp.set("trophy", i, v)
+        now = datetime.datetime.now()
+        cp.set("trophy", "date-accomplished", now.strftime("%Y-%m-%d %H:%M"))
+        trophypath = self.get_trophy_path(accomID)
+        dirpath = os.path.split(trophypath)[0]
+        if not os.path.exists(dirpath):
+            os.makedirs(dirpath)
+        fp = open(trophypath, "w")
+        cp.write(fp)
+        fp.close()
+        
+        if not self.get_acc_needs_signing():
+            # The accomplishment does not need signing!
+            self.service.trophy_received("accomID")
+            self._display_accomplished_bubble("accomID")
+            self._display_unlocked_bubble("accomID")
+            self.run_all_scripts()
+            
+        return True
+        
+    def run_script(self,accomID):
+        # Schedules a single script to be run
+        pass
+        pass
+        pass
+        
+    def run_all_scripts(self):
+        to_run = self.list_unlocked_not_completed()
+        for acc in to_run:
+            run_script(acc)
+        
+    def _coll_from_accomID(self,accomID):
+        return accomID.split("/")[0]
+    
     def _display_accomplished_bubble(self,accomID):
         if self.show_notifications == True and pynotify and (
             pynotify.is_initted() or pynotify.init("icon-summary-body")):
@@ -1466,7 +1418,6 @@ class Accomplishments(object):
                     _("Opportunities Unlocked!"), message,
                     self.get_media_file("unlocked.png"))
                 n.show()
-    
     
     def accomslist(self):
         for k in self.accDB:
