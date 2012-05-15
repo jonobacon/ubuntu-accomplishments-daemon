@@ -100,12 +100,12 @@ class AsyncAPI(object):
         log.msg("Trophy signature recieved...")
         time.sleep(2)
         
-        valid = self.parent.validate_trophy(path)
+        valid = self.parent._get_is_asc_correct(path)
         if not valid:
             log.msg("WARNING: invalid .asc signature recieved from the server!")
         
         if valid == True:
-            accomID = path[len(self.parent.trophies_path):-11]
+            accomID = path[len(self.parent.trophies_path)+1:-11]
             
             self.parent.service.trophy_received(accomID)
             
@@ -786,7 +786,7 @@ class Accomplishments(object):
         This used to remove all trophies, but since it is essential to
         preserve them, this is no longer the case
         """
-        pass;
+        pass
             
     def get_extra_information(self, coll, item):
         """
@@ -917,7 +917,6 @@ class Accomplishments(object):
                             self.accDB[accomID] = accomdata
                             accno = accno + 1
                             
-                            
                 # Look for extrainformation dir
                 extrainfodir = os.path.join(collpath,"extrainformation")
                 extrainfolist = os.listdir(extrainfodir)
@@ -993,11 +992,18 @@ class Accomplishments(object):
     def get_acc_is_completed(self,accomID):
         trophypath = self.get_trophy_path(accomID)
         if not os.path.exists(trophypath):
+            # There is no trophy file
             return False
         if not self.get_acc_needs_signing(accomID):
+            # The trophy does not need a signature
             return True
         else:
-            return self._get_is_asc_correct(trophypath + ".asc")
+            # The trophy needs to be signed
+            ascpath = trophypath + ".asc"
+            if not os.path.exists(ascpath):
+                return False
+            else:
+                return self._get_is_asc_correct(ascpath)
         
     def get_acc_script_path(self,accomID):
         return self.accDB[accomID]['script-path']
@@ -1053,7 +1059,7 @@ class Accomplishments(object):
     # ================================
     
     def accomplish(self,accomID):
-        log.msg("Accomplishing: %s", accomID)
+        log.msg("Accomplishing: %s" % accomID)
         if not self.get_acc_exists(accomID):
             log.msg("There is no such accomplishment.")
             return False
@@ -1083,6 +1089,7 @@ class Accomplishments(object):
         dirpath = os.path.split(trophypath)[0]
         if not os.path.exists(dirpath):
             os.makedirs(dirpath)
+        log.msg(trophypath)
         fp = open(trophypath, "w")
         cp.write(fp)
         fp.close()
@@ -1148,7 +1155,7 @@ class Accomplishments(object):
                 # result = {'timestamp': sig[0].timestamp, 'signer': sig[0].fpr}
                 return True
         else:
-            log.msg("Cannot check if signature is correct, because file %s does not exist", filepath)
+            log.msg("Cannot check if signature is correct, because file %s does not exist" % filepath)
             return False
             
     
