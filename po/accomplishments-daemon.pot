@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-15 14:32+0200\n"
+"POT-Creation-Date: 2012-05-16 00:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,16 +25,16 @@ msgstr ""
 msgid "Clear your trophies collection"
 msgstr ""
 
-#: ../accomplishments/daemon/api.py:128 ../accomplishments/daemon/api.py:769
-#: ../accomplishments/daemon/api.py:1454
+#: ../accomplishments/daemon/oldapi.py:309
+#: ../accomplishments/daemon/api.py:1093
 msgid "You have accomplished something!"
 msgstr ""
 
-#: ../accomplishments/daemon/api.py:443 ../accomplishments/daemon/api.py:1464
+#: ../accomplishments/daemon/api.py:1103
 #, python-format
 msgid "You have unlocked %s new opportunity."
 msgstr ""
 
-#: ../accomplishments/daemon/api.py:445 ../accomplishments/daemon/api.py:1466
+#: ../accomplishments/daemon/api.py:1105
 msgid "Opportunities Unlocked!"
 msgstr ""
