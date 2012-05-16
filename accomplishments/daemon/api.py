@@ -815,6 +815,8 @@ class Accomplishments(object):
                 langdefault = cfg.get("general","langdefault")
                 collectionname = cfg.get("general","name")
                 
+                collauthors = set()
+                
                 langdefaultpath = os.path.join(collpath,langdefault)
                 setsslist = os.listdir(langdefaultpath)
                 accno = 0
@@ -841,6 +843,8 @@ class Accomplishments(object):
                                 langused = langdefault
                         accomdata = dict(accomcfg._sections["accomplishment"])
                         accomID = collection + "/" + accomset[:-15]
+                        if 'author' in accomdata:
+                            collauthors.add(accomdata['author'])
                         del accomdata['__name__']
                         accomdata['set'] = ""
                         accomdata['collection'] = collection
@@ -913,7 +917,7 @@ class Accomplishments(object):
                     extrainfo[extrainfofile] = {'label':label,'description':description}
                 
                 # Store data about this colection
-                collectiondata = {'langdefault':langdefault,'name':collectionname, 'acc_num':accno, 'type':"collection", 'base-path': collpath, 'extra-information': extrainfo}
+                collectiondata = {'langdefault':langdefault,'name':collectionname, 'acc_num':accno, 'type':"collection", 'base-path': collpath, 'extra-information': extrainfo, 'authors':collauthors}
                 self.accDB[collection] = collectiondata
           
         # Uncomment following for debugging
@@ -1005,6 +1009,8 @@ class Accomplishments(object):
     def get_collection_exists(self,collection):
         return collection in self.list_collections()
         
+    def get_collection_authors(self,collection):
+        return self.accDB[collection]['authors']
     # ====== Listing functions ======
     
     def list_accomplishments(self):
