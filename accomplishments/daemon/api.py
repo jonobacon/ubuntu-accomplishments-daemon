@@ -842,6 +842,8 @@ class Accomplishments(object):
                         accomdata = dict(accomcfg._sections["accomplishment"])
                         accomID = collection + "/" + accomset[:-15]
                         del accomdata['__name__']
+                        accomdata['set'] = ""
+                        accomdata['collection'] = collection
                         accomdata['type'] = "accomplishment"
                         accomdata['lang'] = langused
                         accomdata['base-path'] = collpath
@@ -850,7 +852,7 @@ class Accomplishments(object):
                         accno = accno + 1
                     else:
                         # this is indeed a set!
-                        setID = collection + "/" + accomset
+                        setID = collection + ":" + accomset
                         setdata = {'type':"set",'name':accomset}
                         self.accDB[setID] = setdata
                         setdir = os.path.join(langdefaultpath,accomset)
@@ -876,9 +878,11 @@ class Accomplishments(object):
                                     accomcfg.read(accompath)
                                     langused = langdefault
                             accomdata = dict(accomcfg._sections["accomplishment"])
-                            accomID = collection + "/" + accomset + "/" + accomfile[:-15]
+                            accomID = collection + "/" + accomfile[:-15]
                             accomdata['type'] = "accomplishment"
                             del accomdata['__name__']
+                            accomdata['set'] = accomset
+                            accomdata['collection'] = collection
                             accomdata['lang'] = langused
                             accomdata['base-path'] = collpath
                             accomdata['script-path'] = os.path.join(installpath,os.path.join('scripts',os.path.join(collection,os.path.join(accomset,accomfile[:-15] + ".py"))))
@@ -1061,6 +1065,8 @@ class Accomplishments(object):
         cp.remove_option("trophy","script-path")
         cp.remove_option("trophy","base-path")
         cp.remove_option("trophy","lang")
+        cp.remove_option("trophy","collection")
+        cp.remove_option("trophy","set")
         trophypath = self.get_trophy_path(accomID)
         dirpath = os.path.split(trophypath)[0]
         if not os.path.exists(dirpath):
