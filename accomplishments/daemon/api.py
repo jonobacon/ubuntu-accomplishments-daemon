@@ -62,7 +62,10 @@ os.environ["PYTHONPATH"] = "$PYTHONPATH:."
 if installed:
     os.environ["PYTHONPATH"] = module_dir1 + ":" + module_dir2 + ":" + os.environ["PYTHONPATH"]
 
-MATRIX_USERNAME = "openiduser155707"
+# Uncomment one to select server to use
+#MATRIX_USERNAME = "openiduser155707" # production ID
+MATRIX_USERNAME = "openiduser204307" # staging ID
+
 LOCAL_USERNAME = getpass.getuser()
 SCRIPT_DELAY = 900
 
@@ -910,7 +913,7 @@ class Accomplishments(object):
                 self.accDB[collection] = collectiondata
           
         # Uncomment following for debugging
-        # print self.accDB
+        # print self.accDB\
         
     # ======= Access functions =======
         
@@ -1045,12 +1048,16 @@ class Accomplishments(object):
         # Create .trophy file
         cp = ConfigParser.RawConfigParser()
         cp.add_section("trophy")
-        cp.set("trophy", "accomplishment", accomID)
+        cp.set("trophy", "id", accomID)
         for i, v in accdata.items():
             cp.set("trophy", i, v)
         now = datetime.datetime.now()
         cp.set("trophy", "date-accomplished", now.strftime("%Y-%m-%d %H:%M"))
         cp.remove_option("trophy","type")
+        if cp.has_option("trophy","accomplishment"):
+            cp.remove_option("trophy","accomplishment")
+        if cp.has_option("trophy","application"):
+            cp.remove_option("trophy","application")
         cp.remove_option("trophy","script-path")
         cp.remove_option("trophy","base-path")
         cp.remove_option("trophy","lang")
