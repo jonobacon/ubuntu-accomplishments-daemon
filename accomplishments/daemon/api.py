@@ -995,6 +995,13 @@ class Accomplishments(object):
             return []
         return self.accDB[accomID]['needs-information'].split(" ")
     
+    def get_acc_collection(self,accomID):
+        return self.accDB[accomID]['collection']
+        
+    def get_acc_category(self,accomID):
+        return self.accDB[accomID]['category']
+    
+    
     def get_trophy_data(self,accomID):
         if not self.get_acc_is_completed(accomID):
             return
