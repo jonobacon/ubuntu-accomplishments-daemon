@@ -776,7 +776,7 @@ class Accomplishments(object):
             final = [{item : data, "label" : label}]
         except IOError as e:
             #print "No data."
-            final = [{item : None, "label" : ""}]
+            final = [{item : "", "label" : ""}]
         return final
 		
     # =================================================================
