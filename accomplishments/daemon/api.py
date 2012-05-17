@@ -63,8 +63,8 @@ if installed:
     os.environ["PYTHONPATH"] = module_dir1 + ":" + module_dir2 + ":" + os.environ["PYTHONPATH"]
 
 # Uncomment one to select server to use
-#MATRIX_USERNAME = "openiduser155707" # production ID
-MATRIX_USERNAME = "openiduser204307" # staging ID
+MATRIX_USERNAME = "openiduser155707" # production ID
+#MATRIX_USERNAME = "openiduser204307" # staging ID
 
 LOCAL_USERNAME = getpass.getuser()
 SCRIPT_DELAY = 900
