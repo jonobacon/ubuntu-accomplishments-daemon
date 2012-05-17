@@ -283,8 +283,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
     #    pass
     @dbus.service.signal(dbus_interface='org.ubuntu.accomplishments')
     def trophy_received(self, trophy):
-        t = "mytrophy"
-        return t
+        return trophy
 
     @dbus.service.signal(dbus_interface='org.ubuntu.accomplishments')
     def scriptrunner_start(self):

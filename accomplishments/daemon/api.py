@@ -1123,7 +1123,7 @@ class Accomplishments(object):
         
         if not self.get_acc_needs_signing(accomID):
             # The accomplishment does not need signing!
-            self.service.trophy_received("accomID")
+            self.service.trophy_received(accomID)
             self._display_accomplished_bubble(accomID)
             self._display_unlocked_bubble(accomID)
             self.run_scripts(0)
