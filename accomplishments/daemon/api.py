@@ -370,7 +370,7 @@ class Accomplishments(object):
         if not os.path.exists(self.dir_cache):
             os.makedirs(self.dir_cache)
 
-        print str("------------------- Ubuntu Accomplishments Daemon Log"
+        print str("------------------- Ubuntu Accomplishments Daemon "
             "- "+ str(datetime.datetime.now()) +" -------------------")
 
         self._load_config_file()
@@ -988,7 +988,16 @@ class Accomplishments(object):
         return self.accDB[accomID]['icon']
         
     def get_acc_icon_path(self,accomID):
-        return os.path.join(self.accDB[accomID]['base-path'], os.path.join('trophyimages',self.get_acc_icon(accomID)))
+        imagesdir = os.path.join(self.dir_cache,'trophyimages')
+        imagesdir = os.path.join(imagesdir,self.get_acc_collection(accomID))
+        iconfile = self.get_acc_icon(accomID)
+        iconfilename, iconfileext = iconfile.split(".")
+        if not self.get_acc_is_unlocked(accomID):
+            iconfilename = iconfilename + '-locked'
+        elif not self.get_acc_is_completed(accomID):
+            iconfilename = iconfilename + '-opportunity'
+        iconfile = iconfilename + "." + iconfileext
+        return os.path.join(imagesdir,iconfile)
     
     def get_acc_needs_info(self,accomID):
         if not 'needs-information' in self.accDB[accomID]:
@@ -1008,7 +1017,7 @@ class Accomplishments(object):
         else:
             cfg = ConfigParser.RawConfigParser()
             cfg.read(self.get_trophy_path(accomID))
-            return dict(accomcfg._sections["trophy"])
+            return dict(cfg._sections["trophy"])
     
     def get_collection_name(self,collection):
         return self.accDB[collection]['name']
@@ -1018,6 +1027,10 @@ class Accomplishments(object):
         
     def get_collection_authors(self,collection):
         return self.accDB[collection]['authors']
+        
+    def get_collection_data(self,collection):
+        return self.accDB[collection]
+        
     # ====== Listing functions ======
     
     def list_accomplishments(self):
@@ -1041,6 +1054,25 @@ class Accomplishments(object):
     def list_collections(self):
         return [col for col in self.accDB if self.accDB[col]['type'] == 'collection']
     
+    # ====== Viewer-specific functions ======
+        
+    def build_viewer_database(self):
+        accs = self.list_accomplishments()
+        db = []
+        for acc in accs:
+            db.append({ 
+                'title' :           self.get_acc_title(acc),
+                'accomplished' :    self.get_acc_is_completed(acc),
+                'locked' :      not self.get_acc_is_unlocked(acc),
+                'iconpath' :        self.get_acc_icon_path(acc),
+                'collection' :      self.get_acc_collection(acc),
+                'collection-human' :self.get_collection_name(
+                                        self.get_acc_collection(acc) ),
+                'category' :        self.get_acc_category(acc),
+                'id' :              acc 
+                })
+        return db
+        
     # ================================
     
     def accomplish(self,accomID):

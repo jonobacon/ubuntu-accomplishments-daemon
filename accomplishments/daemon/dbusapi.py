@@ -231,6 +231,11 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_collection_authors(collection)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="v")
+    def get_collection_data(self,collection):
+        return self.api.get_collection_data(collection)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="as")
     def list_accomplishments(self):
         return self.api.list_accomplishments()
@@ -264,6 +269,11 @@ class AccomplishmentsDBusService(service.DBusExportService):
         in_signature="", out_signature="as")
     def list_collections(self):
         return self.api.list_collections()
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="aa{sv}")
+    def build_viewer_database(self):
+        return self.api.build_viewer_database()
         
     # XXX this looks like an unintentional duplicate of the "other"
     # trophy_received... I've moved them here together so that someone in the
