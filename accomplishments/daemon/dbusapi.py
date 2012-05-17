@@ -70,21 +70,6 @@ class AccomplishmentsDBusService(service.DBusExportService):
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="aa{sv}")
-    def get_all_accomplishments(self):
-        return self.api.get_all_accomplishments()
-
-    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="aa{sv}")
-    def get_all_accomplishments_and_status(self):
-        return self.api.get_all_accomplishments_and_status()
-
-    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="aa{sv}")
-    def get_all_available_accomplishments_with_scripts(self):
-        return self.api.list_all_available_accomplishments_with_scripts()
-
-    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="aa{sv}")
     def get_all_extra_information_required(self):
         return self.api.get_all_extra_information_required()
 
@@ -94,39 +79,29 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_all_extra_information()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="aa{sv}")
-    def get_accomplishment_information(self, accomplishment):
-        return self.api.get_accomplishment_information(accomplishment)
-        
-    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="aa{sv}")
-    def get_trophy_information(self, trophy):
-        return self.api.get_trophy_information(trophy)
-
-    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="b", out_signature="")
     def run_scripts(self, run_by_client):
         return self.api.run_scripts(run_by_client)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="aa{sv}")
+        in_signature="ss", out_signature="aa{sv}")
     def get_extra_information(self, app, info):
         return self.api.get_extra_information(app, info)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="")
-    def create_extra_information_file(self, app, item, data):
-        return self.api.create_extra_information_file(app, item, data)
+    def create_extra_information_file(self, item, data):
+        return self.api.create_extra_information_file(item, data)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="")
-    def write_extra_information_file(self, app, item, data):
-        return self.api.write_extra_information_file(app, item, data)
+    def write_extra_information_file(self, item, data):
+        return self.api.write_extra_information_file(item, data)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="ss", out_signature="")
-    def accomplish(self, app, accomplishment_name):
-        trophy = self.api.accomplish(app, accomplishment_name)
+        in_signature="s", out_signature="")
+    def accomplish(self, accomID):
+        trophy = self.api.accomplish(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="b")
@@ -152,11 +127,153 @@ class AccomplishmentsDBusService(service.DBusExportService):
         in_signature="", out_signature="b")
     def verify_ubuntu_one_account(self):
         return self.api.verify_ubuntu_one_account()
-
+        
+        
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="")
+    def reload_accom_database(self):
+        return self.api.reload_accom_database()
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="v")
+    def get_acc_data(self,accomID):
+        return self.api.get_acc_data(accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="b")   
+    def get_acc_exists(self,accomID):
+        return self.api.get_acc_exists(accomID)
+        
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="s")
-    def get_application_full_name(self,app):
-        return self.api.get_application_full_name(app)
+    def get_acc_title(self,accomID):
+        return self.api.get_acc_title(accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="s")
+    def get_acc_description(self,accomID):
+        return self.api.get_acc_description(accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="s")
+    def get_acc_collection(self,accomID):
+        return self.api.get_acc_collection(accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="s")
+    def get_acc_category(self,accomID):
+        return self.api.get_acc_category(accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="b")
+    def get_acc_needs_signing(self,accomID):
+        return self.api.get_acc_needs_signing(accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="s")
+    def get_acc_depends(self,accomID):
+        return self.api.get_acc_depends(accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="b")
+    def get_acc_is_unlocked(self,accomID):
+        return self.api.get_acc_is_unlocked(accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="s")
+    def get_trophy_path(self,accomID):
+        return self.api.get_trophy_path(accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="b")
+    def get_acc_is_completed(self,accomID):
+        return self.api.get_acc_is_completed(accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="s")
+    def get_acc_script_path(self,accomID):
+        return self.api.get_acc_script_path(accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="s")
+    def get_acc_icon(self,accomID):
+        return self.api.get_acc_icon(accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="s")
+    def get_acc_icon_path(self,accomID):
+        return self.api.get_acc_icon_path(accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="v")
+    def get_acc_needs_info(self,accomID):
+        return self.api.get_acc_needs_info(self,accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="v")
+    def get_trophy_data(self,accomID):
+        return self.api.get_trophy_data(accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="s")
+    def get_collection_name(self,collection):
+        return self.api.get_collection_name(collection)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="b")
+    def get_collection_exists(self,collection):
+        return self.api.get_collection_exists(collection)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="v")
+    def get_collection_authors(self,collection):
+        return self.api.get_collection_authors(collection)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="v")
+    def get_collection_data(self,collection):
+        return self.api.get_collection_data(collection)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="as")
+    def list_accomplishments(self):
+        return self.api.list_accomplishments()
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="as")
+    def list_trophies(self):
+        return self.api.list_trophies()
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="as")
+    def list_opportunitues(self):
+        return self.api.list_opportunitues()
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="s", out_signature="as")
+    def list_depending_on(self,accomID):
+        return self.api.list_depending_on(accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="as")
+    def list_unlocked(self):
+        return self.api.list_unlocked()
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="as")
+    def list_unlocked_not_completed(self):
+        return self.api.list_unlocked_not_completed()
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="as")
+    def list_collections(self):
+        return self.api.list_collections()
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="aa{sv}")
+    def build_viewer_database(self):
+        return self.api.build_viewer_database()
         
     # XXX this looks like an unintentional duplicate of the "other"
     # trophy_received... I've moved them here together so that someone in the
@@ -166,8 +283,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
     #    pass
     @dbus.service.signal(dbus_interface='org.ubuntu.accomplishments')
     def trophy_received(self, trophy):
-        t = "mytrophy"
-        return t
+        return trophy
 
     @dbus.service.signal(dbus_interface='org.ubuntu.accomplishments')
     def scriptrunner_start(self):

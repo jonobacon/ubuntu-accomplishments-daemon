@@ -62,7 +62,10 @@ os.environ["PYTHONPATH"] = "$PYTHONPATH:."
 if installed:
     os.environ["PYTHONPATH"] = module_dir1 + ":" + module_dir2 + ":" + os.environ["PYTHONPATH"]
 
-MATRIX_USERNAME = "openiduser155707"
+# Uncomment one to select server to use
+#MATRIX_USERNAME = "openiduser155707" # production ID
+MATRIX_USERNAME = "openiduser204307" # staging ID
+
 LOCAL_USERNAME = getpass.getuser()
 SCRIPT_DELAY = 900
 
@@ -99,36 +102,18 @@ class AsyncAPI(object):
             and path.endswith(".asc"))
         log.msg("Trophy signature recieved...")
         time.sleep(2)
-        accomname = os.path.splitext(os.path.splitext(
-            os.path.split(path)[1])[0])[0]
         
-        valid = self.parent.validate_trophy(path)
+        valid = self.parent._get_is_asc_correct(path)
         if not valid:
             log.msg("WARNING: invalid .asc signature recieved from the server!")
         
         if valid == True:
-            item = os.path.split(path)[1][:-11]
-            app = os.path.split(os.path.split(path)[0])[1]
-            data = self.parent.get_accomplishment_information(item)
-            iconpath = os.path.join(
-                self.parent.accomplishments_path,
-                data[0]["application"],
-                "trophyimages",
-                data[0]["icon"])
-
-            self.parent.service.trophy_received("foo")
-            if self.parent.show_notifications == True and pynotify and (
-            pynotify.is_initted() or pynotify.init("icon-summary-body")):
-                trophy_icon_path = "file://%s" % os.path.realpath(
-                    os.path.join(
-                        os.path.split(__file__)[0],
-                        "trophy-accomplished.svg"))
-                n = pynotify.Notification(
-                    _("You have accomplished something!"), data[0]["title"], iconpath)
-                n.show()
-
-            # check to see if there are any unlocked accomplishments
-            self.parent.show_unlocked_accomplishments(app, item)
+            accomID = path[len(self.parent.trophies_path)+1:-11]
+            
+            self.parent.service.trophy_received(accomID)
+            
+            self.parent._display_accomplished_bubble(accomID)
+            self.parent._display_unlocked_bubble(accomID)
             
         self.parent.run_scripts(0)
         self.wait_until_a_sig_file_arrives()
@@ -283,35 +268,28 @@ class AsyncAPI(object):
         # XXX all parent calls should be refactored out of the AsyncAPI class
         # to keep the code cleaner and the logic more limited to one particular
         # task
-        accoms = self.parent.get_all_available_accomplishments_with_scripts()
+        accoms = self.parent.list_unlocked_not_completed()
                 
         totalscripts = len(accoms)
-        self.parent.scriptrun_total = totalscripts
-        log.msg("Need to run (%d) scripts" % totalscripts)
+        log.msg("Need to run (%d) scripts:" % totalscripts)
+        log.msg(str(accoms))
 
         scriptcount = 1
-        for accom in accoms:
-            msg = "%s/%s: %s" % (scriptcount, totalscripts, accom["_script"])
+        for accomID in accoms:
+            scriptpath = self.parent.get_acc_script_path(accomID)
+            msg = "%s/%s: %s" % (scriptcount, totalscripts, scriptpath)
             log.msg(msg)
-            exitcode = yield self.run_a_subprocess([accom["_script"]])
+            exitcode = yield self.run_a_subprocess([scriptpath])
             if exitcode == 0:
-                self.parent.scriptrun_results.append(
-                    str(accom["application"]) + "/"
-                    + str(accom["accomplishment"]))
-                self.parent.accomplish(
-                    accom["application"], accom["accomplishment"])
+                self.parent.accomplish(accomID)
                 log.msg("...Accomplished")
             elif exitcode == 1:
-                self.parent.scriptrun_results.append(None)
                 log.msg("...Not Accomplished")
             elif exitcode == 2:
-                self.parent.scriptrun_results.append(None)
                 log.msg("....Error")
             elif exitcode == 4:
-                self.parent.scriptrun_results.append(None)
-                log.msg("...Could not get launchpad email")
+                log.msg("...Could not get extra-information")
             else:
-                self.parent.scriptrun_results.append(None)
                 log.msg("...Error code %d" % exitcode)
             scriptcount = scriptcount + 1
 
@@ -343,8 +321,7 @@ class Accomplishments(object):
     No D-Bus required, so that it can be used for testing.
     """
     def __init__(self, service, show_notifications=None):
-        self.accomplishments_path = None
-        self.scripts_path = None
+        self.accomplishments_installpaths = None
         self.trophies_path = None
         self.has_u1 = None
         self.has_verif = None
@@ -355,13 +332,6 @@ class Accomplishments(object):
         #self.lang = "pt_BR"
         self.accomlangs = []
         self.service = service
-        self.dir_config = None
-        self.dir_data = None
-        self.dir_cache = None
-        self.scriptrun_total = 0
-        self.scriptrun_results = []
-        self.depends = []
-        self.processing_unlocked = False
         self.asyncapi = AsyncAPI(self)
 
         # The following dictionary represents state of scripts.
@@ -400,27 +370,25 @@ class Accomplishments(object):
         if not os.path.exists(self.dir_cache):
             os.makedirs(self.dir_cache)
 
-        log.msg(
-            "------------------- Ubuntu Accomplishments Daemon Log - %s "
-            "-------------------", str(datetime.datetime.now()))
+        print str("------------------- Ubuntu Accomplishments Daemon "
+            "- "+ str(datetime.datetime.now()) +" -------------------")
 
         self._load_config_file()
 
-        log.msg("Accomplishments path: " + self.accomplishments_path)
-        log.msg("Scripts path: " + self.scripts_path)
-        log.msg("Trophies path: " + self.trophies_path)
+        print str("Accomplishments install paths: " + self.accomplishments_installpaths)
+        print str("Trophies path: " + self.trophies_path)
 
         self.show_notifications = show_notifications
         log.msg("Connecting to Ubuntu One")
         self.sd = SyncDaemonTool()
 
+        self.reload_accom_database()
+		
         # XXX this wait-until thing should go away; it should be replaced by a
         # deferred-returning function that has a callback which fires off
         # generate_all_trophis and schedule_run_scripts...
         self.asyncapi.wait_until_a_sig_file_arrives()
         self._create_all_trophy_icons()
-
-        self.get_accom_dependencies("ubuntu-community", "report-first-bug")
 
     def get_media_file(self, media_file_name):
         log.msg("MEDIA_FILE_NAME:")
@@ -438,201 +406,53 @@ class Accomplishments(object):
         final = "file:///" + media_filename
         return final
 
-    def show_unlocked_accomplishments(self, app, item):
-        """
-        Determine if accomplishments have been unlocked and display a
-        notify-osd bubble.
-        """
-
-        files = self.get_accom_dependencies(app, item)
-        unlocked = len(files)
-
-        if unlocked is not 0:
-            if self.show_notifications == True and pynotify and (
-            pynotify.is_initted() or pynotify.init("icon-summary-body")):
-                message = (N_("You have unlocked %s new opportunity.","You have unlocked %s new opportunities.",unlocked) % str(unlocked))
-                n = pynotify.Notification(
-                    _("Opportunities Unlocked!"), message,
-                    self.get_media_file("unlocked.png"))
-                n.show()
-
-        self.scriptrun_total = 0
-        self.scriptrun_results = []
-        self.depends = []
-
-    def _get_accomplishments_files_list(self):
-        """Return a list of all accomplishments files on the system."""
-        
-        # get list of accomplishments sets
-        sets = os.listdir(self.accomplishments_path)
-                
-        setpaths = []
-        
-        self.accomlangs = []
-        
-        log.msg("Checking accomplishment sets for language support:")
-        for s in sets:
-            log.msg("...checking: " + s)
-            langs = os.listdir(os.path.join(self.accomplishments_path, s))
-            langs.remove("trophyimages")
-            langs.remove("extrainformation")
-            langs.remove("ABOUT")
-            if self.lang in langs:
-                log.msg("......found system language: " + self.lang)
-                # here the system language matches a translation in the set
-                setpaths.append(
-                    os.path.join(self.accomplishments_path, s, self.lang, "*.accomplishment"))
-                self.accomlangs.append({ s : self.lang })
-                pass
-            elif self.lang[:2] in langs:
-                log.msg("......found general system language: " + self.lang[:2])
-                # here the first letters (e.g. en) are in the accom set
-                setpaths.append(
-                    os.path.join(
-                        os.path.join(
-                            os.path.join(self.accomplishments_path, s),
-                        self.lang[:2]),
-                    "*.accomplishment"))
-                self.accomlangs.append({ s : self.lang[:2] })
-                pass
-            elif self.lang not in langs:
-                # here nothing is found so check the default from the
-                # ABOUT file in the set
-                log.msg("......accomplishment set not found in: " + self.lang)
-                aboutfile = os.path.join(
-                    os.path.join(self.accomplishments_path, s), "ABOUT")
-                config = ConfigParser.RawConfigParser()
-                config.read(aboutfile)
-                lang = config.get("general", "langdefault")
-                log.msg("......loading the set's default language: " + lang)
-                setpaths.append(
-                    os.path.join(
-                        os.path.join(
-                            os.path.join(self.accomplishments_path, s),
-                        lang),
-                    "*.accomplishment"))
-                self.accomlangs.append({ s : lang })
-                
-        finalpaths = []
-        
-        for p in setpaths:
-            log.msg("Looking for accomplishments files in "
-                         + os.path.split(p)[0])
-            finalpaths = finalpaths + glob.glob(p)
-
-        log.msg(setpaths)
-        return finalpaths
-
-    def _get_trophies_files_list(self):
-        """Return a list of all trophy files. Please note: these are
-        raw .trophy files and for machine-verifiable accomplishments
-        some of these files may have not been verified."""
-        
-        log.msg("Looking for trophies files in "
-                     + self.trophies_path)
-        trphy_files = os.path.join(self.trophies_path,
-            "*", "*.trophy")
-        return glob.glob(trphy_files)
-
-    def _load_accomplishment_file(self, f):
-        log.msg("Loading accomplishments file: " + f)
-        config = ConfigParser.RawConfigParser()
-        config.read(f)
-        data = dict(config._sections["accomplishment"])
-        data["_filename"] = f
-        data["accomplishment"] = os.path.splitext(os.path.split(f)[1])[0]
-        data["accomplishment"] = os.path.splitext(os.path.split(f)[1])[0]
-        return data
-
-    def validate_trophy(self, filename):
-        """
-        Validated a trophy file to ensure it has not been tampered with.
-        Returns True for valid or False for invalid (missing file, bad sig
-        etc).
-        """
-        log.msg("Validate trophy: " + str(filename))
-
-        if os.path.exists(filename):
-            # the .asc signed file exists, so let's verify that it is correctly
-            # signed by the Matrix
-            trophysigned = open(filename, "r")
-            trophy = open(filename[:-4], "r")
-            c = gpgme.Context()
-
-            signed = StringIO(trophysigned.read())
-            plaintext = StringIO(trophy.read())
-            sig = c.verify(signed, None, plaintext)
-
-            if len(sig) != 1:
-                log.msg("...No Sig")
-                return False
-
-            if sig[0].status is not None:
-                log.msg("...Bad Sig")
-                return False
-            else:
-                result = {'timestamp': sig[0].timestamp, 'signer': sig[0].fpr}
-                log.msg("...Verified!")
-                return True
-        else:
-            log.msg(".asc does not exist for this trophy")
-            return False
-
-        log.msg("Verifying trophy signature")
-
-    def _load_trophy_file(self, f):
-        log.msg("Load trophy file: " + f)
-        config = ConfigParser.RawConfigParser()
-        config.read(f)
-        data = dict(config._sections["trophy"])
-        data["_filename"] = f
-        data["accomplishment"] = os.path.splitext(os.path.split(f)[1])[0]
-        return data
-
-    def get_all_accomplishments(self):
-        log.msg("List all accomplishments")
-        log.msg(files)
-        fs = [self._load_accomplishment_file(f) for f in
-            self._get_accomplishments_files_list()]
-        return fs
-
     def _create_all_trophy_icons(self):
         """Iterate through each of the accomplishments on the system
         and generate all of the required icons that we provide to
         clients."""
-        
-        paths = []
-        final = []
-        files = self._get_accomplishments_files_list()
+        cols = self.list_collections()
 
-        for f in files:
-            paths.append(os.path.split(f)[0])
-
-        paths = list(set(paths))
-
-        for p in paths:
-            app = os.path.split(os.path.split(p)[0])[1]
-            app_trophyimagespath = os.path.join(os.path.split(p)[0], "trophyimages")
+        for col in cols:
+            col_imagespath = os.path.join(self.accDB[col]['base-path'],"trophyimages")
             cache_trophyimagespath = os.path.join(
-                self.dir_cache, "trophyimages", app)
+                self.dir_cache, "trophyimages", col)
+            lock_image_path = os.path.join(media_dir, "lock.png")
             if not os.path.exists(cache_trophyimagespath):
                 os.makedirs(cache_trophyimagespath)
+            
+            # First, delete all cached images:
+            cachedlist=glob.glob(cache_trophyimagespath + "/*")
+            for c in cachedlist:
+                os.remove(c)
+            
+            mark = Image.open(lock_image_path)
+            for root, dirs, files in os.walk(col_imagespath):
+                for name in files:
+                    try:
+                        im = Image.open(os.path.join(root, name))
+                        filename = os.path.join(cache_trophyimagespath, name)
+                        filecore = os.path.splitext(filename)[0]
+                        filetype = os.path.splitext(filename)[1]
 
-            # first delete existing images
-            lockedlist=glob.glob(cache_trophyimagespath + "/*locked*")
+                        im.save(filename)
+                        
+                        # Opacity set to 1.0 until we figure out a better way of
+                        # showing opportunities
+                        reduced = self._create_reduced_opacity_trophy_icon(im, 1.0)
+                        reduced.save(filecore + "-opportunity" + filetype)
 
-            opplist=glob.glob(cache_trophyimagespath + "/*opportunity*")
-
-            for l in lockedlist:
-                os.remove(l)
-
-            for o in opplist:
-                os.remove(o)
-
-            # now generate our trophy images
-            lock_image_path = os.path.join(media_dir, "lock.png")
-            self._create_trophy_icons(
-                app_trophyimagespath, cache_trophyimagespath, lock_image_path)
+                        if im.mode != 'RGBA':
+                            im = im.convert('RGBA')
+                        layer = Image.new('RGBA', im.size, (0,0,0,0))
+                        position = (
+                            im.size[0] - mark.size[0], im.size[1] - mark.size[1])
+                        layer.paste(mark, position)
+                        img = Image.composite(layer, reduced, layer)
+                        img.save(filecore + "-locked" + filetype)
+                        
+                    except Exception, (msg):
+                        log.msg(msg)
+            
 
     def _create_reduced_opacity_trophy_icon(self, im, opacity):
         """Returns an image with reduced opacity."""
@@ -646,56 +466,6 @@ class Accomplishments(object):
         alpha = ImageEnhance.Brightness(alpha).enhance(opacity)
         im.putalpha(alpha)
         return im
-
-    def _create_trophy_icons(self, infolder, outfolder, watermark):
-        """Generate a set of trophy icons for a given accomplishment
-        set."""
-        mark = Image.open(watermark)
-        for root, dirs, files in os.walk(infolder):
-            for name in files:
-                try:
-                    im = Image.open(os.path.join(root, name))
-                    filename = os.path.join(outfolder, name)
-                    filecore = os.path.splitext(filename)[0]
-                    filetype = os.path.splitext(filename)[1]
-
-                    im.save(filename)
-
-                    # Opacity set to 1.0 until we figure out a better way of
-                    # showing opportunities
-                    reduced = self._create_reduced_opacity_trophy_icon(im, 1.0)
-                    reduced.save(filecore + "-opportunity" + filetype)
-
-                    if im.mode != 'RGBA':
-                        im = im.convert('RGBA')
-                    layer = Image.new('RGBA', im.size, (0,0,0,0))
-                    position = (
-                        im.size[0] - mark.size[0], im.size[1] - mark.size[1])
-                    layer.paste(mark, position)
-                    img = Image.composite(layer, reduced, layer)
-                    img.save(filecore + "-locked" + filetype)
-                except Exception, (msg):
-                    log.msg(msg)
-
-    def get_accom_dependencies(self, app, accom):
-        """Return a list of all the dependencies for a given accomplishment.
-        This is returned as a list. An empty set will return an empty list."""
-
-        files = self._get_accomplishments_files_list()
-                
-        depterm = app + "/" + accom
-        results = []
-        
-        for f in files:
-            config = ConfigParser.ConfigParser()
-            config.read(f)
-
-            if config.has_option("accomplishment", "depends"):
-                item = config.get("accomplishment", "depends")
-                if item == depterm:
-                    results.append(f)
-
-        return results
 
     def verify_ubuntu_one_account(self):
         # check if this machine has an Ubuntu One account
@@ -772,123 +542,15 @@ class Accomplishments(object):
 
         config.set('config', 'has_u1', self.has_u1)
         config.set('config', 'has_verif', self.has_verif)
-        config.set('config', 'accompath', self.accomplishments_path)
+        config.set('config', 'accompath', self.accomplishments_installpaths)
         config.set('config', 'trophypath', self.trophies_path)
 
         with open(cfile, 'wb') as configfile:
         # Writing our configuration file to 'example.cfg'
             config.write(configfile)
 
-        self.accomplishments_path = os.path.join(
-            self.accomplishments_path, "accomplishments")
         log.msg("...done.")
 
-    def accomplish(self, app, accomplishment_name):
-        """Mark a file as accomplished and create the .trophy file in the
-        trophies directory. If this is a machine-verifiable accomplishment,
-        this .trophy file should be automatically synced to the verification
-        server to be validated. This method purely generates the .trophy
-        file with information about the accomplishment."""
-        
-        log.msg(self.accomlangs)
-        for l in self.accomlangs:
-            if app in l:
-                lang = l[app]
-        log.msg(
-            "Accomplishing something: %s, %s", app, accomplishment_name)
-        accom_file = os.path.join(self.accomplishments_path, app, lang,
-            "%s.accomplishment" % accomplishment_name)
-        try:
-            data = self._load_accomplishment_file(accom_file)
-        except KeyError:
-            raise exceptions.NoSuchAccomplishment()
-
-        needsinfolist = []
-
-        for k in data:
-            if "needs-information" in k:
-                needsinfolist.append(data[k])
-
-        for n in needsinfolist:
-            values = self.get_extra_information(app, n)
-            data[n] = values[0][n]
-
-        if "depends" in data:
-            for dependency in data["depends"].split(","):
-                dapp, dname = dependency.split("/")
-                #XXX: Below application's default language should be used
-                # instead of "en", but this will work well in most cases,
-                # and implementing this properli will be much much easier
-                # in the new API.
-                dpath = os.path.join(self.accomplishments_path, dapp, "en",
-            "%s.accomplishment" % dname)
-                dcp = ConfigParser.RawConfigParser()
-                dcp.read(dpath)
-                dacc_data = dict(dcp._sections["accomplishment"])
-                dtrophy_file = os.path.join(
-                    self.trophies_path, dapp,
-                    "%s.trophy" % dname)
-                dtrophysigned = dtrophy_file + ".asc"
-                if(dacc_data.has_key("needs-signing") and (dacc_data["needs-signing"] == True or dacc_data["needs-signing"] == "True" or dacc_data["needs-signing"] == "true")):
-                    # the dependent accom needs to be signed
-                    dvalid = self.validate_trophy(dtrophysigned)
-                else:
-                    # this dependency trophy does not require signature
-                    dvalid = os.path.exists(dtrophy_file)
-                
-                if not dvalid:
-                    raise exceptions.AccomplishmentLocked()
-
-        cp = ConfigParser.RawConfigParser()
-        cp.add_section("trophy")
-        del data["_filename"]
-        cp.set("trophy", "accomplishment", "%s/%s" % (
-            app, accomplishment_name))
-        for o, v in data.items():
-            cp.set("trophy", o, v)
-        now = datetime.datetime.now()
-        cp.set("trophy", "date-accomplished", now.strftime("%Y-%m-%d %H:%M"))
-        try:
-            os.makedirs(os.path.join(self.trophies_path, app))
-        except OSError:
-            pass # already exists
-        trophy_file = os.path.join(self.trophies_path, app,
-            "%s.trophy" % accomplishment_name)
-        fp = open(trophy_file, "w")
-        cp.write(fp)
-        fp.close()
-        
-        if data.has_key("needs-signing") == False or data["needs-signing"] is False:
-            self.service.trophy_received("foo")
-            iconpath = os.path.join(
-                self.accomplishments_path,
-                data["application"],
-                "trophyimages",
-                data["icon"])
-                
-            if self.show_notifications is True and pynotify and (
-            pynotify.is_initted() or pynotify.init("icon-summary-body")):
-                # XXX: need to fix loading the right icon
-                trophy_icon_path = "file://%s" % os.path.realpath(
-                    os.path.join(media_dir, "unlocked.png"))
-                n = pynotify.Notification(_("You have accomplished something!"),
-                    data["title"], iconpath)
-                n.show()
-                
-            self.show_unlocked_accomplishments(app,accomplishment_name)
-            # Because something new has been accomplished and it does not
-            # require to wait for .asc file, scripts have to be re-run to check
-            # if something that has been just unlocked hasn't been already
-            # achieved. Because this function is usually called from
-            # scriptrunner, the following will schedule scripts for re-running.
-            self.run_scripts(0)
-            
-        else:
-            # if the trophy needs signing we wait for wait_until_a_sig_file_arrives
-            # to display the notification
-            pass
-            
-        return self._load_trophy_file(trophy_file)
 
     def _load_config_file(self):
         """Load the main configuration file for the daemon. This should be
@@ -909,15 +571,10 @@ class Accomplishments(object):
         if config.read(cfile):
             log.msg("Loading configuration file: " + cfile)
             if config.get('config', 'accompath'):
-                self.accomplishments_path = os.path.join(
-                    config.get('config', 'accompath'), "accomplishments/")
+                self.accomplishments_installpaths = config.get('config', 'accompath')
                 log.msg(
-                    "...setting accomplishments path to: "
-                    + self.accomplishments_path)
-                self.scripts_path = os.path.split(
-                    os.path.split(self.accomplishments_path)[0])[0] + "/scripts"
-                log.msg(
-                    "...setting scripts path to: " + self.scripts_path)
+                    "...setting accomplishments install paths to: "
+                    + self.accomplishments_installpaths)
             if config.get('config', 'trophypath'):
                 log.msg(
                     "...setting trophies path to: "
@@ -933,15 +590,13 @@ class Accomplishments(object):
             log.msg("Configuration file not found...creating it!")
 
             self.has_verif = False
-            self.accomplishments_path = accompath
+            self.accomplishments_installpaths = accompath
             log.msg(
-                "...setting accomplishments path to: "
-                + self.accomplishments_path)
-            log.msg("You can set this to a different location in your config file.")
+                "...setting accomplishments install paths to: "
+                + self.accomplishments_installpaths)
+            log.msg("You can set this to different locations in your config file.")
             self.trophies_path = os.path.join(self.dir_data, "trophies")
             log.msg("...setting trophies path to: " + self.trophies_path)
-            self.scripts_path = os.path.join(accompath, "scripts")
-            log.msg("...setting scripts path to: " + self.scripts_path)
 
             if not os.path.exists(self.trophies_path):
                 os.makedirs(self.trophies_path)
@@ -954,8 +609,8 @@ class Accomplishments(object):
         to authticate. Returns {application, needs-information, label,
         description, value}.
         """
-        # get a list of all accomplishment files
-        accomplishments_files = self._get_accomplishments_files_list()
+        # get a list of all accomplishments
+        accomplishments = self.list_accomplishments()
         
         infoneeded = []
         # and prepend the path to the directory, where all extra-information 
@@ -969,87 +624,52 @@ class Accomplishments(object):
             os.makedirs(trophyextrainfo)
 
         # now, for each accomplishment file that is available...
-        for f in accomplishments_files:
+        for acc in accomplishments:
             # get the path to the directory of accomplishments set's
             # "extrainformation" dir - it is useful, because it contains
             # translated labels and descriptions
-            accomextrainfo = os.path.join(
-                os.path.split(f)[0], "../extrainformation")
+            accomextrainfo = os.path.join(self.accDB[acc]['base-path']
+                , "extrainformation")
                 
             # a temporary variable, representing a single entry of the list this function returns
             d = {}
             
-            # prepare a ConfigParser, that will read the .accomplishment file
-            accomconfig = ConfigParser.RawConfigParser()
-            accomconfig.read(f)
+            # Get collection name from accomOD
+            collection = self._coll_from_accomID(acc)
             
-            # proceed only if the accomplishment file has 'needs-information'
-            # key [in other case we can skip it, as it does not require any ExtraInformation]
-            config_args = ("accomplishment", "needs-information")
-            if accomconfig.has_option(*config_args) == True:
+            ei = self.get_acc_needs_info(acc)
+            if len(ei) is not 0:
             
-                # prepare the path to accomplishment set's extrainformation file
-                # [e.g. [...]accomplishments/ubuntu-community/extrainformation/launchpad-email]
-                infofile = os.path.join(accomextrainfo, accomconfig.get(*config_args))
-                
-                # and then read that file with a config parser
-                infoconfig = ConfigParser.RawConfigParser()
-                infoconfig.read(infofile)
-                
-                # we need the set's ABOUT file, to determine the default language.
-                # let's read it with a config parser too
-                aboutset_path = os.path.join(os.path.split(f)[0], "../ABOUT")
-                aboutconfig = ConfigParser.RawConfigParser()
-                aboutconfig.read(aboutset_path)
-                
-                # this will store the set's default language in deflang
-                deflang = aboutconfig.get("general","langdefault")
-                
-                # if the item's label in user's language is present, get it;
-                # otherwise get the label in default language
-                
-                if infoconfig.has_option("label", self.lang):
-                    label = infoconfig.get("label", self.lang)
-                elif infoconfig.has_option("label", deflang):
-                    label = infoconfig.get("label", deflang)
-                else:
-                    label = infoconfig.get("label", "en")
-                    
-                # similarly, get the item's description, use default language
-                # in case it's not translated to user's language
-                if infoconfig.has_option("description",self.lang):
-                    desc = infoconfig.get("description", self.lang)
-                elif infoconfig.has_option("description", deflang):
-                    desc = infoconfig.get("description", deflang)
-                else:
-                    desc = infoconfig.get("description", "en")
-                    
-                # we also need to know whether user has already set this item's value.
-                # to do this, simply check whether trophies/.extrainformation/<item> file exists.
-                try:
-                    valuefile = open(trophyextrainfo + str(accomconfig.get(*config_args)))
-                    # if we got here without an exception, it means that the file exists
-                    # so, we can read it's value
-                    value = valuefile.readline()
-                    value = value.rstrip() # get rid of the tailing newline
-                    # and build up the dictionary of all data for a single ExtraInformation field
-                    d = {
-                        "application" : accomconfig.get("accomplishment", "application"),
-                        "needs-information" : accomconfig.get(*config_args),
-                        "label" : label,
-                        "description" : desc,
-                        "value" : value}
-                except IOError as e:
-                    # we got an exception, so it seems that the file is not present - we'll use "" as the value, to indicate that it's empty
-                    d = {
-                        "application" : accomconfig.get("accomplishment", "application"),
-                        "needs-information" : accomconfig.get(*config_args),
-                        "label" : label,
-                        "description" : desc,
-                        "value" : ""}
+                # For each needed piece of information:
+                for i in ei:
+                    label = self.accDB[collection]['extra-information'][i]['label']
+                    desc = self.accDB[collection]['extra-information'][i]['description']
+                    # we also need to know whether user has already set this item's value.
+                    # to do this, simply check whether trophies/.extrainformation/<item> file exists.
+                    try:
+                        valuefile = open(os.path.join(trophyextrainfo,i))
+                        # if we got here without an exception, it means that the file exists
+                        # so, we can read it's value
+                        value = valuefile.readline()
+                        value = value.rstrip() # get rid of the tailing newline
+                        # and build up the dictionary of all data for a single ExtraInformation field
+                        d = {
+                            "collection" : collection,
+                            "needs-information" : i,
+                            "label" : label,
+                            "description" : desc,
+                            "value" : value}
+                    except IOError as e:
+                        # we got an exception, so it seems that the file is not present - we'll use "" as the value, to indicate that it's empty
+                        d = {
+                            "collection" : collection,
+                            "needs-information" : i,
+                            "label" : label,
+                            "description" : desc,
+                            "value" : ""}
 
-                # since the collected all data related to this particular ExtraInformation field, append it to the list
-                infoneeded.append(d)
+                    # since the collected all data related to this particular ExtraInformation field, append it to the list
+                    infoneeded.append(d)
 
         # at this moment the infoneeded list will be ready, but full of duplicates,
         # for the items have been added multiple times, if they are mentioned in more then one .accomplishment file
@@ -1079,178 +699,6 @@ class Accomplishments(object):
             
         return result
 
-    def get_all_accomplishments_and_status(self):
-        """
-        Provide a list of all accomplishments and whether they have been
-        accomplished or not, including validating the trophies. Returns a list
-        of dictionaries.
-        """
-        if self.depends == []:
-            getdepends = True
-        else:
-            getdepends = False
-
-        log.msg("List all accomplishments and status")
-        accomplishments_files = self._get_accomplishments_files_list()
-        things = {}
-        for accomplishment_file in accomplishments_files:
-            path, name = os.path.split(accomplishment_file)
-            name = os.path.splitext(name)[0]
-            lang = os.path.split(path)[1]
-            app = os.path.split(os.path.split(path)[0])[1]
-            data = self._load_accomplishment_file(accomplishment_file)
-
-            icon = data["icon"]
-            #icondir = os.path.join(os.path.split(
-            #   accomplishment_file)[0], "trophyimages")
-            icondir = os.path.join(
-                self.dir_cache, "trophyimages", data["application"])
-            iconname = os.path.splitext(icon)[0]
-            iconext = os.path.splitext(icon)[1]
-
-            # find the human readable name of the application and add it to the
-            # dict
-            accompath = os.path.join(
-                self.accomplishments_path, data["application"])
-            infofile = os.path.join(accompath, "ABOUT")
-            config = ConfigParser.RawConfigParser()
-            config.read(infofile)
-            final = config.get("general", "name")
-
-            data["application-human"] = final
-
-            # If the trophy file exists, this must be accomplished and not
-            # locked
-            trophy_file = os.path.join(
-                self.trophies_path, app, "%s.trophy" % name)
-                
-            trophysigned = str(trophy_file) + ".asc"
-            
-            acc_file_cfg = ConfigParser.RawConfigParser()
-            acc_file_cfg.read(accomplishment_file)
-            acc_data = dict(acc_file_cfg._sections["accomplishment"])
-            if(acc_data.has_key("needs-signing") and (acc_data["needs-signing"] == True or acc_data["needs-signing"] == "True" or acc_data["needs-signing"] == "true")):
-                # this trophy needs to be signed in order to be validated
-                valid = self.validate_trophy(trophysigned)
-            else:
-                # this trophy does not require signature
-                valid = os.path.exists(trophy_file)
-
-
-            if valid:
-                data["accomplished"] = True
-                data["locked"] = False
-                data.update(self._load_trophy_file(trophy_file))
-                data["iconpath"] = os.path.join(icondir, icon)
-            else:
-                if os.path.exists(trophysigned):
-                    os.remove(trophysigned)
-                    # os.remove(trophy_file)
-                data["accomplished"] = False
-                data["iconpath"] = os.path.join(icondir, (
-                    iconname + "-opportunity" + iconext))
-                # can't tell if it's locked until we've seen all trophies
-            things[accomplishment_file] = data
-        # Now go through the list again and check if things are locked
-        for accomplishment_file in things:
-            accomlang = os.path.split(
-                os.path.split(accomplishment_file)[0])[1]
-            item = things[accomplishment_file]
-            if item["accomplished"] == False:
-                locked = False
-                depends_list = item.get("depends")
-                if depends_list:
-                    dependencies = depends_list.split(",")
-                    for dependency in dependencies:
-                        dapp, dname = dependency.split("/")
-
-                        # we need to check the language of the dependency
-                        # as it may be in a different set and be a different
-                        # language.
-                        for l in self.accomlangs:
-                            if dapp in l:
-                                dapplang = l[dapp]
-
-                        daccomplishment_file = os.path.join(
-                            self.accomplishments_path, dapp, dapplang,
-                            "%s.accomplishment" % dname)
-                        daccomplishment_data = things[daccomplishment_file]
-                        if daccomplishment_data["accomplished"] == False:
-                            # update the list of dependencies
-                            if getdepends == True:
-                                depends_key = str(
-                                    item["application"]) + "/" + str(
-                                        item["accomplishment"])
-                                self.depends.append(
-                                    {depends_key: depends_list})
-                            locked = True
-                            itemicon = item["icon"]
-                            itemiconname = os.path.splitext(itemicon)[0]
-                            itemiconext = os.path.splitext(itemicon)[1]
-                            item["iconpath"] = os.path.join(
-                                os.path.split(item["iconpath"])[0],
-                                (itemiconname + "-locked" + itemiconext))
-                item["locked"] = locked
-                #item["icon"] = os.path.join(
-                #   icondir, (iconname + "-opportunity" + iconext))
-        return things.values()
-
-    def get_all_available_accomplishments_with_scripts(self):
-        log.msg("List all accomplishments with scripts")
-        available = [accom for accom in self.get_all_accomplishments_and_status()
-            if not accom["accomplished"] and not accom["locked"]]
-        withscripts = []
-        for accom in available:
-            path, name = os.path.split(accom["_filename"])
-            name = os.path.splitext(name)[0]
-            lang = os.path.split(path)[1]
-            app = os.path.split(os.path.split(path)[0])[1]
-            #path, name = os.path.split(accom["_filename"])
-            #name = os.path.splitext(name)[0]
-            #app = os.path.split(path)[1]
-            scriptglob = glob.glob(os.path.join(
-                self.scripts_path, app, "%s.*" % name))
-            if scriptglob:
-                accom["_script"] = scriptglob[0]
-                withscripts.append(accom)
-        return withscripts
-
-    def get_accomplishment_information(self, accomplishment):
-        """Returns information for the given accomplishment."""
-        
-        log.msg("Getting accomplishment info for " + accomplishment)
-        search = "/" + accomplishment + ".accomplishment"
-        files = self._get_accomplishments_files_list()
-        match = None
-
-        data = []
-
-        for i in files:
-            if search in i:
-                match = i
-
-        config = ConfigParser.RawConfigParser()
-        config.read(match)
-        data.append(dict(config._sections["accomplishment"]))
-        return data
-
-    def get_trophy_information(self, trophy):
-        log.msg("Getting trophy info for " + trophy)
-        search = "/" + trophy + ".trophy"
-        files = self._get_trophies_files_list()
-        match = None
-
-        data = []
-
-        for i in files:
-            if search in i:
-                match = i
-
-        config = ConfigParser.RawConfigParser()
-        config.read(match)
-        data.append(dict(config._sections["trophy"]))
-        return data
-
     def run_scripts_for_all_active_users(self):
         for uid in [x.pw_uid for x in pwd.getpwall()
             if x.pw_dir.startswith('/home/') and x.pw_shell != '/bin/false']:
@@ -1266,13 +714,13 @@ class Accomplishments(object):
             log.msg("Run scripts for user")
             self.asyncapi.run_scripts_for_user(uid)
 
-    def create_extra_information_file(self, app, item, data):
+    def create_extra_information_file(self, item, data):
         """Does exactly the same as write_extra_information_file(), but it does not
            overwrite any existing data"""
            
         # XXX this should be removed as we are using write_extra_information_file
         log.msg(
-            "Creating Extra Information file: %s, %s, %s", app, item, data)
+            "Creating Extra Information file: %s, %s", item, data)
         extrainfodir = os.path.join(self.trophies_path, ".extrainformation/")
 
         if not os.path.isdir(extrainfodir):
@@ -1285,10 +733,9 @@ class Accomplishments(object):
             f.write(data)
             f.close()
             
-    def write_extra_information_file(self, app, item, data):
-
+    def write_extra_information_file(self, item, data):
         log.msg(
-            "Saving Extra Information file: %s, %s, %s", app, item, data)
+            "Saving Extra Information file: %s, %s", item, data)
         extrainfodir = os.path.join(self.trophies_path, ".extrainformation/")
 
         if not os.path.isdir(extrainfodir):
@@ -1303,44 +750,25 @@ class Accomplishments(object):
             os.remove(os.path.join(extrainfodir, item))
             
     def invalidate_extra_information(self,extrainfo):
-        """Removes all trophies that use this extra-info. This is useful
-        for re-authorizing trophies when extra-information changes."""
-        trophylist = self._get_trophies_files_list()
-        for trophyfile in trophylist:
-            config = ConfigParser.RawConfigParser()
-            config.read(trophyfile)
-            if config.has_option("trophy","needs-information"):
-                needs = config.get("trophy","needs-information")
-                if extrainfo in needs:
-                    #this file uses the invalidated extrainfo, we must remove it
-                    os.remove(trophyfile)
-                    ascfile = trophyfile + ".asc"
-                    try:
-                        open(ascfile)
-                        os.remove(ascfile)
-                    except IOError:
-                        pass
+        """
+        This used to remove all trophies, but since it is essential to
+        preserve them, this is no longer the case
+        """
+        pass
             
-    def get_extra_information(self, app, item):
+    def get_extra_information(self, coll, item):
+        """
+        This function is particularly sensitive.
+        It is used by all global accomplishment scripts.
+        """
         extrainfopath = os.path.join(self.trophies_path, ".extrainformation/")
         authfile = os.path.join(extrainfopath, item)
-        label = None
         
-        for l in self.accomlangs:
-            if app in l:
-                lang = l[app]
+        if not self.get_collection_exists(coll):
+            log.msg("No such collection:" + coll)
+            return None
         
-        appdir = os.path.join(self.accomplishments_path, app)
-        extrad = os.path.join(appdir, "extrainformation")
-        itempath = os.path.join(extrad, item)
-        cfg = ConfigParser.RawConfigParser()
-        cfg.read(itempath)
-        if cfg.has_option("label", self.lang):
-            label = cfg.get("label", self.lang)
-        else:
-            label = cfg.get("label", "en")
-        
-        log.msg("The authfile is %s" % authfile)
+        label = self.accDB[coll]['extra-information'][item]['label']
         
         try:
             f = open(authfile, "r")
@@ -1348,13 +776,412 @@ class Accomplishments(object):
             final = [{item : data, "label" : label}]
         except IOError as e:
             #print "No data."
-            final = [{item : False, "label" : ""}]
+            final = [{item : "", "label" : ""}]
         return final
+		
+    # =================================================================
+        
+    def reload_accom_database(self):
     
-    def get_application_full_name(self,app):
-        appaboutpath = os.path.join( os.path.join(self.accomplishments_path, app) , "ABOUT")
-        aboutcfg = ConfigParser.RawConfigParser()
-        aboutcfg.read(appaboutpath)
-        name = aboutcfg.get("general","name")
-        return name
+    # First, clear the database.
+        self.accDB = {}
+        # Get the list of all paths where accomplishments may be
+        # installed...
+        installpaths = self.accomplishments_installpaths.split(":")
+        for installpath in installpaths:
+            # Look for all accomplishment collections in this path
+            path = os.path.join(installpath,'accomplishments')
+            if not os.path.exists(path):
+                continue
+            
+            collections = os.listdir(path)
+            for collection in collections:
+                # For each collection...
+                if collection in self.accDB:
+                    # This collection has already been loaded from another install path!
+                    continue
+                
+                collpath = os.path.join(path,collection)
+                aboutpath = os.path.join(collpath,'ABOUT')
+                
+                # Load data from ABOUT file
+                cfg = ConfigParser.RawConfigParser()
+                cfg.read(aboutpath)
+                
+                if not (cfg.has_option("general","langdefault") and cfg.has_option("general","name")):
+                    print aboutpath
+                    raise LookupError("Accomplishment collection with invalid ABOUT file ")
+                
+                langdefault = cfg.get("general","langdefault")
+                collectionname = cfg.get("general","name")
+                
+                collauthors = set()
+                
+                langdefaultpath = os.path.join(collpath,langdefault)
+                setsslist = os.listdir(langdefaultpath)
+                accno = 0
+                for accomset in setsslist:
+                    if accomset[-15:] == '.accomplishment':
+                        # this is an ungroped accomplishment file
+                        accompath = os.path.join(langdefaultpath,accomset)
+                        accomcfg = ConfigParser.RawConfigParser()
+                        # check if there is a translated version...
+                        translatedpath = os.path.join(os.path.join(collpath,self.lang),accomset)
+                        if os.path.exists(translatedpath):
+                            # yes, so use the translated file
+                            accomcfg.read(translatedpath)
+                            langused = self.lang
+                        else:
+                            # no. maybe there is a shorter language code?
+                            translatedpath = os.path.join(os.path.join(collpath,self.lang.split("_")[0]),accomset)
+                            if os.path.exists(translatedpath):
+                                accomcfg.read(translatedpath)
+                                langused = self.lang.split("_")[0]
+                            else:
+                                # no. fallback to default one
+                                accomcfg.read(accompath)
+                                langused = langdefault
+                        accomdata = dict(accomcfg._sections["accomplishment"])
+                        accomID = collection + "/" + accomset[:-15]
+                        if 'author' in accomdata:
+                            collauthors.add(accomdata['author'])
+                        del accomdata['__name__']
+                        accomdata['set'] = ""
+                        accomdata['collection'] = collection
+                        accomdata['type'] = "accomplishment"
+                        accomdata['lang'] = langused
+                        accomdata['base-path'] = collpath
+                        accomdata['script-path'] = os.path.join(installpath,os.path.join('scripts',os.path.join(collection,accomset[:-15] + ".py")))
+                        self.accDB[accomID] = accomdata
+                        accno = accno + 1
+                    else:
+                        # this is indeed a set!
+                        setID = collection + ":" + accomset
+                        setdata = {'type':"set",'name':accomset}
+                        self.accDB[setID] = setdata
+                        setdir = os.path.join(langdefaultpath,accomset)
+                        accomfiles = os.listdir(setdir)
+                        for accomfile in accomfiles:
+                            # For each accomplishment in this set...
+                            accompath = os.path.join(langdefaultpath,os.path.join(accomset,accomfile))
+                            accomcfg = ConfigParser.RawConfigParser()
+                            # check if there is a translated version...
+                            translatedpath = os.path.join(os.path.join(collpath,self.lang),os.path.join(accomset,accomfile))
+                            if os.path.exists(translatedpath):
+                                # yes, so use the translated file
+                                accomcfg.read(translatedpath)
+                                langused = self.lang
+                            else:
+                                # no. maybe there is a shorter language code?
+                                translatedpath = os.path.join(os.path.join(collpath,self.lang.split("_")[0]),os.path.join(accomset,accomfile))
+                                if os.path.exists(translatedpath):
+                                    accomcfg.read(translatedpath)
+                                    langused = self.lang.split("_")[0]
+                                else:
+                                    # no. fallback to default one
+                                    accomcfg.read(accompath)
+                                    langused = langdefault
+                            accomdata = dict(accomcfg._sections["accomplishment"])
+                            accomID = collection + "/" + accomfile[:-15]
+                            accomdata['type'] = "accomplishment"
+                            del accomdata['__name__']
+                            accomdata['set'] = accomset
+                            accomdata['collection'] = collection
+                            accomdata['lang'] = langused
+                            accomdata['base-path'] = collpath
+                            accomdata['script-path'] = os.path.join(installpath,os.path.join('scripts',os.path.join(collection,os.path.join(accomset,accomfile[:-15] + ".py"))))
+                            self.accDB[accomID] = accomdata
+                            accno = accno + 1
+                            
+                # Look for extrainformation dir
+                extrainfodir = os.path.join(collpath,"extrainformation")
+                extrainfolist = os.listdir(extrainfodir)
+                extrainfo = {}
+                for extrainfofile in extrainfolist:
+                    extrainfopath = os.path.join(extrainfodir,extrainfofile)
+                    eicfg = ConfigParser.RawConfigParser()
+                    eicfg.read(extrainfopath)
+                    if eicfg.has_option("label",self.lang):
+                        label = eicfg.get("label",self.lang)
+                    elif eicfg.has_option("label",self.lang.split("_")[0]):
+                        label = eicfg.get("label",self.lang.split("_")[0])
+                    else:
+                        label = eicfg.get("label",langdefault)
+                    if eicfg.has_option("description",self.lang):
+                        description = eicfg.get("description",self.lang)
+                    elif eicfg.has_option("description",self.lang.split("_")[0]):
+                        description = eicfg.get("description",self.lang.split("_")[0])
+                    else:
+                        description = eicfg.get("description",langdefault)
+                        
+                    extrainfo[extrainfofile] = {'label':label,'description':description}
+                
+                # Store data about this colection
+                collectiondata = {'langdefault':langdefault,'name':collectionname, 'acc_num':accno, 'type':"collection", 'base-path': collpath, 'extra-information': extrainfo, 'authors':collauthors}
+                self.accDB[collection] = collectiondata
+          
+        # Uncomment following for debugging
+        # print self.accDB\
+        
+    # ======= Access functions =======
+        
+    def get_acc_data(self,accomID):
+        return self.accDB[accomID]
+        
+    def get_acc_exists(self,accomID):
+        return accomID in self.accDB
+        
+    def get_acc_title(self,accomID):
+        return self.accDB[accomID]['title']
+        
+    def get_acc_description(self,accomID):
+        return self.accDB[accomID]['description']
+        
+    def get_acc_needs_signing(self,accomID):
+        if not 'needs-signing' in self.accDB[accomID]:
+            return False
+        elif (self.accDB[accomID]['needs-signing'] == "false" or self.accDB[accomID]['needs-signing'] == "False" or self.accDB[accomID]['needs-signing'] == "no"):
+            return False
+        else:
+            return True
     
+    def get_acc_depends(self,accomID):
+        if 'depends' in self.accDB[accomID]:
+            return self.accDB[accomID]['depends']
+        else:
+            return
+    
+    def get_acc_is_unlocked(self,accomID):
+        dependency = self.get_acc_depends(accomID)
+        if not dependency:
+            return True
+        else:
+            return self.get_acc_is_completed(dependency)
+    
+    def get_trophy_path(self,accomID):
+        if not self.get_acc_exists(accomID):
+            # hopefully an empty path will break something...
+            return ""
+        else:
+            return os.path.join(self.trophies_path,accomID + ".trophy")
+
+    def get_acc_is_completed(self,accomID):
+        trophypath = self.get_trophy_path(accomID)
+        if not os.path.exists(trophypath):
+            # There is no trophy file
+            return False
+        if not self.get_acc_needs_signing(accomID):
+            # The trophy does not need a signature
+            return True
+        else:
+            # The trophy needs to be signed
+            ascpath = trophypath + ".asc"
+            if not os.path.exists(ascpath):
+                return False
+            else:
+                return self._get_is_asc_correct(ascpath)
+        
+    def get_acc_script_path(self,accomID):
+        return self.accDB[accomID]['script-path']
+        
+    def get_acc_icon(self,accomID):
+        return self.accDB[accomID]['icon']
+        
+    def get_acc_icon_path(self,accomID):
+        imagesdir = os.path.join(self.dir_cache,'trophyimages')
+        imagesdir = os.path.join(imagesdir,self.get_acc_collection(accomID))
+        iconfile = self.get_acc_icon(accomID)
+        iconfilename, iconfileext = iconfile.split(".")
+        if not self.get_acc_is_unlocked(accomID):
+            iconfilename = iconfilename + '-locked'
+        elif not self.get_acc_is_completed(accomID):
+            iconfilename = iconfilename + '-opportunity'
+        iconfile = iconfilename + "." + iconfileext
+        return os.path.join(imagesdir,iconfile)
+    
+    def get_acc_needs_info(self,accomID):
+        if not 'needs-information' in self.accDB[accomID]:
+            return []
+        return self.accDB[accomID]['needs-information'].split(" ")
+    
+    def get_acc_collection(self,accomID):
+        return self.accDB[accomID]['collection']
+        
+    def get_acc_category(self,accomID):
+        return self.accDB[accomID]['category']
+    
+    
+    def get_trophy_data(self,accomID):
+        if not self.get_acc_is_completed(accomID):
+            return
+        else:
+            cfg = ConfigParser.RawConfigParser()
+            cfg.read(self.get_trophy_path(accomID))
+            return dict(cfg._sections["trophy"])
+    
+    def get_collection_name(self,collection):
+        return self.accDB[collection]['name']
+        
+    def get_collection_exists(self,collection):
+        return collection in self.list_collections()
+        
+    def get_collection_authors(self,collection):
+        return self.accDB[collection]['authors']
+        
+    def get_collection_data(self,collection):
+        return self.accDB[collection]
+        
+    # ====== Listing functions ======
+    
+    def list_accomplishments(self):
+        return [acc for acc in self.accomslist()]
+        
+    def list_trophies(self):
+        return [acc for acc in self.accomslist() if self.get_acc_is_completed(acc)]
+        
+    def list_opportunitues(self):
+        return [acc for acc in self.accomslist() if not self.get_acc_is_completed(acc)]
+        
+    def list_depending_on(self,accomID):
+        return [acc for acc in self.accomslist() if self.get_acc_depends(acc) == accomID]
+        
+    def list_unlocked(self):
+        return [acc for acc in self.accomslist() if self.get_acc_is_unlocked(acc)]
+        
+    def list_unlocked_not_completed(self):
+        return [acc for acc in self.accomslist() if self.get_acc_is_unlocked(acc) and not self.get_acc_is_completed(acc)]        
+    
+    def list_collections(self):
+        return [col for col in self.accDB if self.accDB[col]['type'] == 'collection']
+    
+    # ====== Viewer-specific functions ======
+        
+    def build_viewer_database(self):
+        accs = self.list_accomplishments()
+        db = []
+        for acc in accs:
+            db.append({ 
+                'title' :           self.get_acc_title(acc),
+                'accomplished' :    self.get_acc_is_completed(acc),
+                'locked' :      not self.get_acc_is_unlocked(acc),
+                'iconpath' :        self.get_acc_icon_path(acc),
+                'collection' :      self.get_acc_collection(acc),
+                'collection-human' :self.get_collection_name(
+                                        self.get_acc_collection(acc) ),
+                'category' :        self.get_acc_category(acc),
+                'id' :              acc 
+                })
+        return db
+        
+    # ================================
+    
+    def accomplish(self,accomID):
+        log.msg("Accomplishing: %s" % accomID)
+        if not self.get_acc_exists(accomID):
+            log.msg("There is no such accomplishment.")
+            return False
+            
+        coll = self._coll_from_accomID(accomID)
+        accdata = self.get_acc_data(accomID)
+        
+        # Check if this accomplishment is unlocked
+        if not self.get_acc_is_unlocked(accomID):
+            log.msg("This accomplishment cannot be completed; it's locked.")
+            return False
+        
+        # Prepare extra-info
+        needsinformation = self.get_acc_needs_info(accomID)
+        for i in needsinformation:
+            accdata[i] = self.get_extra_information(coll,i)[0][i]
+            
+        # Create .trophy file
+        cp = ConfigParser.RawConfigParser()
+        cp.add_section("trophy")
+        cp.set("trophy", "id", accomID)
+        for i, v in accdata.items():
+            cp.set("trophy", i, v)
+        now = datetime.datetime.now()
+        cp.set("trophy", "date-accomplished", now.strftime("%Y-%m-%d %H:%M"))
+        cp.remove_option("trophy","type")
+        if cp.has_option("trophy","accomplishment"):
+            cp.remove_option("trophy","accomplishment")
+        if cp.has_option("trophy","application"):
+            cp.remove_option("trophy","application")
+        cp.remove_option("trophy","script-path")
+        cp.remove_option("trophy","base-path")
+        cp.remove_option("trophy","lang")
+        cp.remove_option("trophy","collection")
+        cp.remove_option("trophy","set")
+        trophypath = self.get_trophy_path(accomID)
+        dirpath = os.path.split(trophypath)[0]
+        if not os.path.exists(dirpath):
+            os.makedirs(dirpath)
+        log.msg(trophypath)
+        fp = open(trophypath, "w")
+        cp.write(fp)
+        fp.close()
+        
+        if not self.get_acc_needs_signing(accomID):
+            # The accomplishment does not need signing!
+            self.service.trophy_received(accomID)
+            self._display_accomplished_bubble(accomID)
+            self._display_unlocked_bubble(accomID)
+            self.run_scripts(0)
+            
+        return True
+    
+    def _coll_from_accomID(self,accomID):
+        return accomID.split("/")[0]
+    
+    def _display_accomplished_bubble(self,accomID):
+        if self.show_notifications == True and pynotify and (
+            pynotify.is_initted() or pynotify.init("icon-summary-body")):
+            n = pynotify.Notification(
+                _("You have accomplished something!"),
+                self.get_acc_title(accomID),
+                self.get_acc_icon_path(accomID) )
+            n.show()
+    
+    def _display_unlocked_bubble(self,accomID):
+        unlocked = len(self.list_depending_on(accomID))
+        if unlocked is not 0:
+            if self.show_notifications == True and pynotify and (
+                pynotify.is_initted() or pynotify.init("icon-summary-body")):
+                message = (N_("You have unlocked %s new opportunity.","You have unlocked %s new opportunities.",unlocked) % str(unlocked))
+                n = pynotify.Notification(
+                    _("Opportunities Unlocked!"), message,
+                    self.get_media_file("unlocked.png"))
+                n.show()
+    
+    def accomslist(self):
+        for k in self.accDB:
+            if self.accDB[k]['type'] is "accomplishment":
+                yield k
+            
+    def _get_is_asc_correct(self,filepath):
+        if os.path.exists(filepath):
+            # the .asc signed file exists, so let's verify that it is correctly
+            # signed by the Matrix
+            trophysigned = open(filepath, "r")
+            trophy = open(filepath[:-4], "r")
+            c = gpgme.Context()
+
+            signed = StringIO(trophysigned.read())
+            plaintext = StringIO(trophy.read())
+            sig = c.verify(signed, None, plaintext)
+
+            if len(sig) != 1:
+                # No Sig
+                return False
+
+            if sig[0].status is not None:
+                # Bad Sig
+                return False
+            else:
+                # Correct!
+                # result = {'timestamp': sig[0].timestamp, 'signer': sig[0].fpr}
+                return True
+        else:
+            log.msg("Cannot check if signature is correct, because file %s does not exist" % filepath)
+            return False
+            

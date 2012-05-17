@@ -5,6 +5,7 @@ from twisted.application.service import Application
 
 from accomplishments.daemon import dbusapi
 from accomplishments.daemon import service
+from accomplishments.daemon import api
 
 
 # XXX these won't work with twistd; we need to write a twistd plugin to support
@@ -13,9 +14,8 @@ def parse_options():
     parser = OptionParser()
     parser.set_defaults(suppress_notifications=False)
     parser.add_option("--trophies-path", dest="trophies_path", default=None)
-    parser.add_option("--accomplishments-path", dest="accomplishments_path",
+    parser.add_option("--accomplishments-path", dest="accomplishments_installpaths",
                       default=None)
-    parser.add_option("--scripts-path", dest="scripts_path", default=None)
     parser.add_option("--suppress-notifications", action="store_true",
                       dest="suppress_notifications")
     return parser.parse_args()
@@ -44,5 +44,5 @@ def applicationFactory(app_name="", bus_name="", main_loop=None,
     timer_service = service.ScriptRunnerService(
         update_interval, dbus_export_service.api)
     timer_service.setServiceParent(top_level_service)
-
+    
     return application
