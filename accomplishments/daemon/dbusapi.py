@@ -226,7 +226,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_collection_exists(collection)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="v")
+        in_signature="s", out_signature="as")
     def get_collection_authors(self,collection):
         return self.api.get_collection_authors(collection)
         
