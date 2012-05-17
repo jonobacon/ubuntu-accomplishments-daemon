@@ -883,6 +883,8 @@ class Accomplishments(object):
                                     langused = langdefault
                             accomdata = dict(accomcfg._sections["accomplishment"])
                             accomID = collection + "/" + accomfile[:-15]
+                            if 'author' in accomdata:
+                                collauthors.add(accomdata['author'])
                             accomdata['type'] = "accomplishment"
                             del accomdata['__name__']
                             accomdata['set'] = accomset
