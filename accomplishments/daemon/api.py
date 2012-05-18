@@ -52,6 +52,8 @@ from accomplishments.daemon import dbusapi
 from accomplishments.util import get_data_file, SubprocessReturnCodeProtocol
 from accomplishments.util.paths import media_dir, module_dir1, module_dir2, installed, locale_dir
 
+MATRIX_USERNAME = ""
+
 gettext.bindtextdomain('accomplishments-daemon',locale_dir)
 gettext.textdomain('accomplishments-daemon')
 
@@ -61,10 +63,6 @@ os.environ["PYTHONPATH"] = "$PYTHONPATH:."
 # installed using a non-default prefix.
 if installed:
     os.environ["PYTHONPATH"] = module_dir1 + ":" + module_dir2 + ":" + os.environ["PYTHONPATH"]
-
-# Uncomment one to select server to use
-#MATRIX_USERNAME = "openiduser155707" # production ID
-MATRIX_USERNAME = "openiduser204307" # staging ID
 
 LOCAL_USERNAME = getpass.getuser()
 SCRIPT_DELAY = 900
@@ -584,6 +582,11 @@ class Accomplishments(object):
                 self.has_u1 = config.getboolean('config', 'has_u1')
             if config.get('config', 'has_verif'):
                 self.has_verif = config.getboolean('config', 'has_verif')
+            if config.get('config', 'staging'):
+                MATRIX_USERNAME = "openiduser204307" # staging ID
+            else:
+                MATRIX_USERNAME = "openiduser155707" # production ID
+
         else:
             # setting accomplishments path to the system default
             accompath = "/usr/share/accomplishments"

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ubuntu-accomplishments-daemon\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-05-02 21:23+0200\n"
+"POT-Creation-Date: 2012-05-16 20:46+0200\n"
 "PO-Revision-Date: 2012-04-12 04:14+0000\n"
 "Last-Translator: Joel Pickett <jlkpcktt@gmail.com>\n"
 "Language-Team: English (Australia) <en_AU@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-11 06:09+0000\n"
-"X-Generator: Launchpad (build 15225)\n"
+"X-Launchpad-Export-Date: 2012-05-18 05:08+0000\n"
+"X-Generator: Launchpad (build 15259)\n"
 
 #: ../accomplishments/util/__init__.py:94
 msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
@@ -25,15 +25,16 @@ msgstr "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
 msgid "Clear your trophies collection"
 msgstr "Clear your trophies collection"
 
-#: ../accomplishments/daemon/api.py:124 ../accomplishments/daemon/api.py:871
+#: ../accomplishments/daemon/oldapi.py:309
+#: ../accomplishments/daemon/api.py:1101
 msgid "You have accomplished something!"
 msgstr "You have accomplished something!"
 
-#: ../accomplishments/daemon/api.py:450
+#: ../accomplishments/daemon/api.py:1111
 #, python-format
 msgid "You have unlocked %s new opportunity."
 msgstr ""
 
-#: ../accomplishments/daemon/api.py:452
+#: ../accomplishments/daemon/api.py:1113
 msgid "Opportunities Unlocked!"
 msgstr ""
