@@ -136,7 +136,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.reload_accom_database()
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="v")
+        in_signature="s", out_signature="a{sv}")
     def get_acc_data(self,accomID):
         return self.api.get_acc_data(accomID)
         
@@ -171,7 +171,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_acc_needs_signing(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="s")
+        in_signature="s", out_signature="as")
     def get_acc_depends(self,accomID):
         return self.api.get_acc_depends(accomID)
         
@@ -211,7 +211,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_acc_needs_info(self,accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="v")
+        in_signature="s", out_signature="a{sv}")
     def get_trophy_data(self,accomID):
         return self.api.get_trophy_data(accomID)
         
