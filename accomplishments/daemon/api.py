@@ -52,8 +52,6 @@ from accomplishments.daemon import dbusapi
 from accomplishments.util import get_data_file, SubprocessReturnCodeProtocol
 from accomplishments.util.paths import media_dir, module_dir1, module_dir2, installed, locale_dir
 
-MATRIX_USERNAME = ""
-
 gettext.bindtextdomain('accomplishments-daemon',locale_dir)
 gettext.textdomain('accomplishments-daemon')
 
@@ -144,11 +142,11 @@ class AsyncAPI(object):
                 signal_ok='FolderCreated', success_filter=success_filter)
 
             self.parent.sd.offer_share(
-                trophydir, MATRIX_USERNAME, LOCAL_USERNAME + " Trophies Folder"
+                trophydir, self.parent.matrix_username, LOCAL_USERNAME + " Trophies Folder"
                 + " (" + timeid + ")", "Modify")
             log.msg(
                 "...share has been offered (" + trophydir + "" + ", "
-                + MATRIX_USERNAME + ", " + LOCAL_USERNAME + ")")
+                + self.parent.matrix_username + ", " + LOCAL_USERNAME + ")")
             return
 
         log.msg("...the '%s' folder is already synced" % trophydir)
@@ -168,10 +166,10 @@ class AsyncAPI(object):
             # XXX let's break this out into a separate folder-sharing method
             log.msg("...the '%s' folder is not shared" % trophydir)
             self.parent.sd.offer_share(
-                trophydir, MATRIX_USERNAME, LOCAL_USERNAME + " Trophies Folder"
+                trophydir, self.parent.matrix_username, LOCAL_USERNAME + " Trophies Folder"
                 + " (" + timeid + ")", "Modify")
             log.msg("...share has been offered (" + trophydir + "" + ", "
-                + MATRIX_USERNAME + ", " + LOCAL_USERNAME + ")")
+                + self.parent.matrix_username + ", " + LOCAL_USERNAME + ")")
             log.msg("...offered the share.")
             return
         else:
@@ -322,6 +320,8 @@ class Accomplishments(object):
         self.trophies_path = None
         self.has_u1 = None
         self.has_verif = None
+        
+        self.matrix_username = ""
         
         self.lang = locale.getdefaultlocale()[0]
         
@@ -582,9 +582,9 @@ class Accomplishments(object):
             if config.get('config', 'has_verif'):
                 self.has_verif = config.getboolean('config', 'has_verif')
             if config.get('config', 'staging'):
-                MATRIX_USERNAME = "openiduser204307" # staging ID
+                self.matrix_username = "openiduser204307" # staging ID
             else:
-                MATRIX_USERNAME = "openiduser155707" # production ID
+                self.matrix_username = "openiduser155707" # production ID
 
         else:
             # setting accomplishments path to the system default
