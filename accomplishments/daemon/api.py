@@ -581,7 +581,7 @@ class Accomplishments(object):
                 self.has_u1 = config.getboolean('config', 'has_u1')
             if config.get('config', 'has_verif'):
                 self.has_verif = config.getboolean('config', 'has_verif')
-            if config.get('config', 'staging'):
+            if config.has_option('config','staging') and config.get('config', 'staging'):
                 self.matrix_username = "openiduser204307" # staging ID
             else:
                 self.matrix_username = "openiduser155707" # production ID
