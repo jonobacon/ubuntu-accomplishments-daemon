@@ -107,11 +107,10 @@ class AsyncAPI(object):
         
         if valid == True:
             accomID = path[len(self.parent.trophies_path)+1:-11]
-            
             self.parent.service.trophy_received(accomID)
-            
             self.parent._display_accomplished_bubble(accomID)
             self.parent._display_unlocked_bubble(accomID)
+            self.parent._mark_as_completed(accomID)
             
         self.parent.run_scripts(0)
         self.wait_until_a_sig_file_arrives()
@@ -589,7 +588,8 @@ class Accomplishments(object):
 
         else:
             # setting accomplishments path to the system default
-            accompath = "/usr/share/accomplishments"
+            home = os.path.expanduser("~/accomplishments")
+            accompath = home + ":" + "/usr/share/accomplishments"
             log.msg("Configuration file not found...creating it!")
 
             self.has_verif = False
@@ -925,6 +925,7 @@ class Accomplishments(object):
                 collectiondata = {'langdefault':langdefault,'name':collectionname, 'acc_num':accno, 'type':"collection", 'base-path': collpath, 'extra-information': extrainfo, 'authors':collauthors}
                 self.accDB[collection] = collectiondata
           
+        self._update_all_locked_and_completed_statuses()
         # Uncomment following for debugging
         # print self.accDB\
         
@@ -952,16 +953,12 @@ class Accomplishments(object):
     
     def get_acc_depends(self,accomID):
         if 'depends' in self.accDB[accomID]:
-            return self.accDB[accomID]['depends']
+            return self.accDB[accomID]['depends'].split(" ")
         else:
-            return
+            return []
     
     def get_acc_is_unlocked(self,accomID):
-        dependency = self.get_acc_depends(accomID)
-        if not dependency:
-            return True
-        else:
-            return self.get_acc_is_completed(dependency)
+        return not self.accDB[accomID]['locked']
     
     def get_trophy_path(self,accomID):
         if not self.get_acc_exists(accomID):
@@ -969,22 +966,9 @@ class Accomplishments(object):
             return ""
         else:
             return os.path.join(self.trophies_path,accomID + ".trophy")
-
+        
     def get_acc_is_completed(self,accomID):
-        trophypath = self.get_trophy_path(accomID)
-        if not os.path.exists(trophypath):
-            # There is no trophy file
-            return False
-        if not self.get_acc_needs_signing(accomID):
-            # The trophy does not need a signature
-            return True
-        else:
-            # The trophy needs to be signed
-            ascpath = trophypath + ".asc"
-            if not os.path.exists(ascpath):
-                return False
-            else:
-                return self._get_is_asc_correct(ascpath)
+        return self.accDB[accomID]['completed']
         
     def get_acc_script_path(self,accomID):
         return self.accDB[accomID]['script-path']
@@ -1048,7 +1032,7 @@ class Accomplishments(object):
         return [acc for acc in self.accomslist() if not self.get_acc_is_completed(acc)]
         
     def list_depending_on(self,accomID):
-        return [acc for acc in self.accomslist() if self.get_acc_depends(acc) == accomID]
+        return [acc for acc in self.accomslist() if accomID in self.get_acc_depends(acc)]
         
     def list_unlocked(self):
         return [acc for acc in self.accomslist() if self.get_acc_is_unlocked(acc)]
@@ -1131,6 +1115,7 @@ class Accomplishments(object):
             self.service.trophy_received(accomID)
             self._display_accomplished_bubble(accomID)
             self._display_unlocked_bubble(accomID)
+            self._mark_as_completed(accomID)
             self.run_scripts(0)
             
         return True
@@ -1190,3 +1175,44 @@ class Accomplishments(object):
             log.msg("Cannot check if signature is correct, because file %s does not exist" % filepath)
             return False
             
+    def _check_if_acc_is_completed(self,accomID):
+        trophypath = self.get_trophy_path(accomID)
+        if not os.path.exists(trophypath):
+            # There is no trophy file
+            return False
+        if not self.get_acc_needs_signing(accomID):
+            # The trophy does not need a signature
+            return True
+        else:
+            # The trophy needs to be signed
+            ascpath = trophypath + ".asc"
+            if not os.path.exists(ascpath):
+                return False
+            else:
+                return self._get_is_asc_correct(ascpath)
+        
+    def _check_if_acc_is_locked(self,accomID):
+        dep = self.get_acc_depends(accomID)
+        if not dep:
+            return False
+        else:
+            locked = False
+            for d in dep:
+                # If at least one dependency is not completed...
+                if not self.get_acc_is_completed(d):
+                    locked = True
+                    break
+            return locked
+            
+    def _update_all_locked_and_completed_statuses(self):
+        accs = self.list_accomplishments()
+        for acc in accs:
+            self.accDB[acc]['completed'] = self._check_if_acc_is_completed(acc)
+        for acc in accs:
+            self.accDB[acc]['locked'] = self._check_if_acc_is_locked(acc)
+            
+    def _mark_as_completed(self,accomID):
+        self.accDB[accomID]['completed'] = True
+        accs = self.list_depending_on(accomID)
+        for acc in accs:
+            self.accDB[acc]['locked'] = self._check_if_acc_is_locked(acc)
