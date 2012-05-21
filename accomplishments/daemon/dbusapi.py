@@ -161,7 +161,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_acc_collection(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="s")
+        in_signature="s", out_signature="as")
     def get_acc_categories(self,accomID):
         return self.api.get_acc_categories(accomID)
         
@@ -231,7 +231,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_collection_authors(collection)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="a{sv}")
+        in_signature="s", out_signature="a{sas}")
     def get_collection_categories(self,collection):
         return self.api.get_collection_categories(collection)
         
