@@ -819,6 +819,7 @@ class Accomplishments(object):
                 collectionname = cfg.get("general","name")
                 
                 collauthors = set()
+                collcategories = {}
                 
                 langdefaultpath = os.path.join(collpath,langdefault)
                 setsslist = os.listdir(langdefaultpath)
@@ -855,6 +856,24 @@ class Accomplishments(object):
                         accomdata['lang'] = langused
                         accomdata['base-path'] = collpath
                         accomdata['script-path'] = os.path.join(installpath,os.path.join('scripts',os.path.join(collection,accomset[:-15] + ".py")))
+                        if 'category' in accomdata:
+                            cats = accomdata['category'].split(",")
+                            categories = []
+                            accomdata['categories'] = []
+                            for cat in cats:
+                                catsplitted = cat.rstrip().lstrip().split(":")
+                                accomdata['categories'].append(cat.rstrip().lstrip())
+                                if catsplitted[0] in collcategories:
+                                    pass
+                                else:
+                                    collcategories[catsplitted[0]] = []
+                                if len(catsplitted) > 1:
+                                    # category + subcategory
+                                    if catsplitted[1] not in collcategories[catsplitted[0]]:
+                                        collcategories[catsplitted[0]].append(catsplitted[1])
+                            del accomdata['category']
+                        else:
+                            accomdata['categories'] = []
                         self.accDB[accomID] = accomdata
                         accno = accno + 1
                     else:
@@ -895,6 +914,24 @@ class Accomplishments(object):
                             accomdata['lang'] = langused
                             accomdata['base-path'] = collpath
                             accomdata['script-path'] = os.path.join(installpath,os.path.join('scripts',os.path.join(collection,os.path.join(accomset,accomfile[:-15] + ".py"))))
+                            if 'category' in accomdata:
+                                cats = accomdata['category'].split(",")
+                                categories = []
+                                accomdata['categories'] = []
+                                for cat in cats:
+                                    catsplitted = cat.rstrip().lstrip().split(":")
+                                    accomdata['categories'].append(cat.rstrip().lstrip())
+                                    if catsplitted[0] in collcategories:
+                                        pass
+                                    else:
+                                        collcategories[catsplitted[0]] = []
+                                    if len(catsplitted) > 1:
+                                        # category + subcategory
+                                        if catsplitted[1] not in collcategories[catsplitted[0]]:
+                                            collcategories[catsplitted[0]].append(catsplitted[1])
+                                del accomdata['category']
+                            else:
+                                accomdata['categories'] = []
                             self.accDB[accomID] = accomdata
                             accno = accno + 1
                             
@@ -922,7 +959,7 @@ class Accomplishments(object):
                     extrainfo[extrainfofile] = {'label':label,'description':description}
                 
                 # Store data about this colection
-                collectiondata = {'langdefault':langdefault,'name':collectionname, 'acc_num':accno, 'type':"collection", 'base-path': collpath, 'extra-information': extrainfo, 'authors':collauthors}
+                collectiondata = {'langdefault':langdefault,'name':collectionname, 'acc_num':accno, 'type':"collection", 'base-path': collpath, 'categories' : collcategories, 'extra-information': extrainfo, 'authors':collauthors}
                 self.accDB[collection] = collectiondata
           
         self._update_all_locked_and_completed_statuses()
@@ -996,8 +1033,8 @@ class Accomplishments(object):
     def get_acc_collection(self,accomID):
         return self.accDB[accomID]['collection']
         
-    def get_acc_category(self,accomID):
-        return self.accDB[accomID]['category']
+    def get_acc_categories(self,accomID):
+        return self.accDB[accomID]['categories']
     
     
     def get_trophy_data(self,accomID):
@@ -1017,6 +1054,9 @@ class Accomplishments(object):
     def get_collection_authors(self,collection):
         return self.accDB[collection]['authors']
         
+    def get_collection_categories(self,collection):
+        return self.accDB[collection]['categories']
+    
     def get_collection_data(self,collection):
         return self.accDB[collection]
         
@@ -1057,7 +1097,7 @@ class Accomplishments(object):
                 'collection' :      self.get_acc_collection(acc),
                 'collection-human' :self.get_collection_name(
                                         self.get_acc_collection(acc) ),
-                'category' :        self.get_acc_category(acc),
+                'categories' :      self.get_acc_categories(acc),
                 'id' :              acc 
                 })
         return db
