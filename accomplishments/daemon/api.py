@@ -859,17 +859,18 @@ class Accomplishments(object):
                         if 'category' in accomdata:
                             cats = accomdata['category'].split(",")
                             categories = []
-                            acomdata['categories'] = []
+                            accomdata['categories'] = []
                             for cat in cats:
                                 catsplitted = cat.rstrip().lstrip().split(":")
-                                acomdata['categories'].append(cat.rstrip().lstrip())
+                                accomdata['categories'].append(cat.rstrip().lstrip())
                                 if catsplitted[0] in collcategories:
                                     pass
                                 else:
-                                    collcategories[catsplitted[0]] = set()
+                                    collcategories[catsplitted[0]] = []
                                 if len(catsplitted) > 1:
                                     # category + subcategory
-                                    collcategories[catsplitted[0]].add(catsplitted[1])
+                                    if catsplitted[1] not in collcategories[catsplitted[0]]:
+                                        collcategories[catsplitted[0]].append(catsplitted[1])
                             del accomdata['category']
                         else:
                             accomdata['categories'] = []
@@ -916,17 +917,18 @@ class Accomplishments(object):
                             if 'category' in accomdata:
                                 cats = accomdata['category'].split(",")
                                 categories = []
-                                acomdata['categories'] = []
+                                accomdata['categories'] = []
                                 for cat in cats:
                                     catsplitted = cat.rstrip().lstrip().split(":")
-                                    acomdata['categories'].append(cat.rstrip().lstrip())
+                                    accomdata['categories'].append(cat.rstrip().lstrip())
                                     if catsplitted[0] in collcategories:
                                         pass
                                     else:
-                                        collcategories[catsplitted[0]] = set()
+                                        collcategories[catsplitted[0]] = []
                                     if len(catsplitted) > 1:
                                         # category + subcategory
-                                        collcategories[catsplitted[0]].add(catsplitted[1])
+                                        if catsplitted[1] not in collcategories[catsplitted[0]]:
+                                            collcategories[catsplitted[0]].append(catsplitted[1])
                                 del accomdata['category']
                             else:
                                 accomdata['categories'] = []
