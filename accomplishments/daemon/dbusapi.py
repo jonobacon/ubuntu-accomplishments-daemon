@@ -95,6 +95,16 @@ class AccomplishmentsDBusService(service.DBusExportService):
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="")
+    def enable_daemon_session_start(self):
+        return self.api.enable_daemon_session_start()
+
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="")
+    def disable_daemon_session_start(self):
+        return self.api.disable_daemon_session_start()
+
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="")
     def write_extra_information_file(self, item, data):
         return self.api.write_extra_information_file(item, data)
 
@@ -124,11 +134,14 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.write_config_file_item(section, item, value)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="vv", out_signature="v")
+    def read_config_file_item(self, section, item):
+        return self.api.read_config_file_item(section, item)
+
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="b")
     def verify_ubuntu_one_account(self):
         return self.api.verify_ubuntu_one_account()
-        
-        
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="")

@@ -50,7 +50,7 @@ import accomplishments
 from accomplishments import exceptions
 from accomplishments.daemon import dbusapi
 from accomplishments.util import get_data_file, SubprocessReturnCodeProtocol
-from accomplishments.util.paths import media_dir, module_dir1, module_dir2, installed, locale_dir
+from accomplishments.util.paths import daemon_exec_dir, media_dir, module_dir1, module_dir2, installed, locale_dir
 
 gettext.bindtextdomain('accomplishments-daemon',locale_dir)
 gettext.textdomain('accomplishments-daemon')
@@ -367,6 +367,9 @@ class Accomplishments(object):
         if not os.path.exists(self.dir_cache):
             os.makedirs(self.dir_cache)
 
+        self.dir_autostart = os.path.join(
+            xdg.BaseDirectory.xdg_config_home, "autostart")
+
         print str("------------------- Ubuntu Accomplishments Daemon "
             "- "+ str(datetime.datetime.now()) +" -------------------")
 
@@ -503,6 +506,19 @@ class Accomplishments(object):
         else:
             item = config.get(section, item)
             return item
+
+    def read_config_file_item(self, section, item):
+        log.msg(
+            "Read configuration file value in '%s': %s", section, item)
+        homedir = os.getenv("HOME")
+        config = ConfigParser.RawConfigParser()
+        cfile = self.dir_config + "/.accomplishments"
+
+        config.read(cfile)
+        if config.has_option(section, item):
+            return config.get(section, item)
+        else:
+            return "NoOption"
 
     def write_config_file_item(self, section, item, value):
         """Set a configuration value in the .accomplishments file"""
@@ -1103,6 +1119,26 @@ class Accomplishments(object):
         return db
         
     # ================================
+
+    def enable_daemon_session_start(self):
+        command = "twistd -noy " + daemon_exec_dir + "/accomplishments-daemon --logfile=" + os.path.join(self.dir_cache, "logs", "daemon.log")
+        filetext = "[Desktop Entry]\n\
+Type=Application\n\
+Encoding=UTF-8\n\
+Name=Accomplishments Daemon\n\
+Exec=" + command + "\n\
+NoDisplay=true"
+
+        filename = os.path.join(self.dir_autostart, "accomplishments-daemon.desktop")
+        file = open(filename, "w")
+        file.write(filetext)
+        file.close
+        
+        self.write_config_file_item("config", "daemon_sessionstart", "true")
+
+    def disable_daemon_session_start(self):
+        filename = os.path.join(self.dir_autostart, "accomplishments-daemon.desktop")
+        os.path.unlink(filename)
     
     def accomplish(self,accomID):
         log.msg("Accomplishing: %s" % accomID)
