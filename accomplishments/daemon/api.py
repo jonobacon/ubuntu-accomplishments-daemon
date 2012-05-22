@@ -1170,6 +1170,7 @@ class Accomplishments(object):
                 _("You have accomplished something!"),
                 self.get_acc_title(accomID),
                 self.get_acc_icon_path(accomID) )
+            n.set_hint_string('append', 'allowed')
             n.show()
     
     def _display_unlocked_bubble(self,accomID):
