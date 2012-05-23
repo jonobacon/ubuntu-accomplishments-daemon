@@ -497,26 +497,16 @@ class Accomplishments(object):
         cfile = self.dir_config + "/.accomplishments"
         config.read(cfile)
 
-        if section == "config" and item == "has_u1":
-            item = config.getboolean(section, item)
-            return item
-        elif section == "config" and item == "has_verif":
-            item = config.getboolean(section, item)
-            return item
-        else:
-            item = config.get(section, item)
-            return item
-
-    def read_config_file_item(self, section, item):
-        log.msg(
-            "Read configuration file value in '%s': %s", section, item)
-        homedir = os.getenv("HOME")
-        config = ConfigParser.RawConfigParser()
-        cfile = self.dir_config + "/.accomplishments"
-
-        config.read(cfile)
         if config.has_option(section, item):
-            return config.get(section, item)
+            if section == "config" and item == "has_u1":
+                item = config.getboolean(section, item)
+                return item
+            elif section == "config" and item == "has_verif":
+                item = config.getboolean(section, item)
+                return item
+            else:
+                item = config.get(section, item)
+                return item
         else:
             return "NoOption"
 
