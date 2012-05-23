@@ -100,8 +100,18 @@ class AccomplishmentsDBusService(service.DBusExportService):
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="")
+    def enable_block_ubuntuone_notification_bubbles(self):
+        return self.api.enable_block_ubuntuone_notification_bubbles()
+
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="")
     def disable_daemon_session_start(self):
         return self.api.disable_daemon_session_start()
+
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="")
+    def disable_block_ubuntuone_notification_bubbles(self):
+        return self.api.disable_block_ubuntuone_notification_bubbles()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="")
