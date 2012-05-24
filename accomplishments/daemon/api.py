@@ -541,6 +541,9 @@ class Accomplishments(object):
         config = ConfigParser.RawConfigParser()
         cfile = self.dir_config + "/.accomplishments"
 
+        # The following sets self.has_u1
+        self.verify_ubuntu_one_account()
+        
         config.add_section('config')
 
         config.set('config', 'has_u1', self.has_u1)
@@ -563,13 +566,6 @@ class Accomplishments(object):
         homedir = os.environ["HOME"]
         config = ConfigParser.RawConfigParser()
         cfile = os.path.join(self.dir_config, ".accomplishments")
-
-        u1ver = self.verify_ubuntu_one_account()
-
-        if u1ver is False:
-            self.has_u1 = False
-        else:
-            self.has_u1 = True
 
         if config.read(cfile):
             log.msg("Loading configuration file: " + cfile)
