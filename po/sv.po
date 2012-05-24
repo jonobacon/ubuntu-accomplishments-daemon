@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ubuntu-accomplishments-daemon\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-05-16 20:46+0200\n"
+"POT-Creation-Date: 2012-05-24 15:18+0200\n"
 "PO-Revision-Date: 2012-05-01 05:42+0000\n"
 "Last-Translator: Daniel Nylander <yeager@ubuntu.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-18 05:08+0000\n"
-"X-Generator: Launchpad (build 15259)\n"
+"X-Launchpad-Export-Date: 2012-05-24 21:36+0000\n"
+"X-Generator: Launchpad (build 15288)\n"
 
 #: ../accomplishments/util/__init__.py:94
 msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
@@ -26,16 +26,15 @@ msgstr ""
 msgid "Clear your trophies collection"
 msgstr "Töm din trofésamling"
 
-#: ../accomplishments/daemon/oldapi.py:309
-#: ../accomplishments/daemon/api.py:1101
+#: ../accomplishments/daemon/api.py:1246
 msgid "You have accomplished something!"
 msgstr "Du har åstadkommit något!"
 
-#: ../accomplishments/daemon/api.py:1111
+#: ../accomplishments/daemon/api.py:1257
 #, python-format
 msgid "You have unlocked %s new opportunity."
 msgstr "Du har låst upp %s ny möjlighet."
 
-#: ../accomplishments/daemon/api.py:1113
+#: ../accomplishments/daemon/api.py:1259
 msgid "Opportunities Unlocked!"
 msgstr "Möjligheter upplåsta!"

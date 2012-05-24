@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ubuntu-accomplishments-daemon\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-05-16 20:46+0200\n"
+"POT-Creation-Date: 2012-05-24 15:18+0200\n"
 "PO-Revision-Date: 2012-04-11 06:16+0000\n"
 "Last-Translator: Rigved Rakshit <Unknown>\n"
 "Language-Team: Marathi <mr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-18 05:08+0000\n"
-"X-Generator: Launchpad (build 15259)\n"
+"X-Launchpad-Export-Date: 2012-05-24 21:36+0000\n"
+"X-Generator: Launchpad (build 15288)\n"
 
 #: ../accomplishments/util/__init__.py:94
 msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
@@ -25,16 +25,15 @@ msgstr "दिबग निरोप दाखवा (-w अकोमप्ल�
 msgid "Clear your trophies collection"
 msgstr "तुमच्या बकशिशाच संग्रह खाली करा"
 
-#: ../accomplishments/daemon/oldapi.py:309
-#: ../accomplishments/daemon/api.py:1101
+#: ../accomplishments/daemon/api.py:1246
 msgid "You have accomplished something!"
 msgstr "तुम्ही काहितरी कार्य तडीस नेलेलय"
 
-#: ../accomplishments/daemon/api.py:1111
+#: ../accomplishments/daemon/api.py:1257
 #, python-format
 msgid "You have unlocked %s new opportunity."
 msgstr ""
 
-#: ../accomplishments/daemon/api.py:1113
+#: ../accomplishments/daemon/api.py:1259
 msgid "Opportunities Unlocked!"
 msgstr ""
