@@ -504,6 +504,9 @@ class Accomplishments(object):
             elif section == "config" and item == "has_verif":
                 item = config.getboolean(section, item)
                 return item
+            elif section == "config" and item == "daemon_sessionstart":
+                item = config.getboolean(section, item)
+                return item
             else:
                 item = config.get(section, item)
                 return item
@@ -1104,71 +1107,8 @@ class Accomplishments(object):
                 })
         return db
         
-    # ================================
-
-    def enable_daemon_session_start(self):
-        command = "twistd -noy " + daemon_exec_dir + "/accomplishments-daemon --logfile=" + os.path.join(self.dir_cache, "logs", "daemon.log")
-        filetext = "[Desktop Entry]\n\
-Type=Application\n\
-Encoding=UTF-8\n\
-Name=Accomplishments Daemon\n\
-Exec=" + command + "\n\
-NoDisplay=true"
-
-        filename = os.path.join(self.dir_autostart, "accomplishments-daemon.desktop")
-        file = open(filename, "w")
-        file.write(filetext)
-        file.close
-        
-        self.write_config_file_item("config", "daemon_sessionstart", "true")
-
-    def enable_block_ubuntuone_notification_bubbles(self):
-        u1configdir = os.path.join(
-            xdg.BaseDirectory.xdg_config_home, "ubuntuone")
-
-        if not os.path.exists(u1configdir):
-            os.makedirs(u1configdir)
-
-        cfile = os.path.join(u1configdir, "syncdaemon.conf")
-
-        config = ConfigParser.ConfigParser()
-        config.read(cfile)
-        
-        if config.has_section("notifications"):
-            config.set('notifications', 'show_all_notifications', "False")
-        else:
-            config.add_section('notifications')
-            config.set('notifications', 'show_all_notifications', "False")
-
-        with open(cfile, 'wb') as configfile:
-        # Writing our configuration file to 'example.cfg'
-            config.write(configfile)
-            
-    def disable_block_ubuntuone_notification_bubbles(self):
-        print "disable"
-        u1configdir = os.path.join(
-            xdg.BaseDirectory.xdg_config_home, "ubuntuone")
-
-        if not os.path.exists(u1configdir):
-            os.makedirs(u1configdir)
-
-        cfile = os.path.join(u1configdir, "syncdaemon.conf")
-
-        config = ConfigParser.ConfigParser()
-        config.read(cfile)
-
-        if(config.read(cfile)):
-            if config.has_section("notifications"):
-                config.set('notifications', 'show_all_notifications', "True")
+    # ========= Misc functions ===========
     
-        with open(cfile, 'wb') as configfile:
-        # Writing our configuration file to 'example.cfg'
-            config.write(configfile)
-
-    def disable_daemon_session_start(self):
-        filename = os.path.join(self.dir_autostart, "accomplishments-daemon.desktop")
-        os.remove(filename)
-        self.write_config_file_item("config", "daemon_sessionstart", "false")
     
     def accomplish(self,accomID):
         log.msg("Accomplishing: %s" % accomID)
@@ -1225,6 +1165,76 @@ NoDisplay=true"
             self.run_scripts(0)
             
         return True
+
+    def set_daemon_session_start(self,value):
+        log.msg(value)
+        log.msg(type(value))
+        if value == True:
+            log.msg("setting")
+            command = "twistd -noy " + daemon_exec_dir + "/accomplishments-daemon --logfile=" + os.path.join(self.dir_cache, "logs", "daemon.log")
+            filetext = "[Desktop Entry]\n\
+Type=Application\n\
+Encoding=UTF-8\n\
+Name=Accomplishments Daemon\n\
+Exec=" + command + "\n\
+NoDisplay=true"
+            filename = os.path.join(self.dir_autostart, "accomplishments-daemon.desktop")
+            file = open(filename, "w")
+            file.write(filetext)
+            file.close
+            self.write_config_file_item("config", "daemon_sessionstart", "true")
+        elif value == False:
+            filename = os.path.join(self.dir_autostart, "accomplishments-daemon.desktop")
+            if os.path.exists(filename):
+                os.remove(filename)
+            self.write_config_file_item("config", "daemon_sessionstart", "false")
+            
+    def get_daemon_session_start(self):
+        return self.get_config_value("config", "daemon_sessionstart")
+    
+    def set_block_ubuntuone_notification_bubbles(self,value):
+        u1configdir = os.path.join(
+            xdg.BaseDirectory.xdg_config_home, "ubuntuone")
+
+        if not os.path.exists(u1configdir):
+            os.makedirs(u1configdir)
+
+        cfile = os.path.join(u1configdir, "syncdaemon.conf")
+
+        config = ConfigParser.ConfigParser()
+        config.read(cfile)
+        
+        if value == True:
+            if not config.has_section("notifications"):
+                config.add_section('notifications')
+            config.set('notifications', 'show_all_notifications', "False")
+        elif value == False:
+            if config.has_section("notifications"):
+                config.set('notifications', 'show_all_notifications', "True")
+        
+        with open(cfile, 'wb') as configfile:
+            config.write(configfile)
+            
+    def get_block_ubuntuone_notification_bubbles(self):
+        u1configdir = os.path.join(
+            xdg.BaseDirectory.xdg_config_home, "ubuntuone")
+
+        if os.path.exists(u1configdir):
+            
+            cfile = os.path.join(u1configdir, "syncdaemon.conf")
+
+            config = ConfigParser.ConfigParser()
+            config.read(cfile)
+
+            if(config.read(cfile)):
+                if config.has_section("notifications"):
+                    val = config.get('notifications', 'show_all_notifications')
+                    if val == "false" or val == "False":
+                        return True
+                    else:
+                        return False
+        else:
+            return False
     
     def _coll_from_accomID(self,accomID):
         return accomID.split("/")[0]

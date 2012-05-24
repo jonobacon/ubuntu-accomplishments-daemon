@@ -94,24 +94,24 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.create_extra_information_file(item, data)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="")
-    def enable_daemon_session_start(self):
-        return self.api.enable_daemon_session_start()
+        in_signature="b", out_signature="")
+    def set_daemon_session_start(self,value):
+        return self.api.set_daemon_session_start(value)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="")
-    def enable_block_ubuntuone_notification_bubbles(self):
-        return self.api.enable_block_ubuntuone_notification_bubbles()
+        in_signature="b", out_signature="")
+    def set_block_ubuntuone_notification_bubbles(self,value):
+        return self.api.set_block_ubuntuone_notification_bubbles(value)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="")
-    def disable_daemon_session_start(self):
-        return self.api.disable_daemon_session_start()
+        in_signature="", out_signature="b")
+    def get_daemon_session_start(self):
+        return self.api.get_daemon_session_start()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="")
-    def disable_block_ubuntuone_notification_bubbles(self):
-        return self.api.disable_block_ubuntuone_notification_bubbles()
+        in_signature="", out_signature="b")
+    def get_block_ubuntuone_notification_bubbles(self):
+        return self.api.get_block_ubuntuone_notification_bubbles()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="")
