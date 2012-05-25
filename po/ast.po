@@ -1,0 +1,41 @@
+# Asturian translation for ubuntu-accomplishments-daemon
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
+# This file is distributed under the same license as the ubuntu-accomplishments-daemon package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ubuntu-accomplishments-daemon\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-05-24 15:18+0200\n"
+"PO-Revision-Date: 2012-05-25 01:32+0000\n"
+"Last-Translator: Xuacu Saturio <xuacusk8@gmail.com>\n"
+"Language-Team: Asturian <ast@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2012-05-25 05:16+0000\n"
+"X-Generator: Launchpad (build 15288)\n"
+
+#: ../accomplishments/util/__init__.py:94
+msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
+msgstr ""
+"Amosar los mensaxes de depuración (-vv tamién depura "
+"accomplishments_daemon_lib)"
+
+#: ../accomplishments/util/__init__.py:97
+msgid "Clear your trophies collection"
+msgstr "Llimpiar la to coleición de trofeos"
+
+#: ../accomplishments/daemon/api.py:1246
+msgid "You have accomplished something!"
+msgstr "Consiguisti daqué"
+
+#: ../accomplishments/daemon/api.py:1257
+#, python-format
+msgid "You have unlocked %s new opportunity."
+msgstr "Desbloquiasti %s oportunidaes nueves."
+
+#: ../accomplishments/daemon/api.py:1259
+msgid "Opportunities Unlocked!"
+msgstr "¡Oportunidaes desbloquiaes!"
