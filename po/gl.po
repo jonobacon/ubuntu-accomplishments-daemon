@@ -1,4 +1,4 @@
-# French translation for ubuntu-accomplishments-daemon
+# Galician translation for ubuntu-accomplishments-daemon
 # Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the ubuntu-accomplishments-daemon package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: ubuntu-accomplishments-daemon\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-24 15:18+0200\n"
-"PO-Revision-Date: 2012-05-25 07:17+0000\n"
-"Last-Translator: François Tissandier <francois.tissandier@gmail.com>\n"
-"Language-Team: French <fr@li.org>\n"
+"PO-Revision-Date: 2012-05-25 09:07+0000\n"
+"Last-Translator: Fran Diéguez <Unknown>\n"
+"Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,22 +20,22 @@ msgstr ""
 #: ../accomplishments/util/__init__.py:94
 msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
 msgstr ""
-"Afficher les informations de débogage (-vv débogue également "
+"Mostra os mensaxes de depuración (-vv depura tamén "
 "accomplishments_daemon_lib)"
 
 #: ../accomplishments/util/__init__.py:97
 msgid "Clear your trophies collection"
-msgstr "Vider votre collection de trophées."
+msgstr "Limpa a colección de trofeos"
 
 #: ../accomplishments/daemon/api.py:1246
 msgid "You have accomplished something!"
-msgstr "Vous avez accompli quelque chose !"
+msgstr "Conseguiches algún logro!"
 
 #: ../accomplishments/daemon/api.py:1257
 #, python-format
 msgid "You have unlocked %s new opportunity."
-msgstr "Vous avez déverrouillé %s nouvelles opportunités."
+msgstr ""
 
 #: ../accomplishments/daemon/api.py:1259
 msgid "Opportunities Unlocked!"
-msgstr "Opportunités déverrouillées !"
+msgstr "Desbloqueáronse oportunidades!"

@@ -1,4 +1,4 @@
-# French translation for ubuntu-accomplishments-daemon
+# Faroese translation for ubuntu-accomplishments-daemon
 # Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the ubuntu-accomplishments-daemon package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: ubuntu-accomplishments-daemon\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-24 15:18+0200\n"
-"PO-Revision-Date: 2012-05-25 07:17+0000\n"
-"Last-Translator: François Tissandier <francois.tissandier@gmail.com>\n"
-"Language-Team: French <fr@li.org>\n"
+"PO-Revision-Date: 2012-05-25 09:29+0000\n"
+"Last-Translator: Jógvan Olsen <jeggy@jebster.net>\n"
+"Language-Team: Faroese <fo@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,23 +19,21 @@ msgstr ""
 
 #: ../accomplishments/util/__init__.py:94
 msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
-msgstr ""
-"Afficher les informations de débogage (-vv débogue également "
-"accomplishments_daemon_lib)"
+msgstr "Vís kembdu boð(-vv kembt qreatir_lib við)"
 
 #: ../accomplishments/util/__init__.py:97
 msgid "Clear your trophies collection"
-msgstr "Vider votre collection de trophées."
+msgstr "Tómstilla tína steypa samling"
 
 #: ../accomplishments/daemon/api.py:1246
 msgid "You have accomplished something!"
-msgstr "Vous avez accompli quelque chose !"
+msgstr "Tú hevur fullgjørt okkurt!"
 
 #: ../accomplishments/daemon/api.py:1257
 #, python-format
 msgid "You have unlocked %s new opportunity."
-msgstr "Vous avez déverrouillé %s nouvelles opportunités."
+msgstr ""
 
 #: ../accomplishments/daemon/api.py:1259
 msgid "Opportunities Unlocked!"
-msgstr "Opportunités déverrouillées !"
+msgstr ""

@@ -1,4 +1,4 @@
-# French translation for ubuntu-accomplishments-daemon
+# Malay translation for ubuntu-accomplishments-daemon
 # Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the ubuntu-accomplishments-daemon package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: ubuntu-accomplishments-daemon\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-24 15:18+0200\n"
-"PO-Revision-Date: 2012-05-25 07:17+0000\n"
-"Last-Translator: François Tissandier <francois.tissandier@gmail.com>\n"
-"Language-Team: French <fr@li.org>\n"
+"PO-Revision-Date: 2012-05-25 23:18+0000\n"
+"Last-Translator: abuyop <Unknown>\n"
+"Language-Team: Malay <ms@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,22 +20,21 @@ msgstr ""
 #: ../accomplishments/util/__init__.py:94
 msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
 msgstr ""
-"Afficher les informations de débogage (-vv débogue également "
-"accomplishments_daemon_lib)"
+"Papar mesej nyahpepijat (-vv nyahpepijat accomplishments_daemon_lib juga)"
 
 #: ../accomplishments/util/__init__.py:97
 msgid "Clear your trophies collection"
-msgstr "Vider votre collection de trophées."
+msgstr "Kosongkan koleksi trofi anda"
 
 #: ../accomplishments/daemon/api.py:1246
 msgid "You have accomplished something!"
-msgstr "Vous avez accompli quelque chose !"
+msgstr "Anda telah mencapai sesuatu!"
 
 #: ../accomplishments/daemon/api.py:1257
 #, python-format
 msgid "You have unlocked %s new opportunity."
-msgstr "Vous avez déverrouillé %s nouvelles opportunités."
+msgstr "Anda telah membuka %s peluang baru."
 
 #: ../accomplishments/daemon/api.py:1259
 msgid "Opportunities Unlocked!"
-msgstr "Opportunités déverrouillées !"
+msgstr "Peluang Dibuka!"
