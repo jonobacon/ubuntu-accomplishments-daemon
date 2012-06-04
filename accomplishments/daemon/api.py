@@ -1146,6 +1146,7 @@ class Accomplishments(object):
         cp.remove_option("trophy","base-path")
         cp.remove_option("trophy","lang")
         cp.remove_option("trophy","collection")
+        cp.remove_option("trophy","completed")
         cp.remove_option("trophy","set")
         trophypath = self.get_trophy_path(accomID)
         dirpath = os.path.split(trophypath)[0]
