@@ -1132,22 +1132,14 @@ class Accomplishments(object):
         # Create .trophy file
         cp = ConfigParser.RawConfigParser()
         cp.add_section("trophy")
+        cp.set("trophy", "version", "0.2")
         cp.set("trophy", "id", accomID)
-        for i, v in accdata.items():
-            cp.set("trophy", i, v)
         now = datetime.datetime.now()
         cp.set("trophy", "date-accomplished", now.strftime("%Y-%m-%d %H:%M"))
-        cp.remove_option("trophy","type")
-        if cp.has_option("trophy","accomplishment"):
-            cp.remove_option("trophy","accomplishment")
-        if cp.has_option("trophy","application"):
-            cp.remove_option("trophy","application")
-        cp.remove_option("trophy","script-path")
-        cp.remove_option("trophy","base-path")
-        cp.remove_option("trophy","lang")
-        cp.remove_option("trophy","collection")
-        cp.remove_option("trophy","completed")
-        cp.remove_option("trophy","set")
+        if 'needs-information' in accdata:
+            cp.set("trophy", 'needs-information', accdata['needs-information'])
+            for i in accdata['needs-information'].split():
+                cp.set("trophy", i, accdata[i])
         trophypath = self.get_trophy_path(accomID)
         dirpath = os.path.split(trophypath)[0]
         if not os.path.exists(dirpath):
