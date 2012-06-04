@@ -1136,6 +1136,8 @@ class Accomplishments(object):
         cp.set("trophy", "id", accomID)
         now = datetime.datetime.now()
         cp.set("trophy", "date-accomplished", now.strftime("%Y-%m-%d %H:%M"))
+        if 'needs-signing' in accdata:
+            cp.set("trophy", 'needs-signing', accdata['needs-signing'])
         if 'needs-information' in accdata:
             cp.set("trophy", 'needs-information', accdata['needs-information'])
             for i in accdata['needs-information'].split():
