@@ -995,7 +995,7 @@ class Accomplishments(object):
     
     def get_acc_depends(self,accomID):
         if 'depends' in self.accDB[accomID]:
-            return self.accDB[accomID]['depends'].split(" ")
+            return [a.rstrip().lstrip() for a in self.accDB[accomID]['depends'].split(",")]
         else:
             return []
     
@@ -1033,7 +1033,7 @@ class Accomplishments(object):
     def get_acc_needs_info(self,accomID):
         if not 'needs-information' in self.accDB[accomID]:
             return []
-        return self.accDB[accomID]['needs-information'].split(" ")
+        return [a.rstrip().lstrip() for a in self.accDB[accomID]['needs-information'].split(",")]
     
     def get_acc_collection(self,accomID):
         return self.accDB[accomID]['collection']
@@ -1140,8 +1140,9 @@ class Accomplishments(object):
             cp.set("trophy", 'needs-signing', accdata['needs-signing'])
         if 'needs-information' in accdata:
             cp.set("trophy", 'needs-information', accdata['needs-information'])
-            for i in accdata['needs-information'].split():
-                cp.set("trophy", i, accdata[i])
+            for i in accdata['needs-information'].split(","):
+                a = i.rstrip().lstrip()
+                cp.set("trophy", a, accdata[a])
         trophypath = self.get_trophy_path(accomID)
         dirpath = os.path.split(trophypath)[0]
         if not os.path.exists(dirpath):
