@@ -216,7 +216,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="s")
     def get_acc_icon(self,accomID):
-        return self.api.get_acc_icon(accomID)
+        return self.api.get_acc_icon(accomID)        
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="s")
@@ -319,4 +319,8 @@ class AccomplishmentsDBusService(service.DBusExportService):
 
     @dbus.service.signal(dbus_interface='org.ubuntu.accomplishments')
     def scriptrunner_finish(self):
+        pass
+
+    @dbus.service.signal(dbus_interface='org.ubuntu.accomplishments')
+    def ubuntu_one_account_ready(self):
         pass
