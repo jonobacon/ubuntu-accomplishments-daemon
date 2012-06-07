@@ -298,6 +298,11 @@ class AccomplishmentsDBusService(service.DBusExportService):
     def build_viewer_database(self):
         return self.api.build_viewer_database()
         
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="s")
+    def get_API_version(self):
+        return self.api.get_API_version()
+        
     # XXX this looks like an unintentional duplicate of the "other"
     # trophy_received... I've moved them here together so that someone in the
     # know (Jono?) can clarify and remove the one that's not needed

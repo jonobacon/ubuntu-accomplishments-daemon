@@ -1329,3 +1329,7 @@ NoDisplay=true"
         accs = self.list_depending_on(accomID)
         for acc in accs:
             self.accDB[acc]['locked'] = self._check_if_acc_is_locked(acc)
+            
+    #Other significant system functions
+    def get_API_version(self):
+        return "0.2"
