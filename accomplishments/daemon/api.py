@@ -44,6 +44,7 @@ except ImportError:
     pynotify = None
 
 from ubuntuone.platform.tools import SyncDaemonTool
+from ubuntuone.platform.credentials import CredentialsManagementTool
 from ubuntuone.couch import auth
 
 import accomplishments
@@ -112,6 +113,23 @@ class AsyncAPI(object):
             
         self.parent.run_scripts(0)
         self.wait_until_a_sig_file_arrives()
+
+    @defer.inlineCallbacks
+    def verify_ubuntu_one_account(self):
+        # check if this machine has an Ubuntu One account
+        log.msg("Check if this machine has an Ubuntu One account...")
+
+        tool = CredentialsManagementTool()
+        creds = yield tool.register()
+        
+        if len(creds) > 1:
+            log.msg("...Yes.")
+            self.parent.has_u1 = True
+            self.parent.service.ubuntu_one_account_ready()
+        else:
+            log.msg("...No.")
+            log.msg(u1auth_response)
+            self.parent.has_u1 = False
 
     # XXX let's rewrite this to use deferreds explicitly
     @defer.inlineCallbacks
@@ -467,27 +485,6 @@ class Accomplishments(object):
         im.putalpha(alpha)
         return im
 
-    def verify_ubuntu_one_account(self):
-        # check if this machine has an Ubuntu One account
-        log.msg("Check if this machine has an Ubuntu One account...")
-        u1auth_response = auth.request(
-            url='https://one.ubuntu.com/api/account/')
-        u1email = None
-        if not isinstance(u1auth_response, basestring):
-            u1email = json.loads(u1auth_response[1])['email']
-        else:
-            log.msg("No Ubuntu One account is configured.")
-
-        if u1email is None:
-            log.msg("...No.")
-            log.msg(u1auth_response)
-            self.has_u1 = False
-            return False
-        else:
-            log.msg("...Yes.")
-            self.has_u1 = True
-            return True
-
     def get_config_value(self, section, item):
         """Return a configuration value from the .accomplishments file"""
         log.msg(
@@ -512,6 +509,9 @@ class Accomplishments(object):
                 return item
         else:
             return "NoOption"
+
+    def verify_ubuntu_one_account(self):
+        self.asyncapi.verify_ubuntu_one_account()
 
     def write_config_file_item(self, section, item, value):
         """Set a configuration value in the .accomplishments file"""
