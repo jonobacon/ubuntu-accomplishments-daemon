@@ -491,7 +491,7 @@ class Accomplishments(object):
     def get_config_value(self, section, item):
         """Return a configuration value from the .accomplishments file"""
         log.msg(
-            "Returning configuration values for: %s, %s", section, item)
+            "Returning configuration values for: %s, %s" % (section, item))
         homedir = os.getenv("HOME")
         config = ConfigParser.RawConfigParser()
         cfile = self.dir_config + "/.accomplishments"
@@ -516,8 +516,8 @@ class Accomplishments(object):
     def write_config_file_item(self, section, item, value):
         """Set a configuration value in the .accomplishments file"""
         log.msg(
-            "Set configuration file value in '%s': %s = %s", section, item,
-            value)
+            "Set configuration file value in '%s': %s = %s" % (section, item,
+            value))
         homedir = os.getenv("HOME")
         config = ConfigParser.RawConfigParser()
         cfile = self.dir_config + "/.accomplishments"
@@ -728,7 +728,7 @@ class Accomplishments(object):
            
         # XXX this should be removed as we are using write_extra_information_file
         log.msg(
-            "Creating Extra Information file: %s, %s", item, data)
+            "Creating Extra Information file: %s, %s" % (item, data))
         extrainfodir = os.path.join(self.trophies_path, ".extrainformation/")
 
         if not os.path.isdir(extrainfodir):
@@ -743,7 +743,7 @@ class Accomplishments(object):
             
     def write_extra_information_file(self, item, data):
         log.msg(
-            "Saving Extra Information file: %s, %s", item, data)
+            "Saving Extra Information file: %s, %s" % (item, data))
         extrainfodir = os.path.join(self.trophies_path, ".extrainformation/")
 
         if not os.path.isdir(extrainfodir):
