@@ -511,7 +511,6 @@ class Accomplishments(object):
             return "NoOption"
 
     def verify_ubuntu_one_account(self):
-        log.msg("------------------- run first func")
         self.asyncapi.verify_ubuntu_one_account()
 
     def write_config_file_item(self, section, item, value):
