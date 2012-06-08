@@ -336,7 +336,7 @@ class Accomplishments(object):
     def __init__(self, service, show_notifications=None):
         self.accomplishments_installpaths = None
         self.trophies_path = None
-        self.has_u1 = None
+        self.has_u1 = False
         self.has_verif = None
         
         self.matrix_username = ""
