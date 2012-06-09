@@ -1114,15 +1114,20 @@ class Accomplishments(object):
         log.msg("Accomplishing: %s" % accomID)
         if not self.get_acc_exists(accomID):
             log.msg("There is no such accomplishment.")
-            return False
+            return False #failure
             
-        coll = self._coll_from_accomID(accomID)
-        accdata = self.get_acc_data(accomID)
-        
+        # Check if is hasn't been already completed
+        if self.get_acc_is_completed(accomID):
+            log.msg("Not accomplishing " + accomID + ", it has already been completed.")
+            return True #success
+            
         # Check if this accomplishment is unlocked
         if not self.get_acc_is_unlocked(accomID):
             log.msg("This accomplishment cannot be completed; it's locked.")
             return False
+            
+        coll = self._coll_from_accomID(accomID)
+        accdata = self.get_acc_data(accomID)
         
         # Prepare extra-info
         needsinformation = self.get_acc_needs_info(accomID)
