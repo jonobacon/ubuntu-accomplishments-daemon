@@ -98,7 +98,7 @@ class AsyncAPI(object):
             info: path.startswith(self.parent.trophies_path)
             and path.endswith(".asc"))
         log.msg("Trophy signature recieved...")
-        time.sleep(2)
+        time.sleep(0.5)
         
         valid = self.parent._get_is_asc_correct(path)
         if not valid:
