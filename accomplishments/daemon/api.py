@@ -720,19 +720,21 @@ class Accomplishments(object):
     def _process_recieved_asc_file(self, path, info):
         log.msg("Trophy signature recieved...")
         log.msg("Processing signature: " + path)
+
+        if path.startswith(self.trophies_path) and path.endswith(".asc"):
+            valid = self._get_is_asc_correct(path)
+
+            if not valid:
+                log.msg("WARNING: invalid .asc signature recieved from the server!")
         
-        valid = self._get_is_asc_correct(path)
-        if not valid:
-            log.msg("WARNING: invalid .asc signature recieved from the server!")
-        
-        if valid == True:
-            accomID = path[len(self.trophies_path)+1:-11]
-            self.service.trophy_received(accomID)
-            self._display_accomplished_bubble(accomID)
-            self._display_unlocked_bubble(accomID)
-            self._mark_as_completed(accomID)
-            
-        self.run_scripts(0)
+            if valid == True:
+                accomID = path[len(self.trophies_path)+1:-11]
+                self.service.trophy_received(accomID)
+                self._display_accomplished_bubble(accomID)
+                self._display_unlocked_bubble(accomID)
+                self._mark_as_completed(accomID)
+                
+            self.run_scripts(0)
             
     def write_extra_information_file(self, item, data):
         log.msg(
