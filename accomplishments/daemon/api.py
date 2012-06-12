@@ -98,7 +98,16 @@ class AsyncAPI(object):
             info: path.startswith(self.parent.trophies_path)
             and path.endswith(".asc"))
         log.msg("Trophy signature recieved...")
-        time.sleep(0.5)
+        self.process_recieved_asc_file(path)
+        self.wait_until_a_sig_file_arrives()
+
+    @defer.inlineCallbacks
+    def process_recieved_asc_file(self,path):
+        log.msg("Processing signature: " + path)
+        # Due to U1 bug, the signal is sometimes issued too soon. 
+        # This 2-second long sleep ensures the file has been copied
+        # before we access it.
+        yield time.sleep(2)
         
         valid = self.parent._get_is_asc_correct(path)
         if not valid:
@@ -112,8 +121,7 @@ class AsyncAPI(object):
             self.parent._mark_as_completed(accomID)
             
         self.parent.run_scripts(0)
-        self.wait_until_a_sig_file_arrives()
-
+    
     @defer.inlineCallbacks
     def verify_ubuntu_one_account(self):
         # check if this machine has an Ubuntu One account
