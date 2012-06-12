@@ -22,7 +22,7 @@ Depends: ${misc:Depends},
  python-twisted-core,
  python-notify,
  python-gobject-2,
- python-distutils-extra,
+ ubuntuone-client,
  python-gpgme
 Description: Background daemon for running the Ubuntu Accomplishments system.
  This is the background daemon process that is required to run the Ubuntu
