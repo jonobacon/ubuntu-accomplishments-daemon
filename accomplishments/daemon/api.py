@@ -90,24 +90,14 @@ class AsyncAPI(object):
         return pprotocol.returnCodeDeferred
 
     # XXX let's rewrite this to use deferreds explicitly
-    @defer.inlineCallbacks
+    #@defer.inlineCallbacks
     def wait_until_a_sig_file_arrives(self):
-        path, info = yield self.parent.sd.wait_for_signals(
-            signal_ok="DownloadFinished",
-            success_filter=lambda path,
-            info: path.startswith(self.parent.trophies_path)
-            and path.endswith(".asc"))
+        self.parent.sd.connect_signal("DownloadFinished", self.process_recieved_asc_file)
         log.msg("Trophy signature recieved...")
-        self.process_recieved_asc_file(path)
-        self.wait_until_a_sig_file_arrives()
 
     @defer.inlineCallbacks
-    def process_recieved_asc_file(self,path):
+    def process_recieved_asc_file(self,path, info):
         log.msg("Processing signature: " + path)
-        # Due to U1 bug, the signal is sometimes issued too soon. 
-        # This 2-second long sleep ensures the file has been copied
-        # before we access it.
-        yield time.sleep(2)
         
         valid = self.parent._get_is_asc_correct(path)
         if not valid:
