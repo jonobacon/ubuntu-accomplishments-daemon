@@ -88,39 +88,6 @@ class AsyncAPI(object):
         pprotocol = SubprocessReturnCodeProtocol()
         reactor.spawnProcess(pprotocol, command[0], command, env=os.environ)
         return pprotocol.returnCodeDeferred
-
-    # XXX let's rewrite this to use deferreds explicitly
-    @defer.inlineCallbacks
-    def wait_until_a_sig_file_arrives(self):
-        path, info = yield self.parent.sd.wait_for_signals(
-            signal_ok="DownloadFinished",
-            success_filter=lambda path,
-            info: path.startswith(self.parent.trophies_path)
-            and path.endswith(".asc"))
-        log.msg("Trophy signature recieved...")
-        self.process_recieved_asc_file(path)
-        self.wait_until_a_sig_file_arrives()
-
-    @defer.inlineCallbacks
-    def process_recieved_asc_file(self,path):
-        log.msg("Processing signature: " + path)
-        # Due to U1 bug, the signal is sometimes issued too soon. 
-        # This 2-second long sleep ensures the file has been copied
-        # before we access it.
-        yield time.sleep(2)
-        
-        valid = self.parent._get_is_asc_correct(path)
-        if not valid:
-            log.msg("WARNING: invalid .asc signature recieved from the server!")
-        
-        if valid == True:
-            accomID = path[len(self.parent.trophies_path)+1:-11]
-            self.parent.service.trophy_received(accomID)
-            self.parent._display_accomplished_bubble(accomID)
-            self.parent._display_unlocked_bubble(accomID)
-            self.parent._mark_as_completed(accomID)
-            
-        self.parent.run_scripts(0)
     
     @defer.inlineCallbacks
     def verify_ubuntu_one_account(self):
@@ -413,7 +380,8 @@ class Accomplishments(object):
         # XXX this wait-until thing should go away; it should be replaced by a
         # deferred-returning function that has a callback which fires off
         # generate_all_trophis and schedule_run_scripts...
-        self.asyncapi.wait_until_a_sig_file_arrives()
+        #self._wait_until_a_sig_file_arrives()
+        self.sd.connect_signal("DownloadFinished", self._process_recieved_asc_file)
         self._create_all_trophy_icons()
 
     def get_media_file(self, media_file_name):
@@ -748,6 +716,25 @@ class Accomplishments(object):
             f = open(os.path.join(extrainfodir, item), 'w')
             f.write(data)
             f.close()
+
+    def _process_recieved_asc_file(self, path, info):
+        log.msg("Trophy signature recieved...")
+        log.msg("Processing signature: " + path)
+
+        if path.startswith(self.trophies_path) and path.endswith(".asc"):
+            valid = self._get_is_asc_correct(path)
+
+            if not valid:
+                log.msg("WARNING: invalid .asc signature recieved from the server!")
+        
+            if valid == True:
+                accomID = path[len(self.trophies_path)+1:-11]
+                self.service.trophy_received(accomID)
+                self._display_accomplished_bubble(accomID)
+                self._display_unlocked_bubble(accomID)
+                self._mark_as_completed(accomID)
+                
+            self.run_scripts(0)
             
     def write_extra_information_file(self, item, data):
         log.msg(
