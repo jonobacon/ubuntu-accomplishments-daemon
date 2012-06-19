@@ -1,0 +1,40 @@
+# Esperanto translation for ubuntu-accomplishments-daemon
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
+# This file is distributed under the same license as the ubuntu-accomplishments-daemon package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ubuntu-accomplishments-daemon\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-05-24 15:18+0200\n"
+"PO-Revision-Date: 2012-06-18 07:20+0000\n"
+"Last-Translator: Michael Moroni <michael.moroni@mailoo.org>\n"
+"Language-Team: Esperanto <eo@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2012-06-19 05:13+0000\n"
+"X-Generator: Launchpad (build 15435)\n"
+
+#: ../accomplishments/util/__init__.py:94
+msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
+msgstr ""
+"Montri sencimigajn mesaĝojn (-vv sencimigas ankaŭ accomplishments_daemon_lib)"
+
+#: ../accomplishments/util/__init__.py:97
+msgid "Clear your trophies collection"
+msgstr "Vakigi vian kolekton de trofeoj"
+
+#: ../accomplishments/daemon/api.py:1246
+msgid "You have accomplished something!"
+msgstr "Vi akiris ion!"
+
+#: ../accomplishments/daemon/api.py:1257
+#, python-format
+msgid "You have unlocked %s new opportunity."
+msgstr "Vi malŝlosis %s novajn oportunojn."
+
+#: ../accomplishments/daemon/api.py:1259
+msgid "Opportunities Unlocked!"
+msgstr "Oportunoj malŝlositaj!"
