@@ -628,6 +628,12 @@ class Accomplishments(object):
                 for i in ei:
                     label = self.accDB[collection]['extra-information'][i]['label']
                     desc = self.accDB[collection]['extra-information'][i]['description']
+                    example = self.accDB[collection]['extra-information'][i].get('example')
+                    if example is None:
+                        example = ''
+                    regex = self.accDB[collection]['extra-information'][i].get('regex')
+                    if regex is None:
+                        regex = ''
                     # we also need to know whether user has already set this item's value.
                     # to do this, simply check whether trophies/.extrainformation/<item> file exists.
                     try:
@@ -642,6 +648,8 @@ class Accomplishments(object):
                             "needs-information" : i,
                             "label" : label,
                             "description" : desc,
+                            "example" : example,
+                            "regex" : regex,
                             "value" : value}
                     except IOError as e:
                         # we got an exception, so it seems that the file is not present - we'll use "" as the value, to indicate that it's empty
@@ -649,7 +657,8 @@ class Accomplishments(object):
                             "collection" : collection,
                             "needs-information" : i,
                             "label" : label,
-                            "description" : desc,
+                            "example" : example,
+                            "regex" : regex,
                             "value" : ""}
 
                     # since the collected all data related to this particular ExtraInformation field, append it to the list
@@ -943,12 +952,14 @@ class Accomplishments(object):
                     extrainfopath = os.path.join(extrainfodir,extrainfofile)
                     eicfg = ConfigParser.RawConfigParser()
                     eicfg.read(extrainfopath)
+
                     if eicfg.has_option("label",self.lang):
                         label = eicfg.get("label",self.lang)
                     elif eicfg.has_option("label",self.lang.split("_")[0]):
                         label = eicfg.get("label",self.lang.split("_")[0])
                     else:
                         label = eicfg.get("label",langdefault)
+
                     if eicfg.has_option("description",self.lang):
                         description = eicfg.get("description",self.lang)
                     elif eicfg.has_option("description",self.lang.split("_")[0]):
@@ -956,7 +967,26 @@ class Accomplishments(object):
                     else:
                         description = eicfg.get("description",langdefault)
                         
-                    extrainfo[extrainfofile] = {'label':label,'description':description}
+                    if eicfg.has_option("example", self.lang):
+                        example = eicfg.get("example", self.lang)
+                    elif eicfg.has_option("example", self.lang.split("_")[0]):
+                        example = eicfg.get("example", self.lang.split("_")[0])
+                    elif eicfg.has_option("example", langdefault):
+                        example = eicfg.get("example", langdefault)
+                    else:
+                        example = None
+                        
+                    if eicfg.has_option("regex", "value"):
+                        regex = eicfg.get("regex", "value")
+                    else:
+                        regex = None
+                        
+                    extrainfo[extrainfofile] = {
+                            'label': label,
+                            'description': description,
+                            'example': example,
+                            'regex': regex,
+                            }
                 
                 # Store data about this colection
                 collectiondata = {'langdefault':langdefault,'name':collectionname, 'acc_num':accno, 'type':"collection", 'base-path': collpath, 'categories' : collcategories, 'extra-information': extrainfo, 'authors':collauthors}
