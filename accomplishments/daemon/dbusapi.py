@@ -207,6 +207,11 @@ class AccomplishmentsDBusService(service.DBusExportService):
         in_signature="s", out_signature="b")
     def get_acc_is_completed(self,accomID):
         return self.api.get_acc_is_completed(accomID)
+
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="b")
+    def get_published_status(self):
+        return self.api.get_published_status()
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="s")
@@ -302,6 +307,16 @@ class AccomplishmentsDBusService(service.DBusExportService):
         in_signature="", out_signature="s")
     def get_API_version(self):
         return self.api.get_API_version()
+
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="")
+    def publish_trophies_online(self):
+        return self.api.publish_trophies_online()
+
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="")
+    def unpublish_trophies_online(self):
+        return self.api.unpublish_trophies_online()
         
     # XXX this looks like an unintentional duplicate of the "other"
     # trophy_received... I've moved them here together so that someone in the

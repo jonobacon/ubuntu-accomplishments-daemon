@@ -27,6 +27,7 @@ import pwd
 import subprocess
 import time
 import locale
+import webbrowser
 
 import dbus
 import dbus.service
@@ -65,6 +66,7 @@ if installed:
 
 LOCAL_USERNAME = getpass.getuser()
 SCRIPT_DELAY = 900
+ONLINETROPHIESHOST = "213.138.100.229:8000"
 
 #flags used for scripts_state
 NOT_RUNNING = 0
@@ -88,7 +90,28 @@ class AsyncAPI(object):
         pprotocol = SubprocessReturnCodeProtocol()
         reactor.spawnProcess(pprotocol, command[0], command, env=os.environ)
         return pprotocol.returnCodeDeferred
-    
+
+    @defer.inlineCallbacks
+    def publish_trophies_online(self):        
+        l = yield self.parent.sd.get_shared()
+
+        trophydir = self.parent.get_config_value("config", "trophypath")
+        matchingshares = []
+
+        for s in l:
+            if s["other_username"] == self.parent.matrix_username:
+                if s["subscribed"] == "True":
+                    matchingshares.append( { "name" : s["name"], "share_id" : s["node_id"] } )
+
+        if len(matchingshares) > 1:
+            print "error"
+        else:
+            webviewfile = open(os.path.join(trophydir, "WEBVIEW"), 'w')
+            string = " "
+            webviewfile.write(string)
+            url = "http://" + ONLINETROPHIESHOST + "/user/addshare?share_name=" + matchingshares[0]["name"] + "&share_id=" + matchingshares[0]["share_id"]            
+            webbrowser.open(url)
+
     @defer.inlineCallbacks
     def verify_ubuntu_one_account(self):
         # check if this machine has an Ubuntu One account
@@ -586,6 +609,13 @@ class Accomplishments(object):
                 os.makedirs(self.trophies_path)
 
             self._write_config_file()
+
+    def publish_trophies_online(self):
+        self.asyncapi.publish_trophies_online()
+
+    def unpublish_trophies_online(self):
+        trophydir = self.get_config_value("config", "trophypath")
+        os.remove(os.path.join(trophydir, "WEBVIEW"))
 
     def get_all_extra_information(self):
         """
@@ -1104,6 +1134,16 @@ class Accomplishments(object):
         
     # ========= Misc functions ===========
     
+    def get_published_status(self):
+        """Detect if we are currently publishing online or not. Returns
+        True if we are or False if we are not. """
+        
+        trophydir = self.get_config_value("config", "trophypath")
+        print trophydir
+        if os.path.exists(os.path.join(trophydir, "WEBVIEW")):
+            return True
+        else:
+            return False
     
     def accomplish(self,accomID):
         log.msg("Accomplishing: %s" % accomID)
