@@ -329,6 +329,10 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return trophy
 
     @dbus.service.signal(dbus_interface='org.ubuntu.accomplishments')
+    def publish_trophies_online_completed(self, url):
+        return url
+
+    @dbus.service.signal(dbus_interface='org.ubuntu.accomplishments')
     def scriptrunner_start(self):
         pass
 

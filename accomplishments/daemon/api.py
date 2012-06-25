@@ -27,7 +27,6 @@ import pwd
 import subprocess
 import time
 import locale
-import webbrowser
 
 import dbus
 import dbus.service
@@ -90,27 +89,6 @@ class AsyncAPI(object):
         pprotocol = SubprocessReturnCodeProtocol()
         reactor.spawnProcess(pprotocol, command[0], command, env=os.environ)
         return pprotocol.returnCodeDeferred
-
-    @defer.inlineCallbacks
-    def publish_trophies_online(self):        
-        l = yield self.parent.sd.list_shared()
-
-        trophydir = self.parent.get_config_value("config", "trophypath")
-        matchingshares = []
-
-        for s in l:
-            if s["other_username"] == self.parent.matrix_username:
-                if s["subscribed"] == "True":
-                    matchingshares.append( { "name" : s["name"], "share_id" : s["node_id"] } )
-
-        if len(matchingshares) > 1:
-            print "error"
-        else:
-            webviewfile = open(os.path.join(trophydir, "WEBVIEW"), 'w')
-            string = " "
-            webviewfile.write(string)
-            url = "http://" + ONLINETROPHIESHOST + "/user/addshare?share_name=" + matchingshares[0]["name"] + "&share_id=" + matchingshares[0]["share_id"]            
-            webbrowser.open(url)
 
     @defer.inlineCallbacks
     def verify_ubuntu_one_account(self):
@@ -610,8 +588,28 @@ class Accomplishments(object):
 
             self._write_config_file()
 
+    def _get_active_share(self, shares):
+        matchingshares = []
+
+        for s in shares:
+            if s["other_username"] == self.matrix_username:
+                if s["subscribed"] == "True":
+                    matchingshares.append( { "name" : s["name"], "share_id" : s["node_id"] } )
+
+        trophydir = self.get_config_value("config", "trophypath")
+
+        if len(matchingshares) > 1:
+            log.msg("Error Publishing Online: could not find unique active share")
+        else:
+            webviewfile = open(os.path.join(trophydir, "WEBVIEW"), 'w')
+            string = " "
+            webviewfile.write(string)
+            url = "http://" + ONLINETROPHIESHOST + "/user/addshare?share_name=" + matchingshares[0]["name"] + "&share_id=" + matchingshares[0]["share_id"]
+            self.service.publish_trophies_online_completed(url)
+
     def publish_trophies_online(self):
-        self.asyncapi.publish_trophies_online()
+        l = self.sd.list_shared()
+        l.addCallback(self._get_active_share)
 
     def unpublish_trophies_online(self):
         trophydir = self.get_config_value("config", "trophypath")
