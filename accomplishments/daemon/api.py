@@ -93,7 +93,7 @@ class AsyncAPI(object):
 
     @defer.inlineCallbacks
     def publish_trophies_online(self):        
-        l = yield self.parent.sd.get_shared()
+        l = yield self.parent.sd.list_shared()
 
         trophydir = self.parent.get_config_value("config", "trophypath")
         matchingshares = []
