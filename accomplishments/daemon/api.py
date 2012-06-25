@@ -65,6 +65,7 @@ if installed:
 
 LOCAL_USERNAME = getpass.getuser()
 SCRIPT_DELAY = 900
+ONLINETROPHIESHOST = "213.138.100.229:8000"
 
 #flags used for scripts_state
 NOT_RUNNING = 0
@@ -88,7 +89,7 @@ class AsyncAPI(object):
         pprotocol = SubprocessReturnCodeProtocol()
         reactor.spawnProcess(pprotocol, command[0], command, env=os.environ)
         return pprotocol.returnCodeDeferred
-    
+
     @defer.inlineCallbacks
     def verify_ubuntu_one_account(self):
         # check if this machine has an Ubuntu One account
@@ -586,6 +587,33 @@ class Accomplishments(object):
                 os.makedirs(self.trophies_path)
 
             self._write_config_file()
+
+    def _get_active_share(self, shares):
+        matchingshares = []
+
+        for s in shares:
+            if s["other_username"] == self.matrix_username:
+                if s["subscribed"] == "True":
+                    matchingshares.append( { "name" : s["name"], "share_id" : s["node_id"] } )
+
+        trophydir = self.get_config_value("config", "trophypath")
+
+        if len(matchingshares) > 1:
+            log.msg("Error Publishing Online: could not find unique active share")
+        else:
+            webviewfile = open(os.path.join(trophydir, "WEBVIEW"), 'w')
+            string = " "
+            webviewfile.write(string)
+            url = "http://" + ONLINETROPHIESHOST + "/user/addshare?share_name=" + matchingshares[0]["name"] + "&share_id=" + matchingshares[0]["share_id"]
+            self.service.publish_trophies_online_completed(url)
+
+    def publish_trophies_online(self):
+        l = self.sd.list_shared()
+        l.addCallback(self._get_active_share)
+
+    def unpublish_trophies_online(self):
+        trophydir = self.get_config_value("config", "trophypath")
+        os.remove(os.path.join(trophydir, "WEBVIEW"))
 
     def get_all_extra_information(self):
         """
@@ -1104,6 +1132,16 @@ class Accomplishments(object):
         
     # ========= Misc functions ===========
     
+    def get_published_status(self):
+        """Detect if we are currently publishing online or not. Returns
+        True if we are or False if we are not. """
+        
+        trophydir = self.get_config_value("config", "trophypath")
+        print trophydir
+        if os.path.exists(os.path.join(trophydir, "WEBVIEW")):
+            return True
+        else:
+            return False
     
     def accomplish(self,accomID):
         log.msg("Accomplishing: %s" % accomID)
