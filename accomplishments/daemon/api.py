@@ -685,6 +685,7 @@ class Accomplishments(object):
                             "collection" : collection,
                             "needs-information" : i,
                             "label" : label,
+                            "description" : desc,
                             "example" : example,
                             "regex" : regex,
                             "value" : ""}
