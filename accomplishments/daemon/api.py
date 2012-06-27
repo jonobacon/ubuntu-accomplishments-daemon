@@ -1094,8 +1094,11 @@ class Accomplishments(object):
         
     def get_acc_categories(self,accomID):
         return self.accDB[accomID]['categories']
-    
-    
+
+    def get_acc_date_completed(self,accomID):
+        """Returns None if the accomplishment has not yet been completed."""
+        return self.accDB[accomID]['date-completed']
+        
     def get_trophy_data(self,accomID):
         if not self.get_acc_is_completed(accomID):
             return
@@ -1152,6 +1155,7 @@ class Accomplishments(object):
                 'title' :           self.get_acc_title(acc),
                 'accomplished' :    self.get_acc_is_completed(acc),
                 'locked' :      not self.get_acc_is_unlocked(acc),
+                'date-completed' :      self.get_acc_date_completed(acc),
                 'iconpath' :        self.get_acc_icon_path(acc),
                 'collection' :      self.get_acc_collection(acc),
                 'collection-human' :self.get_collection_name(
@@ -1390,8 +1394,25 @@ NoDisplay=true"
         accs = self.list_accomplishments()
         for acc in accs:
             self.accDB[acc]['completed'] = self._check_if_acc_is_completed(acc)
+            if self.accDB[acc]['completed'] == True:
+                self.accDB[acc]['date-completed'] = self._get_trophy_date_completed(acc)
+            else:
+                self.accDB[acc]['date-completed'] = "None"
         for acc in accs:
             self.accDB[acc]['locked'] = self._check_if_acc_is_locked(acc)
+         
+    def _get_trophy_date_completed(self, accomID):
+        trophypath = self.get_trophy_path(accomID)
+        if not os.path.exists(trophypath):
+            # There is no trophy file
+            return False
+
+        config = ConfigParser.RawConfigParser()
+        cfile = trophypath
+        config.read(cfile)
+
+        if config.has_option("trophy", "date-accomplished"):
+            return config.get("trophy", "date-accomplished")            
             
     def _mark_as_completed(self,accomID):
         self.accDB[accomID]['completed'] = True
