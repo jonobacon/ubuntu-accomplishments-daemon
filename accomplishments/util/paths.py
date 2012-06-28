@@ -19,7 +19,8 @@ else:
 if installed:
     basepath = os.path.split(os.path.split(os.path.split(branchpath)[0])[0])[0]
     # basepath should equal to prefix given on installation.
-    print "Daemon seems to be installed to: " + basepath
+    
+    #print "Daemon seems to be installed to: " + basepath
     
     # finally, setting these significant data directories...
     systemdata_dir = os.path.join(basepath, 'share/accomplishments-daemon')
@@ -39,7 +40,8 @@ if installed:
 else:
     # using branch root directory as the base path
     basepath = branchpath
-    print "Daemon seems to be run not installed, branch base path used: " + basepath
+    
+    #print "Daemon seems to be run not installed, branch base path used: " + basepath
     
     # finally, setting these significant data directories...
     systemdata_dir = os.path.join(basepath, 'data/daemon')
