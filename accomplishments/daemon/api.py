@@ -265,6 +265,15 @@ class AsyncAPI(object):
 
         scriptcount = 1
         for accomID in accoms:
+            # First ensure that the acccomplishemt has not yet completed.
+            # It happens that the .asc file is present, but we miss the
+            # signal it triggers - so here we can re-check if it is not
+            # present.
+            if self.parent._check_if_acc_is_completed(accomID):
+                self.parent.accomplish(accomID)
+                continue
+            
+            # Run the acc script and determine exit code.
             scriptpath = self.parent.get_acc_script_path(accomID)
             msg = "%s/%s: %s" % (scriptcount, totalscripts, scriptpath)
             log.msg(msg)
