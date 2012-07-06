@@ -603,7 +603,7 @@ class Accomplishments(object):
         for s in shares:
             if s["other_username"] == self.matrix_username:
                 if s["subscribed"] == "True":
-                    matchingshares.append( { "name" : s["name"], "share_id" : s["node_id"] } )
+                    matchingshares.append( { "name" : s["name"], "share_id" : s["volume_id"] } )
 
         trophydir = self.get_config_value("config", "trophypath")
 
