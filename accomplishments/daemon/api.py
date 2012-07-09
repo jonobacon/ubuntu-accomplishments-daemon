@@ -87,9 +87,9 @@ class AsyncAPI(object):
         # The following variable represents state of scripts.Its state 
         # can be either RUNNING or NOT_RUNNING.
         # The use of this flag is to aviod running several instances of 
-        # process_scheduled_scripts, which might result in undefined, troubleful
+        # start_scriptrunner, which might result in undefined, troubleful
         # behavior. The flags are NOT_RUNNING by default, and are set to
-        # RUNNING when the process_scheduled_scripts starts, and back to
+        # RUNNING when the start_scriptrunner runs, and back to
         # NOT_RUNNING when it exits. This way, if the function is already
         # processing scripts, another calls will abort, having checked that
         # this flag is set to RUNNING.
@@ -187,7 +187,7 @@ class AsyncAPI(object):
 
     # XXX let's rewrite this to use deferreds explicitly
     @defer.inlineCallbacks
-    def process_scheduled_scripts(self):
+    def start_scriptrunner(self):
     
         # More info on scripts_state can be found in __init__
         if self.scripts_state is RUNNING:
@@ -232,7 +232,6 @@ class AsyncAPI(object):
 
         required_envars = ['DBUS_SESSION_BUS_ADDRESS']
         env = dict([kv for kv in envars.items() if kv[0] in required_envars])
-        print env
         # XXX use deferToThread
         oldenviron = os.environ
         os.environ.update(env)
@@ -254,7 +253,6 @@ class AsyncAPI(object):
         # to keep the code cleaner and the logic more limited to one particular
         # task
         
-        # Get the accomID we are going to run...
         queuesize = len(self.parent.scripts_queue)
         
         log.msg("--- Starting Running Scripts - %d items on the queue ---" % (queuesize))
@@ -263,8 +261,7 @@ class AsyncAPI(object):
 
         while queuesize > 0:
             accomID = self.parent.scripts_queue.popleft()
-            queuesize = len(self.parent.scripts_queue)
-            log.msg("Running %s, left on queue: %d" % (accomID, queuesize))
+            log.msg("Running %s, left on queue: %d" % (accomID, queuesize-1))
             
             # First ensure that the acccomplishemt has not yet completed.
             # It happens that the .asc file is present, but we miss the
@@ -290,6 +287,10 @@ class AsyncAPI(object):
                 log.msg("...Could not get extra-information")
             else:
                 log.msg("...Error code %d" % exitcode)
+                
+            # New queue size is determined on the very end, since accomplish()
+            # might have added something new to the queue.
+            queuesize = len(self.parent.scripts_queue)
 
         
         log.msg("The queue is now empty - stopping the scriptrunner.")
@@ -369,14 +370,14 @@ class Accomplishments(object):
         self._create_all_trophy_icons()
 
     def get_media_file(self, media_file_name):
-        log.msg("MEDIA_FILE_NAME:")
-        log.msg(media_file_name)
-        log.msg("MEDIA_DIR:")
-        log.msg(media_dir)
+        #log.msg("MEDIA_FILE_NAME:")
+        #log.msg(media_file_name)
+        #log.msg("MEDIA_DIR:")
+        #log.msg(media_dir)
         #media_filename = get_data_file(media_dir.split, '%s' % (media_file_name,))
         media_filename = os.path.join(media_dir, media_file_name)
-        log.msg("MEDIA_FILENAME:")
-        log.msg(media_filename)
+        #log.msg("MEDIA_FILENAME:")
+        #log.msg(media_filename)
 
         if not os.path.exists(media_filename):
             media_filename = None
@@ -738,9 +739,9 @@ class Accomplishments(object):
                 self.service.trophy_received(accomID)
                 self._display_accomplished_bubble(accomID)
                 self._display_unlocked_bubble(accomID)
-                self._mark_as_completed(accomID)
-                
-            self.run_scripts()
+                # Mark as completed and get list of new opportunities
+                just_unlocked = self._mark_as_completed(accomID)
+                self.run_scripts(just_unlocked)
             
     def write_extra_information_file(self, item, data):
         log.msg(
@@ -1122,18 +1123,21 @@ class Accomplishments(object):
     def run_script(self,accomID):
         if not self.get_acc_exists(accomID):
             return
-        self.scripts_queue.append(accomID)
-        self.asyncapi.process_scheduled_scripts()
+        self.run_scripts([accomID])
         
     def run_scripts(self,which=None):
         if which == None:
-            self.scripts_queue.extend(self.list_unlocked_not_completed())
+            to_schedule = self.list_unlocked_not_completed()
         elif type(which) is int or type(which) is bool or type(which) is dbus.Boolean:
             log.msg("Note: This call to run_scripts is incorrect, run_scripts no more takes an int as an argument (it takes - optionally - a list of accomID to run their scripts)")
-            self.scripts_queue.extend(self.list_unlocked_not_completed())
+            to_schedule = self.list_unlocked_not_completed()
         else:
-            self.scripts_queue.extend(which)
-        self.asyncapi.process_scheduled_scripts()
+            if len(which) is 0: # am empty list
+                return
+            to_schedule = which
+        log.msg("Adding to scripts queue: %s " % (str(to_schedule)))
+        self.scripts_queue.extend(to_schedule)
+        self.asyncapi.start_scriptrunner()
     
     # ====== Viewer-specific functions ======
         
@@ -1220,8 +1224,9 @@ class Accomplishments(object):
             self.service.trophy_received(accomID)
             self._display_accomplished_bubble(accomID)
             self._display_unlocked_bubble(accomID)
-            self._mark_as_completed(accomID)
-            self.run_scripts()
+            # Mark as completed and get list of new opportunities
+            just_unlocked = self._mark_as_completed(accomID)
+            self.run_scripts(just_unlocked)
             
         return True
 
@@ -1405,10 +1410,18 @@ NoDisplay=true"
             return config.get("trophy", "date-accomplished")            
             
     def _mark_as_completed(self,accomID):
+        # Marks accomplishments as completed int the accDB, and returns a list
+        # of accomIDs that just got unlocked.
         self.accDB[accomID]['completed'] = True
         accs = self.list_depending_on(accomID)
+        res = []
         for acc in accs:
+            before = self.accDB[acc]['locked']
             self.accDB[acc]['locked'] = self._check_if_acc_is_locked(acc)
+            # If it just got unlocked...
+            if (before == True and self.accDB[acc]['locked'] == False):
+                res.append(acc)
+        return res
             
     #Other significant system functions
     def get_API_version(self):
