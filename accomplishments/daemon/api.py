@@ -1071,7 +1071,7 @@ class Accomplishments(object):
         like 'category:subcategory' (e.g. 'AskUbuntu:Asking')).
         
         :param accomID: The Accomplishment ID (e.g. 'ubuntu-community/registered-on-launchpad')
-        :type accomid: str
+        :type accomID: str
         :returns: list
         """
 
@@ -1082,7 +1082,7 @@ class Accomplishments(object):
         Returns the date that the accomplishment specified by 'accomID' was completed.
         
         :param accomID: The Accomplishment ID (e.g. 'ubuntu-community/registered-on-launchpad')
-        :type accomid: str
+        :type accomID: str
         :returns: the date completed or 'None' if the accomplishment has not yet been completed.
         """
         return self.accDB[accomID]['date-completed']
