@@ -1068,11 +1068,15 @@ class Accomplishments(object):
     def get_acc_categories(self,accomID):
         """
         Returns a list of categories for a given accomplishment. This can include sub-categories (which are formatted
-        like 'category:subcategory' (e.g. 'AskUbuntu:Asking')).
+        like 'category:subcategory' (e.g. `AskUbuntu:Asking`)).
         
-        :param accomID: The Accomplishment ID (e.g. 'ubuntu-community/registered-on-launchpad')
-        :type accomID: str
-        :returns: list
+        Args:
+            accomID (str):  The Accomplishment ID (e.g. 'ubuntu-community/registered-on-launchpad')
+        Returns:
+            (list) The list of categories.
+        Example:
+            >>> obj.get_acc_categories("ubuntu-community/registered-on-launchpad")
+            ["Launchpad"]
         """
 
         return self.accDB[accomID]['categories']
@@ -1081,10 +1085,15 @@ class Accomplishments(object):
         """
         Returns the date that the accomplishment specified by 'accomID' was completed.
         
-        :param accomID: The Accomplishment ID (e.g. 'ubuntu-community/registered-on-launchpad')
-        :type accomID: str
-        :returns: the date completed or 'None' if the accomplishment has not yet been completed.
+        Args:
+            accomID (str):  The Accomplishment ID (e.g. 'ubuntu-community/registered-on-launchpad')
+        Returns:
+            (list) The list of categories.
+        Example:
+            >>> obj.get_acc_completed("ubuntu-community/registered-on-launchpad")
+            ["2012-06-15 12:32"]
         """
+        
         return self.accDB[accomID]['date-completed']
         
     def get_trophy_data(self,accomID):

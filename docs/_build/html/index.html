@@ -74,33 +74,37 @@ overwrite any existing data</p>
 <dt id="accomplishments.daemon.api.Accomplishments.get_acc_categories">
 <tt class="descname">get_acc_categories</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_acc_categories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_acc_categories" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of categories for a given accomplishment. This can include sub-categories (which are formatted
-like &#8216;category:subcategory&#8217; (e.g. &#8216;AskUbuntu:Asking&#8217;)).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>accomID</strong> (<em>str</em>) &#8211; The Accomplishment ID (e.g. &#8216;ubuntu-community/registered-on-launchpad&#8217;)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list</td>
-</tr>
-</tbody>
-</table>
+like &#8216;category:subcategory&#8217; (e.g. <cite>AskUbuntu:Asking</cite>)).</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>accomID (str):  The Accomplishment ID (e.g. &#8216;ubuntu-community/registered-on-launchpad&#8217;)</dd>
+<dt>Returns:</dt>
+<dd>(list) The list of categories.</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_categories</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">[&quot;Launchpad&quot;]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="accomplishments.daemon.api.Accomplishments.get_acc_date_completed">
 <tt class="descname">get_acc_date_completed</tt><big>(</big><em>accomID</em><big>)</big><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_acc_date_completed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the date that the accomplishment specified by &#8216;accomID&#8217; was completed.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>accomID</strong> (<em>str</em>) &#8211; The Accomplishment ID (e.g. &#8216;ubuntu-community/registered-on-launchpad&#8217;)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the date completed or &#8216;None&#8217; if the accomplishment has not yet been completed.</td>
-</tr>
-</tbody>
-</table>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>accomID (str):  The Accomplishment ID (e.g. &#8216;ubuntu-community/registered-on-launchpad&#8217;)</dd>
+<dt>Returns:</dt>
+<dd>(list) The list of categories.</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_completed</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">[&quot;2012-06-15 12:32&quot;]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
