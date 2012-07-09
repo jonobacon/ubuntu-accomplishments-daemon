@@ -96,6 +96,26 @@ class AccomplishmentsDBusService(service.DBusExportService):
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="")
     def create_extra_information_file(self, item, data):
+        """
+        Create an extra-information file that resides in the user's trophy share.
+        
+        It is common for accomplishments to require additional information to verify their completion. Clients
+        should ask for this information and then use this function to write the information to the correct part
+        of the trophy share. You can read more about how Extra Information works at https://wiki.ubuntu.com/Accomplishments/Creating/Guide/Theory
+        
+        As an example, if an accomplishment requires `launchpad-email` and the data for that information is `dave@megadeth.com`, this
+        will be written to `~/.local/share/accomplishments/trophies/.extrainformation/launchpad-email` and the file will contain
+        `dave@megadeth.com`. Never write to this location directly, just use this function to do this.
+        
+        Args:
+            item (str): the extra-information type in question.
+            data (str): the data for the specified item.
+        Returns:
+            None
+        Example:
+            >>> obj.create_extra_information_file("launchpad-email", "dave@megadeth.com")
+        """
+
         return self.api.create_extra_information_file(item, data)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
@@ -126,6 +146,24 @@ class AccomplishmentsDBusService(service.DBusExportService):
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="")
     def accomplish(self, accomID):
+        """
+        This function will accomplish the specified accomplishment.
+        
+        Every accomplishment has a unique identifier called an `Accomplishment ID` that is comprised of the collection
+        and the name of the accomplishment itself (e.g. `ubuntu-community` collection and `registered-in-launchpad`
+        accomplishment has an accomplishment ID of `ubuntu-community/registered-on-launchpad`). You pass this function this
+        `Accomplishment ID` as it's parameter.
+        
+        For this function to work, the specified accomplishment needs to exist on the system. For more details of how to create
+        accomplishments and add them to a collection, see https://wiki.ubuntu.com/Accomplishments/Creating
+                
+        Args:
+            accomID (str):  the `Accomplishment ID` for a given accomplishment (e.g. `ubuntu-community/registered-on-launchpad`).
+        Returns:
+            None
+        Example:
+            >>> obj.accomplish("ubuntu-community/registered-on-launchpad")
+        """
         trophy = self.api.accomplish(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
@@ -161,11 +199,47 @@ class AccomplishmentsDBusService(service.DBusExportService):
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="a{sv}")
     def get_acc_data(self,accomID):
+        """
+        Returns a database of accomplishment information on the system.
+
+        Every accomplishment has a unique identifier called an `Accomplishment ID` that is comprised of the collection
+        and the name of the accomplishment itself (e.g. `ubuntu-community` collection and `registered-in-launchpad`
+        accomplishment has an accomplishment ID of `ubuntu-community/registered-on-launchpad`). You pass this function this
+        `Accomplishment ID` as it's parameter.
+        
+        All accomplishments have information about the accomplishment itself, and this function returns all of this data for the
+        specified accomplishment. This is often useful for displaying this information to the user.
+        
+        Args:
+            accomID (str):  the `Accomplishment ID` for a given accomplishment (e.g. `ubuntu-community/registered-on-launchpad`).
+        Returns:
+            (dict) The data for the accomplishment.
+        Example:
+            >>> obj.build_viewer_database()
+            { dbus.String(u'lang'): dbus.String(u'en', variant_level=1), dbus.String(u'needs-signing'): dbus.String(u'true', variant_level=1), dbus.String(u'date-completed'): dbus.String(u'2012-06-12 22:12', variant_level=1), dbus.String(u'set'): dbus.String(u'infrastructure', variant_level=1), dbus.String(u'locked'): dbus.Boolean(False, variant_level=1), dbus.String(u'help'): dbus.String(u'#launchpad on Freenode', variant_level=1), dbus.String(u'links'): dbus.String(u'http://www.launchpad.net', variant_level=1), dbus.String(u'title'): dbus.String(u'Registered on Launchpad', variant_level=1), dbus.String(u'script-path'): dbus.String(u'/home/jono/source/ubuntu-community-accomplishments/scripts/ubuntu-community/infrastructure/registered-on-launchpad.py', variant_level=1), dbus.String(u'base-path'): dbus.String(u'/home/jono/source/ubuntu-community-accomplishments/accomplishments/ubuntu-community', variant_level=1), dbus.String(u'completed'): dbus.Boolean(True, variant_level=1), dbus.String(u'author'): dbus.String(u'Jono Bacon <jono@ubuntu.com>', variant_level=1), dbus.String(u'collection'): dbus.String(u'ubuntu-community', variant_level=1), dbus.String(u'summary'): dbus.String(u'Launchpad is a website in which we do much of our work in Ubuntu. There we build packages, file and fix bugs, perform translations, manage code, and other activities.\nYou will need to register an account with Launchpad to participate in much of the Ubuntu community. Fortunately, registering is simple, safe, and free.', variant_level=1), dbus.String(u'needs-information'): dbus.String(u'launchpad-email', variant_level=1), dbus.String(u'steps'): dbus.String(u'Load a web browser on your computer.\nIn your web browser go to <tt>http://www.launchpad.net</tt>.\nClick the <i>Register</i> link in the corner of the screen to register.', variant_level=1), dbus.String(u'icon'): dbus.String(u'default.png', variant_level=1), dbus.String(u'type'): dbus.String(u'accomplishment', variant_level=1), dbus.String(u'categories'): dbus.Array([dbus.String(u'Launchpad')], signature=dbus.Signature('s'), variant_level=1), dbus.String(u'description'): dbus.String(u'Registered a Launchpad account', variant_level=1) }
+        """
         return self.api.get_acc_data(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="b")   
     def get_acc_exists(self,accomID):
+        """
+        Returns whether the specified accomplishment is recognized on the system.
+        
+        Every accomplishment has a unique identifier called an `Accomplishment ID` that is comprised of the collection
+        and the name of the accomplishment itself (e.g. `ubuntu-community` collection and `registered-in-launchpad`
+        accomplishment has an accomplishment ID of `ubuntu-community/registered-on-launchpad`). You pass this function this
+        `Accomplishment ID` as it's parameter.
+                        
+        Args:
+            accomID (str):  the `Accomplishment ID` for a given accomplishment (e.g. `ubuntu-community/registered-on-launchpad`).
+        Returns:
+            (bool) returns `True` is the accomplishment exists, and `False` if not.
+        Example:
+            >>> obj.get_acc_exists("ubuntu-community/registered-on-launchpad")
+            True
+        """
+        
         return self.api.get_acc_exists(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
@@ -181,26 +255,132 @@ class AccomplishmentsDBusService(service.DBusExportService):
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="s")
     def get_acc_collection(self,accomID):
+        """
+        Returns the collection that a given accomplishment is part of.
+        
+        Every accomplishment has a unique identifier called an `Accomplishment ID` that is comprised of the collection
+        and the name of the accomplishment itself (e.g. `ubuntu-community` collection and `registered-in-launchpad`
+        accomplishment has an accomplishment ID of `ubuntu-community/registered-on-launchpad`). You pass this function this
+        `Accomplishment ID` as it's parameter.
+        
+        This function returns the collection that the accomplishment specified by `accomID`) is part of.
+                
+        Args:
+            accomID (str):  the `Accomplishment ID` for a given accomplishment (e.g. `ubuntu-community/registered-on-launchpad`).
+        Returns:
+            (str) the collection name.
+        Example:
+            >>> obj.get_acc_collection("ubuntu-community/registered-on-launchpad")
+            ubuntu-community
+        """
+        
         return self.api.get_acc_collection(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="as")
     def get_acc_categories(self,accomID):
+        """
+        Returns a list of categories that the specified accomplishment is part of.
+        
+        Every accomplishment has a unique identifier called an `Accomplishment ID` that is comprised of the collection
+        and the name of the accomplishment itself (e.g. `ubuntu-community` collection and `registered-in-launchpad`
+        accomplishment has an accomplishment ID of `ubuntu-community/registered-on-launchpad`). You pass this function this
+        `Accomplishment ID` as it's parameter.
+        
+        Categories can be specified in accomplishments as singular (e.g. `Ask Ubuntu`) or also include sub-categories
+        (e.g. `Ask Ubuntu:Asking`); this function returns the categories in these formats.
+        
+        Args:
+            accomID (str):  the `Accomplishment ID` for a given accomplishment (e.g. `ubuntu-community/registered-on-launchpad`).
+        Returns:
+            (list) the list of categories.
+        Example:
+            >>> obj.get_acc_categories("ubuntu-community/registered-on-launchpad")
+            ["Launchpad"]
+        """
         return self.api.get_acc_categories(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="b")
     def get_acc_needs_signing(self,accomID):
+        """
+        Returns whether the specified accomplishment needs to be signed (verified) or not.
+        
+        Every accomplishment has a unique identifier called an `Accomplishment ID` that is comprised of the collection
+        and the name of the accomplishment itself (e.g. `ubuntu-community` collection and `registered-in-launchpad`
+        accomplishment has an accomplishment ID of `ubuntu-community/registered-on-launchpad`). You pass this function this
+        `Accomplishment ID` as it's parameter.
+        
+        Global accomplishments, that is...accomplishments that are within the context of community, typically need to be verified
+        to ensure people don't fake them. I know, who would think that people would fake these kinds of things. ;-)
+        
+        Accomplishments that need verifying specify this requirement, and this function returns whether the specified accomplishments
+        needs signing (verifying) or not.
+        
+        Args:
+            accomID (str):  the `Accomplishment ID` for a given accomplishment (e.g. `ubuntu-community/registered-on-launchpad`).
+        Returns:
+            (bool) `True` if the accomplishment needs signing, `False` if not.
+        Example:
+            >>> obj.get_acc_categories("ubuntu-community/registered-on-launchpad")
+            True
+        """
+        
         return self.api.get_acc_needs_signing(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="as")
     def get_acc_depends(self,accomID):
+        """
+        Returns a list of accomplishments that the accomplishment you pass depends on.
+        
+        Every accomplishment has a unique identifier called an `Accomplishment ID` that is comprised of the collection
+        and the name of the accomplishment itself (e.g. `ubuntu-community` collection and `registered-in-launchpad`
+        accomplishment has an accomplishment ID of `ubuntu-community/registered-on-launchpad`). You pass this function this
+        `Accomplishment ID` as it's parameter.
+        
+        Accomplishments can depend on other accomplishments before they are completed: if an accomplishment has not had it's
+        dependency satisfied, it should be shown in clients as locked.
+        
+        Accomplishments can specify multiple dependencies and this function returns a list of dependencies that the accomplishment
+        you pass to this function depends on. These dependencies are also returns as accomplishment IDs. If no dependencies exist for
+        the specified accomplishment, an empty list is returned.
+        
+        Args:
+            accomID (str):  the `Accomplishment ID` for a given accomplishment (e.g. `ubuntu-community/registered-on-launchpad`).
+        Returns:
+            (list) the list of dependencies for the accomplishment.
+        Example:
+            >>> obj.get_acc_depends("ubuntu-community/ubuntu-member")
+            ["ubuntu-community/registered-on-launchpad"]
+        """
+        
         return self.api.get_acc_depends(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="b")
     def get_acc_is_unlocked(self,accomID):
+        """
+        Returns whether the specified accomplishment is unlocked or not (whether it's dependencies have been satisfied or not).
+        
+        Every accomplishment has a unique identifier called an `Accomplishment ID` that is comprised of the collection
+        and the name of the accomplishment itself (e.g. `ubuntu-community` collection and `registered-in-launchpad`
+        accomplishment has an accomplishment ID of `ubuntu-community/registered-on-launchpad`). You pass this function this
+        `Accomplishment ID` as it's parameter.        
+        
+        Accomplishments can depend on other accomplishments before they are completed: if an accomplishment has not had it's
+        dependency satisfied, it should be shown in clients as locked. This function checks whether such dependencies have been
+        completed or not.
+        
+        Args:
+            accomID (str):  the `Accomplishment ID` for a given accomplishment (e.g. `ubuntu-community/registered-on-launchpad`).
+        Returns:
+            (bool) `True` if the dependencies have been completed, `False` if not.
+        Example:
+            >>> obj.get_acc_is_unlocked("ubuntu-community/registered-on-launchpad")
+            True
+        """
+        
         return self.api.get_acc_is_unlocked(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
@@ -226,6 +406,25 @@ class AccomplishmentsDBusService(service.DBusExportService):
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="s")
     def get_acc_icon(self,accomID):
+        """
+        Returns the icon name for the specified accomplishment.
+        
+        Every accomplishment has a unique identifier called an `Accomplishment ID` that is comprised of the collection
+        and the name of the accomplishment itself (e.g. `ubuntu-community` collection and `registered-in-launchpad`
+        accomplishment has an accomplishment ID of `ubuntu-community/registered-on-launchpad`). You pass this function this
+        `Accomplishment ID` as it's parameter.
+        
+        Note: this function only passes the icon name and not the full path to the icon. If you need this you should refer to
+        `get_acc_icon_path()`.
+                        
+        Args:
+            accomID (str):  the `Accomplishment ID` for a given accomplishment (e.g. `ubuntu-community/registered-on-launchpad`).
+        Returns:
+            (str) the name of the icon.
+        Example:
+            >>> obj.get_acc_icon("ubuntu-community/registered-on-launchpad")
+            default.png
+        """
         return self.api.get_acc_icon(accomID)        
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
@@ -381,11 +580,46 @@ class AccomplishmentsDBusService(service.DBusExportService):
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="aa{sv}")
     def build_viewer_database(self):
+        """
+        Returns a database of accomplishment information on the system.
+
+        IMPORTANT: you should only ever use this function when you need to as it takes
+        some time to process and return the data. It is recommended that you run this once and import
+        the data into your own data structure in your client and then only re-run this function when
+        you need to.
+        
+        Args:
+            None
+        Returns:
+            (dict) The list of categories from that collection.
+        Example:
+            >>> obj.build_viewer_database()
+            {dbus.String(u'date-completed'): dbus.String(u'2012-07-04 19:18', variant_level=1), dbus.String(u'locked'): dbus.Boolean(False, variant_level=1), dbus.String(u'title'): dbus.String(u'Filed Bug that was Confirmed', variant_level=1), dbus.String(u'collection-human'): dbus.String(u'Ubuntu Community', variant_level=1), dbus.String(u'collection'): dbus.String(u'ubuntu-community', variant_level=1), dbus.String(u'accomplished'): dbus.Boolean(True, variant_level=1), dbus.String(u'iconpath'): dbus.String(u'/home/jono/.cache/accomplishments/trophyimages/ubuntu-community/default.png', variant_level=1), dbus.String(u'id'): dbus.String(u'ubuntu-community/first-bug-confirmed', variant_level=1), dbus.String(u'categories'): dbus.Array([dbus.String(u'QA')], signature=dbus.Signature('s'), variant_level=1)}
+        """
+                
         return self.api.build_viewer_database()
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="s")
     def get_API_version(self):
+        """
+        Returns the accomplishments API version for the installed daemon.
+
+        This function is useful when you want to ensure that an accomplishment's API version works with the installed
+        daemon.
+        
+        Please note: the accomplishment's API references the API and might not match the version of the daemon. As an example, the
+        accomplishments API might be 0.2, but the daemon might be version 1.2 and still use the 0.2 accomplishments API version.
+        
+        Args:
+            None
+        Returns:
+            (str) The API version
+        Example:
+            >>> obj.get_API_version()
+            0.2
+        """
+        
         return self.api.get_API_version()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',

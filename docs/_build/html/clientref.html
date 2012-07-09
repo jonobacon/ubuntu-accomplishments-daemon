@@ -26,6 +26,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Ubuntu Accomplishments Daemon 0.3 documentation" href="index.html" />
+    <link rel="next" title="Ubuntu Accomplishments Daemon Reference" href="daemonref.html" />
     <link rel="prev" title="Welcome to Ubuntu Accomplishments Daemon’s documentation!" href="index.html" /> 
   </head>
   <body>
@@ -35,6 +36,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="daemonref.html" title="Ubuntu Accomplishments Daemon Reference"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Welcome to Ubuntu Accomplishments Daemon’s documentation!"
              accesskey="P">previous</a> |</li>
@@ -53,6 +57,297 @@
 <dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService">
 <em class="property">class </em><tt class="descclassname">accomplishments.daemon.dbusapi.</tt><tt class="descname">AccomplishmentsDBusService</tt><big>(</big><em>bus_name</em>, <em>session_bus</em>, <em>object_path='/'</em>, <em>show_notifications=True</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.accomplish">
+<tt class="descname">accomplish</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.accomplish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.accomplish" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will accomplish the specified accomplishment.</p>
+<p>Every accomplishment has a unique identifier called an <cite>Accomplishment ID</cite> that is comprised of the collection
+and the name of the accomplishment itself (e.g. <cite>ubuntu-community</cite> collection and <cite>registered-in-launchpad</cite>
+accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-launchpad</cite>). You pass this function this
+<cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
+<p>For this function to work, the specified accomplishment needs to exist on the system. For more details of how to create
+accomplishments and add them to a collection, see <a class="reference external" href="https://wiki.ubuntu.com/Accomplishments/Creating">https://wiki.ubuntu.com/Accomplishments/Creating</a></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dt>Returns:</dt>
+<dd>None</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">accomplish</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.build_viewer_database">
+<tt class="descname">build_viewer_database</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.build_viewer_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.build_viewer_database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a database of accomplishment information on the system.</p>
+<p>IMPORTANT: you should only ever use this function when you need to as it takes
+some time to process and return the data. It is recommended that you run this once and import
+the data into your own data structure in your client and then only re-run this function when
+you need to.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None</dd>
+<dt>Returns:</dt>
+<dd>(dict) The list of categories from that collection.</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">build_viewer_database</span><span class="p">()</span>
+<span class="go">{dbus.String(u&#39;date-completed&#39;): dbus.String(u&#39;2012-07-04 19:18&#39;, variant_level=1), dbus.String(u&#39;locked&#39;): dbus.Boolean(False, variant_level=1), dbus.String(u&#39;title&#39;): dbus.String(u&#39;Filed Bug that was Confirmed&#39;, variant_level=1), dbus.String(u&#39;collection-human&#39;): dbus.String(u&#39;Ubuntu Community&#39;, variant_level=1), dbus.String(u&#39;collection&#39;): dbus.String(u&#39;ubuntu-community&#39;, variant_level=1), dbus.String(u&#39;accomplished&#39;): dbus.Boolean(True, variant_level=1), dbus.String(u&#39;iconpath&#39;): dbus.String(u&#39;/home/jono/.cache/accomplishments/trophyimages/ubuntu-community/default.png&#39;, variant_level=1), dbus.String(u&#39;id&#39;): dbus.String(u&#39;ubuntu-community/first-bug-confirmed&#39;, variant_level=1), dbus.String(u&#39;categories&#39;): dbus.Array([dbus.String(u&#39;QA&#39;)], signature=dbus.Signature(&#39;s&#39;), variant_level=1)}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.create_extra_information_file">
+<tt class="descname">create_extra_information_file</tt><big>(</big><em>item</em>, <em>data</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.create_extra_information_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.create_extra_information_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an extra-information file that resides in the user&#8217;s trophy share.</p>
+<p>It is common for accomplishments to require additional information to verify their completion. Clients
+should ask for this information and then use this function to write the information to the correct part
+of the trophy share. You can read more about how Extra Information works at <a class="reference external" href="https://wiki.ubuntu.com/Accomplishments/Creating/Guide/Theory">https://wiki.ubuntu.com/Accomplishments/Creating/Guide/Theory</a></p>
+<p>As an example, if an accomplishment requires <cite>launchpad-email</cite> and the data for that information is <cite>dave&#64;megadeth.com</cite>, this
+will be written to <cite>~/.local/share/accomplishments/trophies/.extrainformation/launchpad-email</cite> and the file will contain
+<cite>dave&#64;megadeth.com</cite>. Never write to this location directly, just use this function to do this.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>item (str): the extra-information type in question.
+data (str): the data for the specified item.</dd>
+<dt>Returns:</dt>
+<dd>None</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">create_extra_information_file</span><span class="p">(</span><span class="s">&quot;launchpad-email&quot;</span><span class="p">,</span> <span class="s">&quot;dave@megadeth.com&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_API_version">
+<tt class="descname">get_API_version</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_API_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_API_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the accomplishments API version for the installed daemon.</p>
+<p>This function is useful when you want to ensure that an accomplishment&#8217;s API version works with the installed
+daemon.</p>
+<p>Please note: the accomplishment&#8217;s API references the API and might not match the version of the daemon. As an example, the
+accomplishments API might be 0.2, but the daemon might be version 1.2 and still use the 0.2 accomplishments API version.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None</dd>
+<dt>Returns:</dt>
+<dd>(str) The API version</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_API_version</span><span class="p">()</span>
+<span class="go">0.2</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_categories">
+<tt class="descname">get_acc_categories</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_acc_categories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_categories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of categories that the specified accomplishment is part of.</p>
+<p>Every accomplishment has a unique identifier called an <cite>Accomplishment ID</cite> that is comprised of the collection
+and the name of the accomplishment itself (e.g. <cite>ubuntu-community</cite> collection and <cite>registered-in-launchpad</cite>
+accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-launchpad</cite>). You pass this function this
+<cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
+<p>Categories can be specified in accomplishments as singular (e.g. <cite>Ask Ubuntu</cite>) or also include sub-categories
+(e.g. <cite>Ask Ubuntu:Asking</cite>); this function returns the categories in these formats.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dt>Returns:</dt>
+<dd>(list) the list of categories.</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_categories</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">[&quot;Launchpad&quot;]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_collection">
+<tt class="descname">get_acc_collection</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_acc_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the collection that a given accomplishment is part of.</p>
+<p>Every accomplishment has a unique identifier called an <cite>Accomplishment ID</cite> that is comprised of the collection
+and the name of the accomplishment itself (e.g. <cite>ubuntu-community</cite> collection and <cite>registered-in-launchpad</cite>
+accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-launchpad</cite>). You pass this function this
+<cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
+<p>This function returns the collection that the accomplishment specified by <cite>accomID</cite>) is part of.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dt>Returns:</dt>
+<dd>(str) the collection name.</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_collection</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">ubuntu-community</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_data">
+<tt class="descname">get_acc_data</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_acc_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a database of accomplishment information on the system.</p>
+<blockquote>
+<div><p>Every accomplishment has a unique identifier called an <cite>Accomplishment ID</cite> that is comprised of the collection
+and the name of the accomplishment itself (e.g. <cite>ubuntu-community</cite> collection and <cite>registered-in-launchpad</cite>
+accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-launchpad</cite>). You pass this function this
+<cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
+<p>All accomplishments have information about the accomplishment itself, and this function returns all of this data for the
+specified accomplishment. This is often useful for displaying this information to the user.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dt>Returns:</dt>
+<dd>(dict) The data for the accomplishment.</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">build_viewer_database</span><span class="p">()</span>
+<span class="go">{ dbus.String(u&#39;lang&#39;): dbus.String(u&#39;en&#39;, variant_level=1), dbus.String(u&#39;needs-signing&#39;): dbus.String(u&#39;true&#39;, variant_level=1), dbus.String(u&#39;date-completed&#39;): dbus.String(u&#39;2012-06-12 22:12&#39;, variant_level=1), dbus.String(u&#39;set&#39;): dbus.String(u&#39;infrastructure&#39;, variant_level=1), dbus.String(u&#39;locked&#39;): dbus.Boolean(False, variant_level=1), dbus.String(u&#39;help&#39;): dbus.String(u&#39;#launchpad on Freenode&#39;, variant_level=1), dbus.String(u&#39;links&#39;): dbus.String(u&#39;http://www.launchpad.net&#39;, variant_level=1), dbus.String(u&#39;title&#39;): dbus.String(u&#39;Registered on Launchpad&#39;, variant_level=1), dbus.String(u&#39;script-path&#39;): dbus.String(u&#39;/home/jono/source/ubuntu-community-accomplishments/scripts/ubuntu-community/infrastructure/registered-on-launchpad.py&#39;, variant_level=1), dbus.String(u&#39;base-path&#39;): dbus.String(u&#39;/home/jono/source/ubuntu-community-accomplishments/accomplishments/ubuntu-community&#39;, variant_level=1), dbus.String(u&#39;completed&#39;): dbus.Boolean(True, variant_level=1), dbus.String(u&#39;author&#39;): dbus.String(u&#39;Jono Bacon &lt;jono@ubuntu.com&gt;&#39;, variant_level=1), dbus.String(u&#39;collection&#39;): dbus.String(u&#39;ubuntu-community&#39;, variant_level=1), dbus.String(u&#39;summary&#39;): dbus.String(u&#39;Launchpad is a website in which we do much of our work in Ubuntu. There we build packages, file and fix bugs, perform translations, manage code, and other activities.</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+<p>You will need to register an account with Launchpad to participate in much of the Ubuntu community. Fortunately, registering is simple, safe, and free.&#8217;, variant_level=1), dbus.String(u&#8217;needs-information&#8217;): dbus.String(u&#8217;launchpad-email&#8217;, variant_level=1), dbus.String(u&#8217;steps&#8217;): dbus.String(u&#8217;Load a web browser on your computer.
+In your web browser go to &lt;tt&gt;http://www.launchpad.net&lt;/tt&gt;.
+Click the &lt;i&gt;Register&lt;/i&gt; link in the corner of the screen to register.&#8217;, variant_level=1), dbus.String(u&#8217;icon&#8217;): dbus.String(u&#8217;default.png&#8217;, variant_level=1), dbus.String(u&#8217;type&#8217;): dbus.String(u&#8217;accomplishment&#8217;, variant_level=1), dbus.String(u&#8217;categories&#8217;): dbus.Array([dbus.String(u&#8217;Launchpad&#8217;)], signature=dbus.Signature(&#8216;s&#8217;), variant_level=1), dbus.String(u&#8217;description&#8217;): dbus.String(u&#8217;Registered a Launchpad account&#8217;, variant_level=1) }</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_depends">
+<tt class="descname">get_acc_depends</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_acc_depends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_depends" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of accomplishments that the accomplishment you pass depends on.</p>
+<p>Every accomplishment has a unique identifier called an <cite>Accomplishment ID</cite> that is comprised of the collection
+and the name of the accomplishment itself (e.g. <cite>ubuntu-community</cite> collection and <cite>registered-in-launchpad</cite>
+accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-launchpad</cite>). You pass this function this
+<cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
+<p>Accomplishments can depend on other accomplishments before they are completed: if an accomplishment has not had it&#8217;s
+dependency satisfied, it should be shown in clients as locked.</p>
+<p>Accomplishments can specify multiple dependencies and this function returns a list of dependencies that the accomplishment
+you pass to this function depends on. These dependencies are also returns as accomplishment IDs. If no dependencies exist for
+the specified accomplishment, an empty list is returned.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dt>Returns:</dt>
+<dd>(list) the list of dependencies for the accomplishment.</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_depends</span><span class="p">(</span><span class="s">&quot;ubuntu-community/ubuntu-member&quot;</span><span class="p">)</span>
+<span class="go">[&quot;ubuntu-community/registered-on-launchpad&quot;]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_exists">
+<tt class="descname">get_acc_exists</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_acc_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether the specified accomplishment is recognized on the system.</p>
+<p>Every accomplishment has a unique identifier called an <cite>Accomplishment ID</cite> that is comprised of the collection
+and the name of the accomplishment itself (e.g. <cite>ubuntu-community</cite> collection and <cite>registered-in-launchpad</cite>
+accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-launchpad</cite>). You pass this function this
+<cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dt>Returns:</dt>
+<dd>(bool) returns <cite>True</cite> is the accomplishment exists, and <cite>False</cite> if not.</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_exists</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_icon">
+<tt class="descname">get_acc_icon</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_acc_icon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_icon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the icon name for the specified accomplishment.</p>
+<p>Every accomplishment has a unique identifier called an <cite>Accomplishment ID</cite> that is comprised of the collection
+and the name of the accomplishment itself (e.g. <cite>ubuntu-community</cite> collection and <cite>registered-in-launchpad</cite>
+accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-launchpad</cite>). You pass this function this
+<cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
+<p>Note: this function only passes the icon name and not the full path to the icon. If you need this you should refer to
+<cite>get_acc_icon_path()</cite>.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dt>Returns:</dt>
+<dd>(str) the name of the icon.</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_icon</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">default.png</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_is_unlocked">
+<tt class="descname">get_acc_is_unlocked</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_acc_is_unlocked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_is_unlocked" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether the specified accomplishment is unlocked or not (whether it&#8217;s dependencies have been satisfied or not).</p>
+<p>Every accomplishment has a unique identifier called an <cite>Accomplishment ID</cite> that is comprised of the collection
+and the name of the accomplishment itself (e.g. <cite>ubuntu-community</cite> collection and <cite>registered-in-launchpad</cite>
+accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-launchpad</cite>). You pass this function this
+<cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
+<p>Accomplishments can depend on other accomplishments before they are completed: if an accomplishment has not had it&#8217;s
+dependency satisfied, it should be shown in clients as locked. This function checks whether such dependencies have been
+completed or not.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dt>Returns:</dt>
+<dd>(bool) <cite>True</cite> if the dependencies have been completed, <cite>False</cite> if not.</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_is_unlocked</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_needs_signing">
+<tt class="descname">get_acc_needs_signing</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_acc_needs_signing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_needs_signing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether the specified accomplishment needs to be signed (verified) or not.</p>
+<p>Every accomplishment has a unique identifier called an <cite>Accomplishment ID</cite> that is comprised of the collection
+and the name of the accomplishment itself (e.g. <cite>ubuntu-community</cite> collection and <cite>registered-in-launchpad</cite>
+accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-launchpad</cite>). You pass this function this
+<cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
+<p>Global accomplishments, that is...accomplishments that are within the context of community, typically need to be verified
+to ensure people don&#8217;t fake them. I know, who would think that people would fake these kinds of things. ;-)</p>
+<p>Accomplishments that need verifying specify this requirement, and this function returns whether the specified accomplishments
+needs signing (verifying) or not.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dt>Returns:</dt>
+<dd>(bool) <cite>True</cite> if the accomplishment needs signing, <cite>False</cite> if not.</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_categories</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_collection_authors">
 <tt class="descname">get_collection_authors</tt><big>(</big><em>collection</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_collection_authors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_collection_authors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of authors for a given collection.</p>
@@ -155,6 +450,9 @@ we use to refer to the group of accomplishments that form that collection.</p>
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
                         title="previous chapter">Welcome to Ubuntu Accomplishments Daemon&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="daemonref.html"
+                        title="next chapter">Ubuntu Accomplishments Daemon Reference</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/clientref.txt"
@@ -183,6 +481,9 @@ we use to refer to the group of accomplishments that form that collection.</p>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="daemonref.html" title="Ubuntu Accomplishments Daemon Reference"
+             >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Welcome to Ubuntu Accomplishments Daemon’s documentation!"
              >previous</a> |</li>
