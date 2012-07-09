@@ -27,7 +27,8 @@ import pwd
 import subprocess
 import time
 import locale
-
+from collections import deque
+ 
 import dbus
 import dbus.service
 
@@ -81,11 +82,30 @@ class AsyncAPI(object):
     for better readability and separation of concerns.
     """
     def __init__(self, parent):
+    
         self.parent = parent
+        
+        # The following variable represents state of scripts.Its state 
+        # can be either RUNNING, NOT_RUNNING or NEEDS_RE_RUNNING.
+        # The use of this flag is to aviod running several instances of 
+        # process_scheduled_scripts, which might result in undefined, troubleful
+        # behavior. The flags are NOT_RUNNING by default, and are set to
+        # RUNNING when the process_scheduled_scripts starts. However, if it has been
+        # already set to RUNNING, the function will abort, and will instead set the
+        # flag to NEEDS_RE_RUNNING, in order to mark that the scripts have to
+        # be run once more, because something might have changed since we run
+        # them the last time (as the process_scheduled_scripts was called while 
+        # scripts were being executed). Setting the flag to NEEDS_RE_RUNNING 
+        # will cause process_scheduled_scripts to redo everything after having
+        # finished it's current task in progress. Otherwise it will eventually
+        # set the flag back to NOT_RUNNING.
+        self.scripts_state = NOT_RUNNING
 
     @staticmethod
     def run_a_subprocess(command):
-        log.msg("Running subprocess command: " + str(command))
+        # Commented out this debug message, as it creates lots of junk, 
+        # and is not needed for common troubleshooting
+        # log.msg("Running subprocess command: " + str(command))
         pprotocol = SubprocessReturnCodeProtocol()
         reactor.spawnProcess(pprotocol, command[0], command, env=os.environ)
         return pprotocol.returnCodeDeferred
@@ -173,35 +193,33 @@ class AsyncAPI(object):
 
     # XXX let's rewrite this to use deferreds explicitly
     @defer.inlineCallbacks
-    def run_scripts_for_user(self, uid):
+    def process_scheduled_scripts(self):
+    
+        uid = os.getuid()
+        
         # The following avoids running multiple instances of this function,
         # which might get very messy and cause a lot of trouble. Simulatnously
         # run scripts would be the case if user recieves several .asc files
         # within a short time, the scripts take extraordinary time to run,
         # or for various other reasons.
         # NOTE: detailed explanation of scripts_state mechanism is included
-        # near it's initialisation in Accomplishments.__init__(...).
-        if uid in self.parent.scripts_state:
-            if self.parent.scripts_state[uid] is RUNNING:
-                log.msg("Aborting running scripts, execution already in progress. Will re-do this when current run ends.")
-                # scripts are already being run for that user, but since something
-                # called that function, maybe we need to re-run them because
-                # something has changed since last call, so let's schedule the
-                # re-running immidiatelly after finishing this run, and abort
-                self.parent.scripts_state[uid] = NEEDS_RE_RUNNING
-                return
-            elif self.parent.scripts_state[uid] is NEEDS_RE_RUNNING:
-                log.msg("Aborting running scripts, execution already in progress. Re-runing scripts has already been scheduled.")
-                # already scheduled, so just aborting
-                return
+        # near it's initialisation in __init__(...).
+        if self.scripts_state is RUNNING:
+            log.msg("Aborting running scripts, execution already in progress. Will re-do this when current run ends.")
+            # scripts are already being run for that user, but since something
+            # called that function, maybe we need to re-run them because
+            # something has changed since last call, so let's schedule the
+            # re-running immidiatelly after finishing this run, and abort
+            self.scripts_state = NEEDS_RE_RUNNING
+            return
+        elif self.scripts_state is NEEDS_RE_RUNNING:
+            log.msg("Aborting running scripts, execution already in progress. Re-runing scripts has already been scheduled.")
+            # already scheduled, so just aborting
+            return
         # if above conditions failed, that means the scripts are not being run
         # this user, so we can continue normally, marking the scripts as running...
-        self.parent.scripts_state[uid] = RUNNING
+        self.scripts_state = RUNNING
             
-        log.msg("--- Starting Running Scripts ---")
-        timestart = time.time()
-        self.parent.service.scriptrunner_start()
-
         # Is the user currently logged in and running a gnome session?
         # XXX use deferToThread
         username = pwd.getpwuid(uid).pw_name
@@ -214,7 +232,7 @@ class AsyncAPI(object):
             # user does not have gnome-session running or isn't logged in at
             # all
             log.msg("No gnome-session process for user %s" % username)
-            self.parent.scripts_state[uid] = NOT_RUNNING #unmarking to avoid dead-lock
+            self.scripts_state = NOT_RUNNING #unmarking to avoid dead-lock
             return
         # XXX this is a blocking call and can't be here if we want to take
         # advantage of deferreds; instead, rewrite this so that the blocking
@@ -228,7 +246,7 @@ class AsyncAPI(object):
             # user does not have gnome-session running or isn't logged in at
             # all
             log.msg("No gnome-session environment for user %s" % username)
-            self.parent.scripts_state[uid] = NOT_RUNNING #unmarking to avoid dead-lock
+            self.scripts_state = NOT_RUNNING #unmarking to avoid dead-lock
             return
         fp.close()
 
@@ -237,6 +255,7 @@ class AsyncAPI(object):
 
         required_envars = ['DBUS_SESSION_BUS_ADDRESS']
         env = dict([kv for kv in envars.items() if kv[0] in required_envars])
+        print env
         # XXX use deferToThread
         oldenviron = os.environ
         os.environ.update(env)
@@ -257,14 +276,19 @@ class AsyncAPI(object):
         # XXX all parent calls should be refactored out of the AsyncAPI class
         # to keep the code cleaner and the logic more limited to one particular
         # task
-        accoms = self.parent.list_unlocked_not_completed()
-                
-        totalscripts = len(accoms)
-        log.msg("Need to run (%d) scripts:" % totalscripts)
-        log.msg(str(accoms))
+        
+        # Get the accomID we are going to run...
+        queuesize = len(self.parent.scripts_queue)
+        
+        log.msg("--- Starting Running Scripts - %d items on the queue ---" % (queuesize))
+        timestart = time.time()
+        self.parent.service.scriptrunner_start()
 
-        scriptcount = 1
-        for accomID in accoms:
+        while queuesize > 0:
+            accomID = self.parent.scripts_queue.popleft()
+            queuesize = len(self.parent.scripts_queue)
+            log.msg("Running %s, left on queue: %d" % (accomID, queuesize))
+            
             # First ensure that the acccomplishemt has not yet completed.
             # It happens that the .asc file is present, but we miss the
             # signal it triggers - so here we can re-check if it is not
@@ -272,15 +296,15 @@ class AsyncAPI(object):
             if self.parent._check_if_acc_is_completed(accomID):
                 self.parent.accomplish(accomID)
                 continue
-            
             # Run the acc script and determine exit code.
             scriptpath = self.parent.get_acc_script_path(accomID)
-            msg = "%s/%s: %s" % (scriptcount, totalscripts, scriptpath)
-            log.msg(msg)
+            if scriptpath is None:
+                log.msg("...No script for this accomplishment, skipping")
+                continue
             exitcode = yield self.run_a_subprocess([scriptpath])
             if exitcode == 0:
-                self.parent.accomplish(accomID)
                 log.msg("...Accomplished")
+                self.parent.accomplish(accomID)
             elif exitcode == 1:
                 log.msg("...Not Accomplished")
             elif exitcode == 2:
@@ -289,8 +313,10 @@ class AsyncAPI(object):
                 log.msg("...Could not get extra-information")
             else:
                 log.msg("...Error code %d" % exitcode)
-            scriptcount = scriptcount + 1
 
+        
+        log.msg("The queue is now empty - stopping the scriptrunner.")
+        
         os.environ = oldenviron
 
         # XXX eventually the code in this method will be rewritten using
@@ -300,17 +326,17 @@ class AsyncAPI(object):
         timefinal = round((timeend - timestart), 2)
 
         log.msg(
-            "--- Completed Running Scripts in %.2f seconds---" % timefinal)
+            "--- Emptied the scripts queue in %.2f seconds---" % timefinal)
         self.parent.service.scriptrunner_finish()
         
         # checking whether this function was called while script execution was in progress...
-        rerun = (self.parent.scripts_state[uid] is NEEDS_RE_RUNNING)
+        rerun = (self.scripts_state is NEEDS_RE_RUNNING)
         # unsetting the lock
-        self.parent.scripts_state[uid] = NOT_RUNNING
+        self.scripts_state = NOT_RUNNING
         # re-running scripts if needed
         if rerun:
             log.msg("Re-running scripts as intended...")
-            self.run_scripts_for_user(uid)
+            self.process_scheduled_scripts()
 
 
 class Accomplishments(object):
@@ -334,24 +360,7 @@ class Accomplishments(object):
         self.service = service
         self.asyncapi = AsyncAPI(self)
 
-        # The following dictionary represents state of scripts.
-        # It's a dictionary and not a single variable, because scripts may be run
-        # for each user independently. For each user, the state can be either
-        # RUNNING, NOT_RUNNING or NEEDS_RE_RUNNING. If an entry for a
-        # particular UID does not exist, it should be treated as NOT_RUNNING.
-        # The use of this flag is to aviod running several instances of 
-        # run_scripts_for_user, which might result in undefined, troubleful
-        # behavior. The flags are NOT_RUNNING by default, and are set to
-        # RUNNING when the run_scripts_for_user starts. However, if it has been
-        # already set to RUNNING, the function will abort, and will instead set the
-        # flag to NEEDS_RE_RUNNING, in order to mark that the scripts have to
-        # be run once more, because something might have changed since we run
-        # them the last time (as the run_scripts_for_user was called while 
-        # scripts were being executed). Setting the flag to NEEDS_RE_RUNNING 
-        # will cause run_scripts_for_user to redo everything after having
-        # finished it's current task in progress. Otherwise it will eventually
-        # set the flag back to NOT_RUNNING.
-        self.scripts_state = {}
+        self.scripts_queue = deque()
 
         # create config / data dirs if they don't exist
         self.dir_config = os.path.join(
@@ -387,10 +396,6 @@ class Accomplishments(object):
 
         self.reload_accom_database()
 		
-        # XXX this wait-until thing should go away; it should be replaced by a
-        # deferred-returning function that has a callback which fires off
-        # generate_all_trophis and schedule_run_scripts...
-        #self._wait_until_a_sig_file_arrives()
         self.sd.connect_signal("DownloadFinished", self._process_recieved_asc_file)
         self._create_all_trophy_icons()
 
@@ -730,21 +735,6 @@ class Accomplishments(object):
             
         return result
 
-    def run_scripts_for_all_active_users(self):
-        for uid in [x.pw_uid for x in pwd.getpwall()
-            if x.pw_dir.startswith('/home/') and x.pw_shell != '/bin/false']:
-            os.seteuid(0)
-            self.asyncapi.run_scripts_for_user(uid)
-
-    def run_scripts(self, run_by_client):
-        uid = os.getuid()
-        if uid == 0:
-            log.msg("Run scripts for all active users")
-            self.run_scripts_for_all_active_users()
-        else:
-            log.msg("Run scripts for user")
-            self.asyncapi.run_scripts_for_user(uid)
-
     def create_extra_information_file(self, item, data):
         """Does exactly the same as write_extra_information_file(), but it does not
            overwrite any existing data"""
@@ -781,7 +771,7 @@ class Accomplishments(object):
                 self._display_unlocked_bubble(accomID)
                 self._mark_as_completed(accomID)
                 
-            self.run_scripts(0)
+            self.run_scripts()
             
     def write_extra_information_file(self, item, data):
         log.msg(
@@ -1076,7 +1066,11 @@ class Accomplishments(object):
         return self.accDB[accomID]['completed']
         
     def get_acc_script_path(self,accomID):
-        return self.accDB[accomID]['script-path']
+        res = self.accDB[accomID]['script-path']
+        if not os.path.exists(res):
+            return None
+        else:
+            return res
         
     def get_acc_icon(self,accomID):
         return self.accDB[accomID]['icon']
@@ -1153,6 +1147,24 @@ class Accomplishments(object):
     
     def list_collections(self):
         return [col for col in self.accDB if self.accDB[col]['type'] == 'collection']
+        
+    # ====== Scriptrunner functions ======
+    
+    def run_script(self,accomID):
+        if not self.get_acc_exists(accomID):
+            return
+        self.scripts_queue.append(accomID)
+        self.asyncapi.process_scheduled_scripts()
+        
+    def run_scripts(self,which=None):
+        if which == None:
+            self.scripts_queue.extend(self.list_unlocked_not_completed())
+        elif type(which) is int or type(which) is bool or type(which) is dbus.Boolean:
+            log.msg("Note: This call to run_scripts is incorrect, it no more takes an int as an argument (it takes - optionally - list of scripts to run)")
+            self.scripts_queue.extend(self.list_unlocked_not_completed())
+        else:
+            self.scripts_queue.extend(which)
+        self.asyncapi.process_scheduled_scripts()
     
     # ====== Viewer-specific functions ======
         
@@ -1240,7 +1252,7 @@ class Accomplishments(object):
             self._display_accomplished_bubble(accomID)
             self._display_unlocked_bubble(accomID)
             self._mark_as_completed(accomID)
-            self.run_scripts(0)
+            self.run_scripts()
             
         return True
 

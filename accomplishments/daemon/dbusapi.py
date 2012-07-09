@@ -80,8 +80,8 @@ class AccomplishmentsDBusService(service.DBusExportService):
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="b", out_signature="")
-    def run_scripts(self, run_by_client):
-        return self.api.run_scripts(run_by_client)
+    def run_scripts(self, accomIDlist=None):
+        return self.api.run_scripts(accomIDlist)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="ss", out_signature="aa{sv}")
