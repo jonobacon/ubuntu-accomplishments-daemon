@@ -71,7 +71,6 @@ ONLINETROPHIESHOST = "213.138.100.229:8000"
 #flags used for scripts_state
 NOT_RUNNING = 0
 RUNNING = 1
-NEEDS_RE_RUNNING = 2
 
 # XXX the source code needs to be updated to use Twisted async calls better:
 # grep the source code for any *.asyncapi.* references, and if they return
@@ -86,19 +85,14 @@ class AsyncAPI(object):
         self.parent = parent
         
         # The following variable represents state of scripts.Its state 
-        # can be either RUNNING, NOT_RUNNING or NEEDS_RE_RUNNING.
+        # can be either RUNNING or NOT_RUNNING.
         # The use of this flag is to aviod running several instances of 
         # process_scheduled_scripts, which might result in undefined, troubleful
         # behavior. The flags are NOT_RUNNING by default, and are set to
-        # RUNNING when the process_scheduled_scripts starts. However, if it has been
-        # already set to RUNNING, the function will abort, and will instead set the
-        # flag to NEEDS_RE_RUNNING, in order to mark that the scripts have to
-        # be run once more, because something might have changed since we run
-        # them the last time (as the process_scheduled_scripts was called while 
-        # scripts were being executed). Setting the flag to NEEDS_RE_RUNNING 
-        # will cause process_scheduled_scripts to redo everything after having
-        # finished it's current task in progress. Otherwise it will eventually
-        # set the flag back to NOT_RUNNING.
+        # RUNNING when the process_scheduled_scripts starts, and back to
+        # NOT_RUNNING when it exits. This way, if the function is already
+        # processing scripts, another calls will abort, having checked that
+        # this flag is set to RUNNING.
         self.scripts_state = NOT_RUNNING
 
     @staticmethod
@@ -195,31 +189,14 @@ class AsyncAPI(object):
     @defer.inlineCallbacks
     def process_scheduled_scripts(self):
     
-        uid = os.getuid()
-        
-        # The following avoids running multiple instances of this function,
-        # which might get very messy and cause a lot of trouble. Simulatnously
-        # run scripts would be the case if user recieves several .asc files
-        # within a short time, the scripts take extraordinary time to run,
-        # or for various other reasons.
-        # NOTE: detailed explanation of scripts_state mechanism is included
-        # near it's initialisation in __init__(...).
+        # More info on scripts_state can be found in __init__
         if self.scripts_state is RUNNING:
-            log.msg("Aborting running scripts, execution already in progress. Will re-do this when current run ends.")
-            # scripts are already being run for that user, but since something
-            # called that function, maybe we need to re-run them because
-            # something has changed since last call, so let's schedule the
-            # re-running immidiatelly after finishing this run, and abort
-            self.scripts_state = NEEDS_RE_RUNNING
+            # Aborting this call - scriptrunner is already working.
             return
-        elif self.scripts_state is NEEDS_RE_RUNNING:
-            log.msg("Aborting running scripts, execution already in progress. Re-runing scripts has already been scheduled.")
-            # already scheduled, so just aborting
-            return
-        # if above conditions failed, that means the scripts are not being run
-        # this user, so we can continue normally, marking the scripts as running...
+            
         self.scripts_state = RUNNING
             
+        uid = os.getuid()
         # Is the user currently logged in and running a gnome session?
         # XXX use deferToThread
         username = pwd.getpwuid(uid).pw_name
@@ -328,16 +305,8 @@ class AsyncAPI(object):
         log.msg(
             "--- Emptied the scripts queue in %.2f seconds---" % timefinal)
         self.parent.service.scriptrunner_finish()
-        
-        # checking whether this function was called while script execution was in progress...
-        rerun = (self.scripts_state is NEEDS_RE_RUNNING)
-        # unsetting the lock
-        self.scripts_state = NOT_RUNNING
-        # re-running scripts if needed
-        if rerun:
-            log.msg("Re-running scripts as intended...")
-            self.process_scheduled_scripts()
 
+        self.scripts_state = NOT_RUNNING
 
 class Accomplishments(object):
     """The main accomplishments daemon.
@@ -1160,7 +1129,7 @@ class Accomplishments(object):
         if which == None:
             self.scripts_queue.extend(self.list_unlocked_not_completed())
         elif type(which) is int or type(which) is bool or type(which) is dbus.Boolean:
-            log.msg("Note: This call to run_scripts is incorrect, it no more takes an int as an argument (it takes - optionally - list of scripts to run)")
+            log.msg("Note: This call to run_scripts is incorrect, run_scripts no more takes an int as an argument (it takes - optionally - a list of accomID to run their scripts)")
             self.scripts_queue.extend(self.list_unlocked_not_completed())
         else:
             self.scripts_queue.extend(which)
