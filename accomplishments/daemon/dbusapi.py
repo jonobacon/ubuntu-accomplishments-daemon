@@ -79,7 +79,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_all_extra_information()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="as", out_signature="")
+        in_signature="v", out_signature="")
     def run_scripts(self, accomIDlist=None):
         return self.api.run_scripts(accomIDlist)
 

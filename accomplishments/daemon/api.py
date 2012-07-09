@@ -1136,7 +1136,9 @@ class Accomplishments(object):
                 return
             to_schedule = which
         log.msg("Adding to scripts queue: %s " % (str(to_schedule)))
-        self.scripts_queue.extend(to_schedule)
+        for i in to_schedule:
+            if not i in self.scripts_queue:
+                self.scripts_queue.append(i)
         self.asyncapi.start_scriptrunner()
     
     # ====== Viewer-specific functions ======
