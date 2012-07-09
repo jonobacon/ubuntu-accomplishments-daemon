@@ -1,0 +1,222 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Ubuntu Accomplishments Daemon Reference &mdash; Ubuntu Accomplishments Daemon 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Ubuntu Accomplishments Daemon 0.3 documentation" href="index.html" />
+    <link rel="prev" title="Ubuntu Accomplishments Client API Reference" href="clientref.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="clientref.html" title="Ubuntu Accomplishments Client API Reference"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Ubuntu Accomplishments Daemon 0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="ubuntu-accomplishments-daemon-reference">
+<h1>Ubuntu Accomplishments Daemon Reference<a class="headerlink" href="#ubuntu-accomplishments-daemon-reference" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+<dl class="class">
+<dt id="accomplishments.daemon.api.Accomplishments">
+<em class="property">class </em><tt class="descclassname">accomplishments.daemon.api.</tt><tt class="descname">Accomplishments</tt><big>(</big><em>service</em>, <em>show_notifications=None</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments" title="Permalink to this definition">¶</a></dt>
+<dd><p>The main accomplishments daemon.</p>
+<p>No D-Bus required, so that it can be used for testing.</p>
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.create_extra_information_file">
+<tt class="descname">create_extra_information_file</tt><big>(</big><em>item</em>, <em>data</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.create_extra_information_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.create_extra_information_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does exactly the same as write_extra_information_file(), but it does not
+overwrite any existing data</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.get_acc_categories">
+<tt class="descname">get_acc_categories</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_acc_categories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_acc_categories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of categories for a given accomplishment. This can include sub-categories (which are formatted
+like &#8216;category:subcategory&#8217; (e.g. <cite>AskUbuntu:Asking</cite>)).</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>accomID (str):  The Accomplishment ID (e.g. &#8216;ubuntu-community/registered-on-launchpad&#8217;)</dd>
+<dt>Returns:</dt>
+<dd>(list) The list of categories.</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_categories</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">[&quot;Launchpad&quot;]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.get_acc_date_completed">
+<tt class="descname">get_acc_date_completed</tt><big>(</big><em>accomID</em><big>)</big><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_acc_date_completed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the date that the accomplishment specified by &#8216;accomID&#8217; was completed.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>accomID (str):  The Accomplishment ID (e.g. &#8216;ubuntu-community/registered-on-launchpad&#8217;)</dd>
+<dt>Returns:</dt>
+<dd>(list) The list of categories.</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_completed</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">[&quot;2012-06-15 12:32&quot;]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.get_all_extra_information">
+<tt class="descname">get_all_extra_information</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_all_extra_information"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_all_extra_information" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dictionary of all information for the accomplishments
+to authticate. Returns {application, needs-information, label,
+description, value}.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.get_all_extra_information_required">
+<tt class="descname">get_all_extra_information_required</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_all_extra_information_required"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_all_extra_information_required" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dictionary of all information required for the accomplishments
+to authticate that has not been set yet. Returns {application,
+needs-information, label, description} Returns only these, which value is not set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.get_config_value">
+<tt class="descname">get_config_value</tt><big>(</big><em>section</em>, <em>item</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_config_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_config_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a configuration value from the .accomplishments file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.get_extra_information">
+<tt class="descname">get_extra_information</tt><big>(</big><em>coll</em>, <em>item</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_extra_information"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_extra_information" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is particularly sensitive.
+It is used by all global accomplishment scripts.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.get_published_status">
+<tt class="descname">get_published_status</tt><big>(</big><big>)</big><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_published_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detect if we are currently publishing online or not. Returns
+True if we are or False if we are not.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.invalidate_extra_information">
+<tt class="descname">invalidate_extra_information</tt><big>(</big><em>extrainfo</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.invalidate_extra_information"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.invalidate_extra_information" title="Permalink to this definition">¶</a></dt>
+<dd><p>This used to remove all trophies, but since it is essential to
+preserve them, this is no longer the case</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.write_config_file_item">
+<tt class="descname">write_config_file_item</tt><big>(</big><em>section</em>, <em>item</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.write_config_file_item"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.write_config_file_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a configuration value in the .accomplishments file</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="accomplishments.daemon.api.AsyncAPI">
+<em class="property">class </em><tt class="descclassname">accomplishments.daemon.api.</tt><tt class="descname">AsyncAPI</tt><big>(</big><em>parent</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#AsyncAPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.AsyncAPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class simply organizes all the Twisted calls into a single location
+for better readability and separation of concerns.</p>
+<dl class="method">
+<dt id="accomplishments.daemon.api.AsyncAPI.register_trophy_dir">
+<tt class="descname">register_trophy_dir</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#AsyncAPI.register_trophy_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.AsyncAPI.register_trophy_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the Ubuntu One share for the trophydir and offers it to the
+server. Returns True if the folder was successfully shared, False if
+not.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="clientref.html"
+                        title="previous chapter">Ubuntu Accomplishments Client API Reference</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/daemonref.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="clientref.html" title="Ubuntu Accomplishments Client API Reference"
+             >previous</a> |</li>
+        <li><a href="index.html">Ubuntu Accomplishments Daemon 0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Jono Bacon.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

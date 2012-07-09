@@ -99,7 +99,7 @@
     <span class="k">return</span> <span class="n">dbus</span><span class="o">.</span><span class="n">Interface</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&quot;org.ubuntu.accomplishments&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="AccomplishmentsDBusService"><a class="viewcode-back" href="../../../index.html#accomplishments.daemon.dbusapi.AccomplishmentsDBusService">[docs]</a><span class="k">class</span> <span class="nc">AccomplishmentsDBusService</span><span class="p">(</span><span class="n">service</span><span class="o">.</span><span class="n">DBusExportService</span><span class="p">):</span>
+<div class="viewcode-block" id="AccomplishmentsDBusService"><a class="viewcode-back" href="../../../clientref.html#accomplishments.daemon.dbusapi.AccomplishmentsDBusService">[docs]</a><span class="k">class</span> <span class="nc">AccomplishmentsDBusService</span><span class="p">(</span><span class="n">service</span><span class="o">.</span><span class="n">DBusExportService</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bus_name</span><span class="p">,</span> <span class="n">session_bus</span><span class="p">,</span> <span class="n">object_path</span><span class="o">=</span><span class="s">&quot;/&quot;</span><span class="p">,</span> 
@@ -293,24 +293,24 @@
         
     <span class="nd">@dbus.service.method</span><span class="p">(</span><span class="n">dbus_interface</span><span class="o">=</span><span class="s">&#39;org.ubuntu.accomplishments&#39;</span><span class="p">,</span>
         <span class="n">in_signature</span><span class="o">=</span><span class="s">&quot;s&quot;</span><span class="p">,</span> <span class="n">out_signature</span><span class="o">=</span><span class="s">&quot;s&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_collection_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
+<div class="viewcode-block" id="AccomplishmentsDBusService.get_collection_name"><a class="viewcode-back" href="../../../clientref.html#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_collection_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_collection_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">get_collection_name</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
-        
+        </div>
     <span class="nd">@dbus.service.method</span><span class="p">(</span><span class="n">dbus_interface</span><span class="o">=</span><span class="s">&#39;org.ubuntu.accomplishments&#39;</span><span class="p">,</span>
         <span class="n">in_signature</span><span class="o">=</span><span class="s">&quot;s&quot;</span><span class="p">,</span> <span class="n">out_signature</span><span class="o">=</span><span class="s">&quot;b&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_collection_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
+<div class="viewcode-block" id="AccomplishmentsDBusService.get_collection_exists"><a class="viewcode-back" href="../../../clientref.html#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_collection_exists">[docs]</a>    <span class="k">def</span> <span class="nf">get_collection_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">get_collection_exists</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
-        
+        </div>
     <span class="nd">@dbus.service.method</span><span class="p">(</span><span class="n">dbus_interface</span><span class="o">=</span><span class="s">&#39;org.ubuntu.accomplishments&#39;</span><span class="p">,</span>
         <span class="n">in_signature</span><span class="o">=</span><span class="s">&quot;s&quot;</span><span class="p">,</span> <span class="n">out_signature</span><span class="o">=</span><span class="s">&quot;as&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_collection_authors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
+<div class="viewcode-block" id="AccomplishmentsDBusService.get_collection_authors"><a class="viewcode-back" href="../../../clientref.html#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_collection_authors">[docs]</a>    <span class="k">def</span> <span class="nf">get_collection_authors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">get_collection_authors</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
-        
+        </div>
     <span class="nd">@dbus.service.method</span><span class="p">(</span><span class="n">dbus_interface</span><span class="o">=</span><span class="s">&#39;org.ubuntu.accomplishments&#39;</span><span class="p">,</span>
         <span class="n">in_signature</span><span class="o">=</span><span class="s">&quot;s&quot;</span><span class="p">,</span> <span class="n">out_signature</span><span class="o">=</span><span class="s">&quot;a{sas}&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_collection_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
+<div class="viewcode-block" id="AccomplishmentsDBusService.get_collection_categories"><a class="viewcode-back" href="../../../clientref.html#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_collection_categories">[docs]</a>    <span class="k">def</span> <span class="nf">get_collection_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">get_collection_categories</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
-        
+        </div>
     <span class="nd">@dbus.service.method</span><span class="p">(</span><span class="n">dbus_interface</span><span class="o">=</span><span class="s">&#39;org.ubuntu.accomplishments&#39;</span><span class="p">,</span>
         <span class="n">in_signature</span><span class="o">=</span><span class="s">&quot;s&quot;</span><span class="p">,</span> <span class="n">out_signature</span><span class="o">=</span><span class="s">&quot;v&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_collection_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>

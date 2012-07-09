@@ -25,7 +25,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Ubuntu Accomplishments Daemon 0.3 documentation" href="#" /> 
+    <link rel="top" title="Ubuntu Accomplishments Daemon 0.3 documentation" href="#" />
+    <link rel="next" title="Ubuntu Accomplishments Client API Reference" href="clientref.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,6 +35,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="clientref.html" title="Ubuntu Accomplishments Client API Reference"
+             accesskey="N">next</a> |</li>
         <li><a href="#">Ubuntu Accomplishments Daemon 0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -47,140 +51,33 @@
 <h1>Welcome to Ubuntu Accomplishments Daemon&#8217;s documentation!<a class="headerlink" href="#welcome-to-ubuntu-accomplishments-daemon-s-documentation" title="Permalink to this headline">¶</a></h1>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
-<ul class="simple">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="clientref.html">Ubuntu Accomplishments Client API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daemonref.html">Ubuntu Accomplishments Daemon Reference</a></li>
 </ul>
 </div>
 </div>
-<div class="section" id="daemon-class-reference">
-<h1>Daemon Class Reference<a class="headerlink" href="#daemon-class-reference" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
-<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
-<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+<div class="section" id="welcome">
+<h1>Welcome!<a class="headerlink" href="#welcome" title="Permalink to this headline">¶</a></h1>
+<p>Welcome to the Ubuntu Accomplishments Daemon documentation!</p>
+<p>This documentation provides two references:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>Ubuntu Accomplishments Client API Reference</strong> - for both the client-facing documentation (of most interest to those writing client-side apps or support for Ubuntu Accomplishments in their apps) as well as</li>
+<li><strong>Ubuntu Accomplishments Daemon Reference</strong> - documentation designed for programmers of the core Ubuntu Accomplishments system (not intended for client or app devs).</li>
 </ul>
-<dl class="class">
-<dt id="accomplishments.daemon.api.Accomplishments">
-<em class="property">class </em><tt class="descclassname">accomplishments.daemon.api.</tt><tt class="descname">Accomplishments</tt><big>(</big><em>service</em>, <em>show_notifications=None</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments" title="Permalink to this definition">¶</a></dt>
-<dd><p>The main accomplishments daemon.</p>
-<p>No D-Bus required, so that it can be used for testing.</p>
-<dl class="method">
-<dt id="accomplishments.daemon.api.Accomplishments.create_extra_information_file">
-<tt class="descname">create_extra_information_file</tt><big>(</big><em>item</em>, <em>data</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.create_extra_information_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.create_extra_information_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Does exactly the same as write_extra_information_file(), but it does not
-overwrite any existing data</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="accomplishments.daemon.api.Accomplishments.get_acc_categories">
-<tt class="descname">get_acc_categories</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_acc_categories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_acc_categories" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of categories for a given accomplishment. This can include sub-categories (which are formatted
-like &#8216;category:subcategory&#8217; (e.g. <cite>AskUbuntu:Asking</cite>)).</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>accomID (str):  The Accomplishment ID (e.g. &#8216;ubuntu-community/registered-on-launchpad&#8217;)</dd>
-<dt>Returns:</dt>
-<dd>(list) The list of categories.</dd>
-<dt>Example:</dt>
-<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_categories</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
-<span class="go">[&quot;Launchpad&quot;]</span>
-</pre></div>
+</div></blockquote>
 </div>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="accomplishments.daemon.api.Accomplishments.get_acc_date_completed">
-<tt class="descname">get_acc_date_completed</tt><big>(</big><em>accomID</em><big>)</big><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_acc_date_completed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the date that the accomplishment specified by &#8216;accomID&#8217; was completed.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>accomID (str):  The Accomplishment ID (e.g. &#8216;ubuntu-community/registered-on-launchpad&#8217;)</dd>
-<dt>Returns:</dt>
-<dd>(list) The list of categories.</dd>
-<dt>Example:</dt>
-<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_completed</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
-<span class="go">[&quot;2012-06-15 12:32&quot;]</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="accomplishments.daemon.api.Accomplishments.get_all_extra_information">
-<tt class="descname">get_all_extra_information</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_all_extra_information"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_all_extra_information" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a dictionary of all information for the accomplishments
-to authticate. Returns {application, needs-information, label,
-description, value}.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="accomplishments.daemon.api.Accomplishments.get_all_extra_information_required">
-<tt class="descname">get_all_extra_information_required</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_all_extra_information_required"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_all_extra_information_required" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a dictionary of all information required for the accomplishments
-to authticate that has not been set yet. Returns {application,
-needs-information, label, description} Returns only these, which value is not set.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="accomplishments.daemon.api.Accomplishments.get_config_value">
-<tt class="descname">get_config_value</tt><big>(</big><em>section</em>, <em>item</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_config_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_config_value" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a configuration value from the .accomplishments file</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="accomplishments.daemon.api.Accomplishments.get_extra_information">
-<tt class="descname">get_extra_information</tt><big>(</big><em>coll</em>, <em>item</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_extra_information"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_extra_information" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function is particularly sensitive.
-It is used by all global accomplishment scripts.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="accomplishments.daemon.api.Accomplishments.get_published_status">
-<tt class="descname">get_published_status</tt><big>(</big><big>)</big><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_published_status" title="Permalink to this definition">¶</a></dt>
-<dd><p>Detect if we are currently publishing online or not. Returns
-True if we are or False if we are not.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="accomplishments.daemon.api.Accomplishments.invalidate_extra_information">
-<tt class="descname">invalidate_extra_information</tt><big>(</big><em>extrainfo</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.invalidate_extra_information"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.invalidate_extra_information" title="Permalink to this definition">¶</a></dt>
-<dd><p>This used to remove all trophies, but since it is essential to
-preserve them, this is no longer the case</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="accomplishments.daemon.api.Accomplishments.write_config_file_item">
-<tt class="descname">write_config_file_item</tt><big>(</big><em>section</em>, <em>item</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.write_config_file_item"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.write_config_file_item" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set a configuration value in the .accomplishments file</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="accomplishments.daemon.api.AsyncAPI">
-<em class="property">class </em><tt class="descclassname">accomplishments.daemon.api.</tt><tt class="descname">AsyncAPI</tt><big>(</big><em>parent</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#AsyncAPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.AsyncAPI" title="Permalink to this definition">¶</a></dt>
-<dd><p>This class simply organizes all the Twisted calls into a single location
-for better readability and separation of concerns.</p>
-<dl class="method">
-<dt id="accomplishments.daemon.api.AsyncAPI.register_trophy_dir">
-<tt class="descname">register_trophy_dir</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#AsyncAPI.register_trophy_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.AsyncAPI.register_trophy_dir" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates the Ubuntu One share for the trophydir and offers it to the
-server. Returns True if the folder was successfully shared, False if
-not.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="accomplishments-reference">
-<h1>Accomplishments Reference<a class="headerlink" href="#accomplishments-reference" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService">
-<em class="property">class </em><tt class="descclassname">accomplishments.daemon.dbusapi.</tt><tt class="descname">AccomplishmentsDBusService</tt><big>(</big><em>bus_name</em>, <em>session_bus</em>, <em>object_path='/'</em>, <em>show_notifications=True</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="getting-help">
+<h1>Getting Help<a class="headerlink" href="#getting-help" title="Permalink to this headline">¶</a></h1>
+<p>If you have questions about using our APIs or helping to build them, feel free to get in touch with us at the following resources:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>IRC Channel</strong> - <cite>#ubuntu-accomplishments</cite> on freenode IRC.</li>
+<li><strong>Mailing List</strong> - join our mailing list at <a class="reference external" href="https://launchpad.net/~ubuntu-accomplishments-contributors">https://launchpad.net/~ubuntu-accomplishments-contributors</a></li>
+<li><strong>General Help</strong> - you can post questions for help to <a class="reference external" href="http://askubuntu.com/questions/ask?tags=accomplishments">http://askubuntu.com/questions/ask?tags=accomplishments</a></li>
+</ul>
+</div></blockquote>
 </div>
 
 
@@ -194,10 +91,13 @@ not.</p>
 <li><a class="reference internal" href="#">Welcome to Ubuntu Accomplishments Daemon&#8217;s documentation!</a><ul>
 </ul>
 </li>
-<li><a class="reference internal" href="#daemon-class-reference">Daemon Class Reference</a></li>
-<li><a class="reference internal" href="#accomplishments-reference">Accomplishments Reference</a></li>
+<li><a class="reference internal" href="#welcome">Welcome!</a></li>
+<li><a class="reference internal" href="#getting-help">Getting Help</a></li>
 </ul>
 
+  <h4>Next topic</h4>
+  <p class="topless"><a href="clientref.html"
+                        title="next chapter">Ubuntu Accomplishments Client API Reference</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/index.txt"
@@ -226,6 +126,9 @@ not.</p>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="clientref.html" title="Ubuntu Accomplishments Client API Reference"
+             >next</a> |</li>
         <li><a href="#">Ubuntu Accomplishments Daemon 0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>

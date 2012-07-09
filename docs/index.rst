@@ -10,22 +10,25 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+  clientref
+  daemonref
 
-Daemon Class Reference
-======================
+Welcome!
+========
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+Welcome to the Ubuntu Accomplishments Daemon documentation!
 
-.. autoclass:: accomplishments.daemon.api.Accomplishments
-    :members:
+This documentation provides two references:
 
-.. autoclass:: accomplishments.daemon.api.AsyncAPI
-    :members:
+ * **Ubuntu Accomplishments Client API Reference** - for both the client-facing documentation (of most interest to those writing client-side apps or support for Ubuntu Accomplishments in their apps) as well as
 
-Accomplishments Reference
-=========================
+ * **Ubuntu Accomplishments Daemon Reference** - documentation designed for programmers of the core Ubuntu Accomplishments system (not intended for client or app devs).
 
-.. autoclass:: accomplishments.daemon.dbusapi.AccomplishmentsDBusService
-    :members:
+Getting Help
+============
+
+If you have questions about using our APIs or helping to build them, feel free to get in touch with us at the following resources:
+
+ * **IRC Channel** - `#ubuntu-accomplishments` on freenode IRC.
+ * **Mailing List** - join our mailing list at https://launchpad.net/~ubuntu-accomplishments-contributors
+ * **General Help** - you can post questions for help to http://askubuntu.com/questions/ask?tags=accomplishments

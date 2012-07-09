@@ -246,21 +246,96 @@ class AccomplishmentsDBusService(service.DBusExportService):
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="s")
     def get_collection_name(self,collection):
+        """
+        Returns the name of the current collection.
+        
+        Every collection has an identifier (e.g. `ubuntu-community`) that
+        we use to refer to the group of accomplishments that form that collection.
+        
+        This function returns the name of the current collection.
+        
+        NEEDSTESTING
+        
+        Args:
+            collection (str):  the accomplishments collection identifier (e.g. `ubuntu-community`)
+        Returns:
+            (list) The list of categories from that collection.
+        Example:
+            >>> obj.get_collection_authors("ubuntu-community")
+            ["Tom Araya", "Nicko McBrain", "James Hetfield", . . .]
+        """
         return self.api.get_collection_name(collection)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="b")
     def get_collection_exists(self,collection):
+        """
+        Returns whether the collection exists or not on the disk.
+        
+        Every collection has an identifier (e.g. `ubuntu-community`) that
+        we use to refer to the group of accomplishments that form that collection.
+        
+        This function returns a boolean value of whether the collection exists
+        on the current installation.
+        
+        NEEDSTESTING
+        
+        Args:
+            collection (str):  the accomplishments collection identifier (e.g. `ubuntu-community`)
+        Returns:
+            (bool) True if the collection exists, False if it doesn't.
+        Example:
+            >>> obj.get_collection_exists("ubuntu-community")
+            True
+        """
+        
         return self.api.get_collection_exists(collection)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="as")
     def get_collection_authors(self,collection):
+        """
+        Returns a list of authors for a given collection.
+        
+        Every collection has an identifier (e.g. `ubuntu-community`) that
+        we use to refer to the group of accomplishments that form that collection.
+        
+        This function returns all authors (without duplicates) for the collection
+        passed to it.
+        
+        NEEDSTESTING
+        
+        Args:
+            collection (str):  the accomplishments collection identifier (e.g. `ubuntu-community`)
+        Returns:
+            (list) The list of categories from that collection.
+        Example:
+            >>> obj.get_collection_authors("ubuntu-community")
+            ["Tom Araya", "Nicko McBrain", "James Hetfield", . . .]
+        """
+        
         return self.api.get_collection_authors(collection)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="a{sas}")
     def get_collection_categories(self,collection):
+        """
+        Returns a list of categories for a given collection.
+        
+        Every collection has an identifier (e.g. `ubuntu-community`) that
+        we use to refer to the group of accomplishments that form that collection.
+        
+        This function returns all categories (without duplicates) for the collection
+        passed to it.
+        
+        Args:
+            collection (str):  the accomplishments collection identifier (e.g. `ubuntu-community`)
+        Returns:
+            (list) The list of categories from that collection.
+        Example:
+            >>> obj.get_collection_categories("ubuntu-community")
+            ["Launchpad", "Ask Ubuntu", "Development", . . .]
+        """
         return self.api.get_collection_categories(collection)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
