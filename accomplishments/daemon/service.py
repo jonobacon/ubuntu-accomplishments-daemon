@@ -69,7 +69,7 @@ class ScriptRunnerService(TimerService):
     intertal.
     """
     def __init__(self, interval, api):
-        TimerService.__init__(self, interval, api.run_scripts, False)
+        TimerService.__init__(self, interval, api.run_scripts)
 
     def startService(self):
         log.msg("Starting up script runner service ...")
