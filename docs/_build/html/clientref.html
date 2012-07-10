@@ -725,7 +725,29 @@ we use to refer to the group of accomplishments that form that collection.</p>
 <dl class="method">
 <dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_config_value">
 <tt class="descname">get_config_value</tt><big>(</big><em>section</em>, <em>item</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_config_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_config_value" title="Permalink to this definition">¶</a></dt>
-<dd><p>DOCS NEEDED</p>
+<dd><p>Returns the required value from the configuration file. For a list of available values
+see <a class="reference external" href="https://wiki.ubuntu.com/Accomplishments/GetInvolved/Hacking#Configuration_Files">https://wiki.ubuntu.com/Accomplishments/GetInvolved/Hacking#Configuration_Files</a></p>
+<p>Config files are stored in Python ConfigParser format in which you look up the value by
+section and value.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li><strong>section</strong> - (str) the section in the config file (usually <cite>config</cite>).</li>
+<li><strong>value</strong> - (str) the value you want the data for.</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>(str)</strong> - the name of the collection.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_collection_authors</span><span class="p">(</span><span class="s">&quot;config&quot;</span><span class="p">,</span> <span class="s">&quot;has_u1&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -779,6 +801,149 @@ will be written to <cite>~/.local/share/accomplishments/trophies/.extrainformati
 <dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_published_status</span><span class="p">()</span>
 <span class="go">True</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.invalidate_extra_information">
+<tt class="descname">invalidate_extra_information</tt><big>(</big><em>extrainfo</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.invalidate_extra_information"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.invalidate_extra_information" title="Permalink to this definition">¶</a></dt>
+<dd><p>DOCS NEEDED</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.list_accomplishments">
+<tt class="descname">list_accomplishments</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.list_accomplishments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.list_accomplishments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of accomplishment IDs for the all available accomplishments. This includes all accomplishment IDs
+from all collections.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None.</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>(list)</strong> - the list of accomplishment IDs.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">list_accomplishments</span><span class="p">()</span>
+<span class="go">[&quot;ubuntu-community/registered-on-launchpad&quot;, &quot;ubuntu-community/ubuntu-member&quot;, . . .]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.list_collections">
+<tt class="descname">list_collections</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.list_collections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.list_collections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of collections available. Collections are listed in their
+unique formats (e.g. <cite>ubuntu-community</cite>).</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None.</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>(list)</strong> - the list of accomplishment IDs for all trophies.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">list_collections</span><span class="p">()</span>
+<span class="go">[&quot;ubuntu-community&quot;, &quot;ubuntu-desktop&quot;]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.list_depending_on">
+<tt class="descname">list_depending_on</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.list_depending_on"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.list_depending_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>DOCS NEEDED</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.list_opportunitues">
+<tt class="descname">list_opportunitues</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.list_opportunitues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.list_opportunitues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of accomplishment IDs for the all available opportunities. This includes all accomplishment IDs
+from all sets.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None.</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>(list)</strong> - the list of opportunity accomplishment IDs.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">list_opportunitues</span><span class="p">()</span>
+<span class="go">[&quot;ubuntu-community/registered-on-launchpad&quot;, &quot;ubuntu-community/ubuntu-member&quot;, . . .]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.list_trophies">
+<tt class="descname">list_trophies</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.list_trophies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.list_trophies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of trophies for the all available accomplishments in accomplishment ID format.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None.</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>(list)</strong> - the list of accomplishment IDs for all trophies.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">list_trophies</span><span class="p">()</span>
+<span class="go">[&quot;ubuntu-community/registered-on-launchpad&quot;, &quot;ubuntu-community/ubuntu-member&quot;, . . .]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.list_unlocked">
+<tt class="descname">list_unlocked</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.list_unlocked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.list_unlocked" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of accomplishment IDs for the all unlocked opportunities. This includes all accomplishment IDs
+from all collections.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None.</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>(list)</strong> - the list of unlocked opportunity accomplishment IDs.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">list_unlocked</span><span class="p">()</span>
+<span class="go">[&quot;ubuntu-community/registered-on-launchpad&quot;, &quot;ubuntu-community/ubuntu-member&quot;, . . .]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.list_unlocked_not_completed">
+<tt class="descname">list_unlocked_not_completed</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.list_unlocked_not_completed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.list_unlocked_not_completed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of accomplishment IDs for the all unlocked opportunities that are not completed. This includes all accomplishment IDs
+from all collections.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None.</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>(list)</strong> - the list of unlocked opportunity accomplishment IDs.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">list_unlocked</span><span class="p">()</span>
+<span class="go">[&quot;ubuntu-community/registered-on-launchpad&quot;, &quot;ubuntu-community/ubuntu-member&quot;, . . .]</span>
 </pre></div>
 </div>
 </dd>

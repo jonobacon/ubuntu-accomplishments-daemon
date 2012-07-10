@@ -253,13 +253,29 @@ class AccomplishmentsDBusService(service.DBusExportService):
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="vv", out_signature="v")
     def get_config_value(self, section, item):
-        """DOCS NEEDED"""
+        """
+        Returns the required value from the configuration file. For a list of available values
+        see https://wiki.ubuntu.com/Accomplishments/GetInvolved/Hacking#Configuration_Files
         
+        Config files are stored in Python ConfigParser format in which you look up the value by
+        section and value.
+        
+        Args:
+            * **section** - (str) the section in the config file (usually `config`).
+            * **value** - (str) the value you want the data for.
+        Returns:
+            * **(str)** - the name of the collection.
+        Example:
+            >>> obj.get_collection_authors("config", "has_u1")
+            True
+        """        
         return self.api.get_config_value(section, item)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="")
     def invalidate_extra_information(self, extrainfo):
+        """DOCS NEEDED"""
+        
         return self.api.invalidate_extra_information(extrainfo)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
@@ -709,36 +725,115 @@ class AccomplishmentsDBusService(service.DBusExportService):
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="as")
     def list_accomplishments(self):
+        """
+        Returns a list of accomplishment IDs for the all available accomplishments. This includes all accomplishment IDs
+        from all collections.
+                
+        Args:
+            None.
+        Returns:
+            * **(list)** - the list of accomplishment IDs.
+        Example:
+            >>> obj.list_accomplishments()
+            ["ubuntu-community/registered-on-launchpad", "ubuntu-community/ubuntu-member", . . .]
+        """
+        
         return self.api.list_accomplishments()
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="as")
     def list_trophies(self):
+        """
+        Returns a list of trophies for the all available accomplishments in accomplishment ID format.
+                
+        Args:
+            None.
+        Returns:
+            * **(list)** - the list of accomplishment IDs for all trophies.
+        Example:
+            >>> obj.list_trophies()
+            ["ubuntu-community/registered-on-launchpad", "ubuntu-community/ubuntu-member", . . .]
+        """
+        
         return self.api.list_trophies()
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="as")
     def list_opportunitues(self):
+        """
+        Returns a list of accomplishment IDs for the all available opportunities. This includes all accomplishment IDs
+        from all sets.
+                
+        Args:
+            None.
+        Returns:
+            * **(list)** - the list of opportunity accomplishment IDs.
+        Example:
+            >>> obj.list_opportunitues()
+            ["ubuntu-community/registered-on-launchpad", "ubuntu-community/ubuntu-member", . . .]
+        """
+        
         return self.api.list_opportunitues()
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="as")
     def list_depending_on(self,accomID):
+        """DOCS NEEDED"""
+        
         return self.api.list_depending_on(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="as")
     def list_unlocked(self):
+        """
+        Returns a list of accomplishment IDs for the all unlocked opportunities. This includes all accomplishment IDs
+        from all collections.
+                
+        Args:
+            None.
+        Returns:
+            * **(list)** - the list of unlocked opportunity accomplishment IDs.
+        Example:
+            >>> obj.list_unlocked()
+            ["ubuntu-community/registered-on-launchpad", "ubuntu-community/ubuntu-member", . . .]
+        """
+        
         return self.api.list_unlocked()
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="as")
     def list_unlocked_not_completed(self):
+        """
+        Returns a list of accomplishment IDs for the all unlocked opportunities that are not completed. This includes all accomplishment IDs
+        from all collections.
+                
+        Args:
+            None.
+        Returns:
+            * **(list)** - the list of unlocked opportunity accomplishment IDs.
+        Example:
+            >>> obj.list_unlocked()
+            ["ubuntu-community/registered-on-launchpad", "ubuntu-community/ubuntu-member", . . .]
+        """
+        
         return self.api.list_unlocked_not_completed()
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="as")
     def list_collections(self):
+        """
+        Returns a list of collections available. Collections are listed in their
+        unique formats (e.g. `ubuntu-community`).
+                
+        Args:
+            None.
+        Returns:
+            * **(list)** - the list of accomplishment IDs for all trophies.
+        Example:
+            >>> obj.list_collections()
+            ["ubuntu-community", "ubuntu-desktop"]
+        """
+        
         return self.api.list_collections()
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
