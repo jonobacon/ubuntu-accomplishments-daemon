@@ -68,7 +68,10 @@ accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-
 accomplishments and add them to a collection, see <a class="reference external" href="https://wiki.ubuntu.com/Accomplishments/Creating">https://wiki.ubuntu.com/Accomplishments/Creating</a></p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</li>
+</ul>
+</dd>
 <dt>Returns:</dt>
 <dd>None</dd>
 <dt>Example:</dt>
@@ -91,7 +94,10 @@ you need to.</p>
 <dt>Args:</dt>
 <dd>None</dd>
 <dt>Returns:</dt>
-<dd>(dict) The list of categories from that collection.</dd>
+<dd><ul class="first last simple">
+<li><strong>(dict)</strong> - The list of categories from that collection.</li>
+</ul>
+</dd>
 <dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">build_viewer_database</span><span class="p">()</span>
 <span class="go">{dbus.String(u&#39;date-completed&#39;): dbus.String(u&#39;2012-07-04 19:18&#39;, variant_level=1), dbus.String(u&#39;locked&#39;): dbus.Boolean(False, variant_level=1), dbus.String(u&#39;title&#39;): dbus.String(u&#39;Filed Bug that was Confirmed&#39;, variant_level=1), dbus.String(u&#39;collection-human&#39;): dbus.String(u&#39;Ubuntu Community&#39;, variant_level=1), dbus.String(u&#39;collection&#39;): dbus.String(u&#39;ubuntu-community&#39;, variant_level=1), dbus.String(u&#39;accomplished&#39;): dbus.Boolean(True, variant_level=1), dbus.String(u&#39;iconpath&#39;): dbus.String(u&#39;/home/jono/.cache/accomplishments/trophyimages/ubuntu-community/default.png&#39;, variant_level=1), dbus.String(u&#39;id&#39;): dbus.String(u&#39;ubuntu-community/first-bug-confirmed&#39;, variant_level=1), dbus.String(u&#39;categories&#39;): dbus.Array([dbus.String(u&#39;QA&#39;)], signature=dbus.Signature(&#39;s&#39;), variant_level=1)}</span>
@@ -113,8 +119,11 @@ will be written to <cite>~/.local/share/accomplishments/trophies/.extrainformati
 <cite>dave&#64;megadeth.com</cite>. Never write to this location directly, just use this function to do this.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>item (str): the extra-information type in question.
-data (str): the data for the specified item.</dd>
+<dd><ul class="first last simple">
+<li><strong>item</strong> - (str) the extra-information type in question.</li>
+<li><strong>data</strong> - (str) the data for the specified item.</li>
+</ul>
+</dd>
 <dt>Returns:</dt>
 <dd>None</dd>
 <dt>Example:</dt>
@@ -137,7 +146,10 @@ accomplishments API might be 0.2, but the daemon might be version 1.2 and still 
 <dt>Args:</dt>
 <dd>None</dd>
 <dt>Returns:</dt>
-<dd>(str) The API version</dd>
+<dd><ul class="first last simple">
+<li><strong>(str)</strong> - the API version</li>
+</ul>
+</dd>
 <dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_API_version</span><span class="p">()</span>
 <span class="go">0.2</span>
@@ -159,9 +171,15 @@ accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-
 (e.g. <cite>Ask Ubuntu:Asking</cite>); this function returns the categories in these formats.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</li>
+</ul>
+</dd>
 <dt>Returns:</dt>
-<dd>(list) the list of categories.</dd>
+<dd><ul class="first last simple">
+<li><strong>(list)</strong> - the list of categories.</li>
+</ul>
+</dd>
 <dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_categories</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
 <span class="go">[&quot;Launchpad&quot;]</span>
@@ -182,9 +200,15 @@ accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-
 <p>This function returns the collection that the accomplishment specified by <cite>accomID</cite>) is part of.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</li>
+</ul>
+</dd>
 <dt>Returns:</dt>
-<dd>(str) the collection name.</dd>
+<dd><ul class="first last simple">
+<li><strong>(str)</strong> - the collection name.</li>
+</ul>
+</dd>
 <dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_collection</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
 <span class="go">ubuntu-community</span>
@@ -207,9 +231,15 @@ accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-
 specified accomplishment. This is often useful for displaying this information to the user.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</li>
+</ul>
+</dd>
 <dt>Returns:</dt>
-<dd>(dict) The data for the accomplishment.</dd>
+<dd><ul class="first last simple">
+<li><strong>(dict)</strong> - the data for the accomplishment.</li>
+</ul>
+</dd>
 <dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">build_viewer_database</span><span class="p">()</span>
 <span class="go">{ dbus.String(u&#39;lang&#39;): dbus.String(u&#39;en&#39;, variant_level=1), dbus.String(u&#39;needs-signing&#39;): dbus.String(u&#39;true&#39;, variant_level=1), dbus.String(u&#39;date-completed&#39;): dbus.String(u&#39;2012-06-12 22:12&#39;, variant_level=1), dbus.String(u&#39;set&#39;): dbus.String(u&#39;infrastructure&#39;, variant_level=1), dbus.String(u&#39;locked&#39;): dbus.Boolean(False, variant_level=1), dbus.String(u&#39;help&#39;): dbus.String(u&#39;#launchpad on Freenode&#39;, variant_level=1), dbus.String(u&#39;links&#39;): dbus.String(u&#39;http://www.launchpad.net&#39;, variant_level=1), dbus.String(u&#39;title&#39;): dbus.String(u&#39;Registered on Launchpad&#39;, variant_level=1), dbus.String(u&#39;script-path&#39;): dbus.String(u&#39;/home/jono/source/ubuntu-community-accomplishments/scripts/ubuntu-community/infrastructure/registered-on-launchpad.py&#39;, variant_level=1), dbus.String(u&#39;base-path&#39;): dbus.String(u&#39;/home/jono/source/ubuntu-community-accomplishments/accomplishments/ubuntu-community&#39;, variant_level=1), dbus.String(u&#39;completed&#39;): dbus.Boolean(True, variant_level=1), dbus.String(u&#39;author&#39;): dbus.String(u&#39;Jono Bacon &lt;jono@ubuntu.com&gt;&#39;, variant_level=1), dbus.String(u&#39;collection&#39;): dbus.String(u&#39;ubuntu-community&#39;, variant_level=1), dbus.String(u&#39;summary&#39;): dbus.String(u&#39;Launchpad is a website in which we do much of our work in Ubuntu. There we build packages, file and fix bugs, perform translations, manage code, and other activities.</span>
@@ -238,9 +268,15 @@ you pass to this function depends on. These dependencies are also returns as acc
 the specified accomplishment, an empty list is returned.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</li>
+</ul>
+</dd>
 <dt>Returns:</dt>
-<dd>(list) the list of dependencies for the accomplishment.</dd>
+<dd><ul class="first last simple">
+<li><strong>(list)</strong> - the list of dependencies for the accomplishment.</li>
+</ul>
+</dd>
 <dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_depends</span><span class="p">(</span><span class="s">&quot;ubuntu-community/ubuntu-member&quot;</span><span class="p">)</span>
 <span class="go">[&quot;ubuntu-community/registered-on-launchpad&quot;]</span>
@@ -260,9 +296,15 @@ accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-
 <cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</li>
+</ul>
+</dd>
 <dt>Returns:</dt>
-<dd>(bool) returns <cite>True</cite> is the accomplishment exists, and <cite>False</cite> if not.</dd>
+<dd><ul class="first last simple">
+<li><strong>(bool)</strong> - returns <cite>True</cite> is the accomplishment exists, and <cite>False</cite> if not.</li>
+</ul>
+</dd>
 <dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_exists</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
 <span class="go">True</span>
@@ -280,16 +322,79 @@ accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-
 and the name of the accomplishment itself (e.g. <cite>ubuntu-community</cite> collection and <cite>registered-in-launchpad</cite>
 accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-launchpad</cite>). You pass this function this
 <cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
-<p>Note: this function only passes the icon name and not the full path to the icon. If you need this you should refer to
+<p>Note: this function only passes the icon name and not the full path to the icon. If you need this you should use
 <cite>get_acc_icon_path()</cite>.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</li>
+</ul>
+</dd>
 <dt>Returns:</dt>
-<dd>(str) the name of the icon.</dd>
+<dd><ul class="first last simple">
+<li><strong>(str)</strong> - the name of the icon.</li>
+</ul>
+</dd>
 <dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_icon</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
 <span class="go">default.png</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_icon_path">
+<tt class="descname">get_acc_icon_path</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_acc_icon_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_icon_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the icon name for the specified accomplishment.</p>
+<p>Every accomplishment has a unique identifier called an <cite>Accomplishment ID</cite> that is comprised of the collection
+and the name of the accomplishment itself (e.g. <cite>ubuntu-community</cite> collection and <cite>registered-in-launchpad</cite>
+accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-launchpad</cite>). You pass this function this
+<cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
+<p>If you don&#8217;t need the full path and just need the icon name, use <cite>get_acc_icon()</cite>.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>(str)</strong> - the full path to the icon.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_icon_path</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">/home/jono/.cache/accomplishments/trophyimages/ubuntu-community/default.png</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_is_completed">
+<tt class="descname">get_acc_is_completed</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_acc_is_completed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_is_completed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether the specified accomplishment is accomplished or not.</p>
+<p>Every accomplishment has a unique identifier called an <cite>Accomplishment ID</cite> that is comprised of the collection
+and the name of the accomplishment itself (e.g. <cite>ubuntu-community</cite> collection and <cite>registered-in-launchpad</cite>
+accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-launchpad</cite>). You pass this function this
+<cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>(bool)</strong> - <cite>True</cite> if the accomplishment has been completed, <cite>False</cite> if not.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_is_completed</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">True</span>
 </pre></div>
 </div>
 </dd>
@@ -309,9 +414,15 @@ dependency satisfied, it should be shown in clients as locked. This function che
 completed or not.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</li>
+</ul>
+</dd>
 <dt>Returns:</dt>
-<dd>(bool) <cite>True</cite> if the dependencies have been completed, <cite>False</cite> if not.</dd>
+<dd><ul class="first last simple">
+<li><strong>(bool)</strong> - <cite>True</cite> if the dependencies have been completed, <cite>False</cite> if not.</li>
+</ul>
+</dd>
 <dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_is_unlocked</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
 <span class="go">True</span>
@@ -319,6 +430,12 @@ completed or not.</p>
 </div>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_needs_info">
+<tt class="descname">get_acc_needs_info</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_acc_needs_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_needs_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>DOCS NEEDED</p>
 </dd></dl>
 
 <dl class="method">
@@ -335,11 +452,150 @@ to ensure people don&#8217;t fake them. I know, who would think that people woul
 needs signing (verifying) or not.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>accomID (str):  the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</dd>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</li>
+</ul>
+</dd>
 <dt>Returns:</dt>
-<dd>(bool) <cite>True</cite> if the accomplishment needs signing, <cite>False</cite> if not.</dd>
+<dd><ul class="first last simple">
+<li><strong>(bool)</strong> - <cite>True</cite> if the accomplishment needs signing, <cite>False</cite> if not.</li>
+</ul>
+</dd>
 <dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_categories</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_script_path">
+<tt class="descname">get_acc_script_path</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_acc_script_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_script_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the corrosponsing script for the accomplishment.</p>
+<p>Every accomplishment has a unique identifier called an <cite>Accomplishment ID</cite> that is comprised of the collection
+and the name of the accomplishment itself (e.g. <cite>ubuntu-community</cite> collection and <cite>registered-in-launchpad</cite>
+accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-launchpad</cite>). You pass this function this
+<cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
+<p>Many accomplishments have corrosponding scripts (although not all do), and this function returns a full path to the
+script.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>(str)</strong> - the full path to the script.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_script_path</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">/usr/share/accomplishments/scripts/ubuntu-community/infrastructure/registered-on-launchpad.py</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_title">
+<tt class="descname">get_acc_title</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_acc_title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_acc_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the title name of the specified accomplishment.</p>
+<p>Every accomplishment has a unique identifier called an <cite>Accomplishment ID</cite> that is comprised of the collection
+and the name of the accomplishment itself (e.g. <cite>ubuntu-community</cite> collection and <cite>registered-in-launchpad</cite>
+accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-launchpad</cite>). You pass this function this
+<cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>(str)</strong> - the title of the accomplishment.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_exists</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">&#39;Registered on Launchpad&#39;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_all_extra_information">
+<tt class="descname">get_all_extra_information</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_all_extra_information"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_all_extra_information" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all the extra-information data available for the user.</p>
+<p>For more information on how extra-information works, see <a class="reference external" href="https://wiki.ubuntu.com/Accomplishments/Creating/Guide/Theory">https://wiki.ubuntu.com/Accomplishments/Creating/Guide/Theory</a></p>
+<p>Every accomplishment has a unique identifier called an <cite>Accomplishment ID</cite> that is comprised of the collection
+and the name of the accomplishment itself (e.g. <cite>ubuntu-community</cite> collection and <cite>registered-in-launchpad</cite>
+accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-launchpad</cite>). You pass this function this
+<cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
+<p>The dictionaries returned have a series of fields:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>needs-information</strong> - the name of this information field (e.g. <cite>launchpad-email</cite>).</li>
+<li><strong>value</strong> - the user&#8217;s data for this field (e.g. <cite>bruce&#64;ironmaiden.com</cite> for <cite>launchpad-email</cite>).</li>
+<li><strong>regex</strong> - a regular expression that defines the structure of the information.</li>
+<li><strong>description</strong> - a summary of the information.</li>
+<li><strong>label</strong> - a human readable description of the information.</li>
+<li><strong>collection</strong> - the collection this information is used in.</li>
+<li><strong>example</strong> - an example of this field set.</li>
+</ul>
+</div></blockquote>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>(dict)</strong> - a set of dictionaries with the data for extra-information.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_all_extra_information</span><span class="p">()</span>
+<span class="go">{dbus.String(u&#39;regex&#39;): dbus.String(u&#39;^(https?://)?askubuntu.com/users/\d+/.*&#39;, variant_level=1), dbus.String(u&#39;description&#39;): dbus.String(u&#39;The URL of your profile page on Ask Ubuntu&#39;, variant_level=1), dbus.String(u&#39;value&#39;): dbus.String(u&#39;http://askubuntu.com/users/42996/jonobacon&#39;, variant_level=1), dbus.String(u&#39;label&#39;): dbus.String(u&#39;Ask Ubuntu Profile URL&#39;, variant_level=1), dbus.String(u&#39;needs-information&#39;): dbus.String(u&#39;askubuntu-user-url&#39;, variant_level=1), dbus.String(u&#39;collection&#39;): dbus.String(u&#39;ubuntu-community&#39;, variant_level=1), dbus.String(u&#39;example&#39;): dbus.String(u&#39;http://askubuntu.com/users/NUMBER/USERNAME&#39;, variant_level=1)}, signature=dbus.Signature(&#39;sv&#39;)), dbus.Dictionary({dbus.String(u&#39;regex&#39;): dbus.String(u&#39;&#39;, variant_level=1), dbus.String(u&#39;description&#39;): dbus.String(u&#39;The email address used for launchpad.net&#39;, variant_level=1), dbus.String(u&#39;value&#39;): dbus.String(u&#39;jono@ubuntu.com&#39;, variant_level=1), dbus.String(u&#39;label&#39;): dbus.String(u&#39;Launchpad Email&#39;, variant_level=1), dbus.String(u&#39;needs-information&#39;): dbus.String(u&#39;launchpad-email&#39;, variant_level=1), dbus.String(u&#39;collection&#39;): dbus.String(u&#39;ubuntu-community&#39;, variant_level=1), dbus.String(u&#39;example&#39;): dbus.String(u&#39;&#39;, variant_level=1)}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_all_extra_information_required">
+<tt class="descname">get_all_extra_information_required</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_all_extra_information_required"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_all_extra_information_required" title="Permalink to this definition">¶</a></dt>
+<dd><p>DOCS NEEDED</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_block_ubuntuone_notification_bubbles">
+<tt class="descname">get_block_ubuntuone_notification_bubbles</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_block_ubuntuone_notification_bubbles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_block_ubuntuone_notification_bubbles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether the user has chosen to block Ubuntu One sync-daemon bubbles.</p>
+<p>Every accomplishment has a unique identifier called an <cite>Accomplishment ID</cite> that is comprised of the collection
+and the name of the accomplishment itself (e.g. <cite>ubuntu-community</cite> collection and <cite>registered-in-launchpad</cite>
+accomplishment has an accomplishment ID of <cite>ubuntu-community/registered-on-launchpad</cite>). You pass this function this
+<cite>Accomplishment ID</cite> as it&#8217;s parameter.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) the <cite>Accomplishment ID</cite> for a given accomplishment (e.g. <cite>ubuntu-community/registered-on-launchpad</cite>).</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>(bool)</strong> - returns <cite>True</cite> if the bubbles are blocked, and <cite>False</cite> if not.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_block_ubuntuone_notification_bubbles</span><span class="p">()</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -354,16 +610,23 @@ needs signing (verifying) or not.</p>
 <p>Every collection has an identifier (e.g. <cite>ubuntu-community</cite>) that
 we use to refer to the group of accomplishments that form that collection.</p>
 <p>This function returns all authors (without duplicates) for the collection
-passed to it.</p>
-<p>NEEDSTESTING</p>
+passed to it. Data is returned in the following format:</p>
+<blockquote>
+<div><cite>Forename Surname &lt;email address&gt;</cite></div></blockquote>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>collection (str):  the accomplishments collection identifier (e.g. <cite>ubuntu-community</cite>)</dd>
+<dd><ul class="first last simple">
+<li><strong>collection</strong> - (str) the accomplishments collection identifier (e.g. <cite>ubuntu-community</cite>)</li>
+</ul>
+</dd>
 <dt>Returns:</dt>
-<dd>(list) The list of categories from that collection.</dd>
+<dd><ul class="first last simple">
+<li><strong>(list)</strong> - the list of categories from that collection.</li>
+</ul>
+</dd>
 <dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_collection_authors</span><span class="p">(</span><span class="s">&quot;ubuntu-community&quot;</span><span class="p">)</span>
-<span class="go">[&quot;Tom Araya&quot;, &quot;Nicko McBrain&quot;, &quot;James Hetfield&quot;, . . .]</span>
+<span class="go">[&quot;Tom Araya &lt;tom@slayer.com&gt;&quot;, &quot;Nicko McBrain &lt;nicko@ironmaiden.com&gt;&quot;, &quot;James Hetfield &lt;james@metallica.com&gt;&quot;]</span>
 </pre></div>
 </div>
 </dd>
@@ -380,9 +643,15 @@ we use to refer to the group of accomplishments that form that collection.</p>
 passed to it.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>collection (str):  the accomplishments collection identifier (e.g. <cite>ubuntu-community</cite>)</dd>
+<dd><ul class="first last simple">
+<li><strong>collection</strong> - (str) the accomplishments collection identifier (e.g. <cite>ubuntu-community</cite>)</li>
+</ul>
+</dd>
 <dt>Returns:</dt>
-<dd>(list) The list of categories from that collection.</dd>
+<dd><ul class="first last simple">
+<li><strong>(list)</strong> - the list of categories from that collection.</li>
+</ul>
+</dd>
 <dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_collection_categories</span><span class="p">(</span><span class="s">&quot;ubuntu-community&quot;</span><span class="p">)</span>
 <span class="go">[&quot;Launchpad&quot;, &quot;Ask Ubuntu&quot;, &quot;Development&quot;, . . .]</span>
@@ -393,6 +662,12 @@ passed to it.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_collection_data">
+<tt class="descname">get_collection_data</tt><big>(</big><em>collection</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_collection_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_collection_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>DOCS NEEDED</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_collection_exists">
 <tt class="descname">get_collection_exists</tt><big>(</big><em>collection</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_collection_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_collection_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns whether the collection exists or not on the disk.</p>
@@ -400,12 +675,17 @@ passed to it.</p>
 we use to refer to the group of accomplishments that form that collection.</p>
 <p>This function returns a boolean value of whether the collection exists
 on the current installation.</p>
-<p>NEEDSTESTING</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>collection (str):  the accomplishments collection identifier (e.g. <cite>ubuntu-community</cite>)</dd>
+<dd><ul class="first last simple">
+<li><strong>collection</strong> - (str) the accomplishments collection identifier (e.g. <cite>ubuntu-community</cite>)</li>
+</ul>
+</dd>
 <dt>Returns:</dt>
-<dd>(bool) True if the collection exists, False if it doesn&#8217;t.</dd>
+<dd><ul class="first last simple">
+<li><strong>(bool)</strong> - True if the collection exists, False if it doesn&#8217;t.</li>
+</ul>
+</dd>
 <dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_collection_exists</span><span class="p">(</span><span class="s">&quot;ubuntu-community&quot;</span><span class="p">)</span>
 <span class="go">True</span>
@@ -421,16 +701,84 @@ on the current installation.</p>
 <dd><p>Returns the name of the current collection.</p>
 <p>Every collection has an identifier (e.g. <cite>ubuntu-community</cite>) that
 we use to refer to the group of accomplishments that form that collection.</p>
-<p>This function returns the name of the current collection.</p>
-<p>NEEDSTESTING</p>
+<p>This function returns the name of the current collection in a human-readable format.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>collection (str):  the accomplishments collection identifier (e.g. <cite>ubuntu-community</cite>)</dd>
+<dd><ul class="first last simple">
+<li><strong>collection</strong> - (str) the accomplishments collection identifier (e.g. <cite>ubuntu-community</cite>)</li>
+</ul>
+</dd>
 <dt>Returns:</dt>
-<dd>(list) The list of categories from that collection.</dd>
+<dd><ul class="first last simple">
+<li><strong>(str)</strong> - the name of the collection.</li>
+</ul>
+</dd>
 <dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_collection_authors</span><span class="p">(</span><span class="s">&quot;ubuntu-community&quot;</span><span class="p">)</span>
-<span class="go">[&quot;Tom Araya&quot;, &quot;Nicko McBrain&quot;, &quot;James Hetfield&quot;, . . .]</span>
+<span class="go">&#39;Ubuntu Community&#39;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_config_value">
+<tt class="descname">get_config_value</tt><big>(</big><em>section</em>, <em>item</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_config_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_config_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>DOCS NEEDED</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_daemon_session_start">
+<tt class="descname">get_daemon_session_start</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_daemon_session_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_daemon_session_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>DOCS NEEDED</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_extra_information">
+<tt class="descname">get_extra_information</tt><big>(</big><em>collection</em>, <em>info</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_extra_information"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_extra_information" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the data for the current user for the specified extra-information.</p>
+<p>It is common for accomplishments to require additional information to verify their completion. Clients
+should ask for this information and then use this function to write the information to the correct part
+of the trophy share. You can read more about how Extra Information works at <a class="reference external" href="https://wiki.ubuntu.com/Accomplishments/Creating/Guide/Theory">https://wiki.ubuntu.com/Accomplishments/Creating/Guide/Theory</a></p>
+<p>As an example, if an accomplishment requires <cite>launchpad-email</cite> and the data for that information is <cite>dave&#64;megadeth.com</cite>, this
+will be written to <cite>~/.local/share/accomplishments/trophies/.extrainformation/launchpad-email</cite> and the file will contain
+<cite>dave&#64;megadeth.com</cite>.</p>
+<p>This function gets this data for you. It returns a dictionary with the following fields:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>&lt;extra-information-field&gt;</strong> - the extra-information field type has the data associated with it (e.g. { &#8216;launchpad-email&#8217; : <a class="reference external" href="mailto:'george&#37;&#52;&#48;cc&#46;com">'george<span>&#64;</span>cc<span>&#46;</span>com</a>&#8216;})</li>
+<li><strong>label</strong> - the human-readable label for the extra-information field (e.g. &#8216;Launchpad Email&#8217; for <cite>launchpad-email</cite>).</li>
+</ul>
+</div></blockquote>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">collection (str): the collection that the extra-information applies to.</p>
+<p class="last">info (str): the name of the extra-information type.</p>
+</dd>
+<dt>Returns:</dt>
+<dd>(dict) dictionary of data for the specified field.</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_extra_information</span><span class="p">(</span><span class="s">&quot;ubuntu-community&quot;</span><span class="p">,</span> <span class="s">&quot;launchpad-email&quot;</span><span class="p">)</span>
+<span class="go">{dbus.String(u&#39;launchpad-email&#39;): dbus.String(u&#39;george@cc.com&#39;, variant_level=1), dbus.String(u&#39;label&#39;): dbus.String(u&#39;Launchpad Email&#39;, variant_level=1)}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_published_status">
+<tt class="descname">get_published_status</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/dbusapi.html#AccomplishmentsDBusService.get_published_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.dbusapi.AccomplishmentsDBusService.get_published_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether the user has opted to publish their accomplishments online.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None</dd>
+<dt>Returns:</dt>
+<dd>(bool) returns <cite>True</cite> if the user has opted to publish online, or <cite>False</cite> if not.</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_published_status</span><span class="p">()</span>
+<span class="go">True</span>
 </pre></div>
 </div>
 </dd>
