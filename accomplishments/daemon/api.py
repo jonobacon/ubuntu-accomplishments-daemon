@@ -332,13 +332,21 @@ class Accomplishments(object):
 
         self.scripts_queue = deque()
 
-        # create config / data dirs if they don't exist
-        self.dir_config = os.path.join(
-            xdg.BaseDirectory.xdg_config_home, "accomplishments")
-        self.dir_data = os.path.join(
-            xdg.BaseDirectory.xdg_data_home, "accomplishments")
-        self.dir_cache = os.path.join(
-            xdg.BaseDirectory.xdg_cache_home, "accomplishments")
+        try:
+            rootdir = os.environ['ACCOMPLISHMENTS_ROOT_DIR']
+            self.dir_config = os.path.join(
+                rootdir, "accomplishments", ".config", "accomplishments")
+            self.dir_data = os.path.join(
+                rootdir, "accomplishments", ".local", "share", "accomplishments")
+            self.dir_cache = os.path.join(
+                rootdir, "accomplishments", ".cache", "accomplishments")
+        except KeyError:
+            self.dir_config = os.path.join(
+                xdg.BaseDirectory.xdg_config_home, "accomplishments")
+            self.dir_data = os.path.join(
+                xdg.BaseDirectory.xdg_data_home, "accomplishments")
+            self.dir_cache = os.path.join(
+                xdg.BaseDirectory.xdg_cache_home, "accomplishments")
 
         if not os.path.exists(self.dir_config):
             os.makedirs(self.dir_config)
