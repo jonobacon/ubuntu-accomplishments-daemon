@@ -458,7 +458,6 @@ class Accomplishments(object):
         """Return a configuration value from the .accomplishments file"""
         log.msg(
             "Returning configuration values for: %s, %s" % (section, item))
-        homedir = os.getenv("HOME")
         config = ConfigParser.RawConfigParser()
         cfile = self.dir_config + "/.accomplishments"
         config.read(cfile)
@@ -487,7 +486,6 @@ class Accomplishments(object):
         log.msg(
             "Set configuration file value in '%s': %s = %s" % (section, item,
             value))
-        homedir = os.getenv("HOME")
         config = ConfigParser.RawConfigParser()
         cfile = self.dir_config + "/.accomplishments"
 
@@ -509,7 +507,6 @@ class Accomplishments(object):
         in ~/.config/accomplishments/.accomplishments."""
         
         log.msg("Writing the configuration file")
-        homedir = os.getenv("HOME")
         config = ConfigParser.RawConfigParser()
         cfile = self.dir_config + "/.accomplishments"
 
@@ -534,8 +531,7 @@ class Accomplishments(object):
         """Load the main configuration file for the daemon. This should be
         located in ~/.config/accomplishments/.accomplishments and it provides
         a ConfigParser INI-style list of values."""
-        
-        homedir = os.environ["HOME"]
+
         config = ConfigParser.RawConfigParser()
         cfile = os.path.join(self.dir_config, ".accomplishments")
 
