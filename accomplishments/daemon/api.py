@@ -1053,7 +1053,7 @@ class Accomplishments(object):
         imagesdir = os.path.join(imagesdir,self.get_acc_collection(accomID))
         iconfile = self.get_acc_icon(accomID)
         # XXX - this will fail if the icon passed in does not have a .
-        # in the file name 
+        # in the file name - LP: 1024012
         iconfilename, iconfileext = iconfile.split(".")
         if not self.get_acc_is_unlocked(accomID):
             iconfilename = iconfilename + '-locked'
@@ -1072,9 +1072,10 @@ class Accomplishments(object):
         
     def get_acc_categories(self,accomID):
         """
-        Returns a list of categories for a given accomplishment. This can include sub-categories (which are formatted
-        like 'category:subcategory' (e.g. `AskUbuntu:Asking`)).
-        
+        Returns a list of categories for a given accomplishment. This can
+        include sub-categories (which are formatted like 'category:subcategory'
+        (e.g. `AskUbuntu:Asking`)).
+
         Args:
             accomID (str):  The Accomplishment ID (e.g. 'ubuntu-community/registered-on-launchpad')
         Returns:
@@ -1088,19 +1089,20 @@ class Accomplishments(object):
 
     def get_acc_date_completed(self,accomID):
         """
-        Returns the date that the accomplishment specified by 'accomID' was completed.
-        
+        Returns the date that the accomplishment specified by 'accomID' was
+        completed.
+
         Args:
             accomID (str):  The Accomplishment ID (e.g. 'ubuntu-community/registered-on-launchpad')
         Returns:
-            (list) The list of categories.
+            (string) The completed date
         Example:
-            >>> obj.get_acc_completed("ubuntu-community/registered-on-launchpad")
-            ["2012-06-15 12:32"]
+            >>> obj.get_acc_date_completed("ubuntu-community/registered-on-launchpad")
+            "2012-06-15 12:32"
         """
-        
+
         return self.accDB[accomID]['date-completed']
-        
+
     def get_trophy_data(self,accomID):
         if not self.get_acc_is_completed(accomID):
             return
@@ -1438,8 +1440,8 @@ NoDisplay=true"
         config.read(cfile)
 
         if config.has_option("trophy", "date-accomplished"):
-            return config.get("trophy", "date-accomplished")            
-            
+            return config.get("trophy", "date-accomplished")
+
     def _mark_as_completed(self,accomID):
         # Marks accomplishments as completed int the accDB, and returns a list
         # of accomIDs that just got unlocked.
