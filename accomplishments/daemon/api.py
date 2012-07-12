@@ -382,13 +382,12 @@ class Accomplishments(object):
         #log.msg(media_file_name)
         #log.msg("MEDIA_DIR:")
         #log.msg(media_dir)
-        #media_filename = get_data_file(media_dir.split, '%s' % (media_file_name,))
         media_filename = os.path.join(media_dir, media_file_name)
         #log.msg("MEDIA_FILENAME:")
         #log.msg(media_filename)
 
         if not os.path.exists(media_filename):
-            media_filename = None
+            return None
 
         final = "file:///" + media_filename
         return final
@@ -1053,6 +1052,8 @@ class Accomplishments(object):
         imagesdir = os.path.join(self.dir_cache,'trophyimages')
         imagesdir = os.path.join(imagesdir,self.get_acc_collection(accomID))
         iconfile = self.get_acc_icon(accomID)
+        # XXX - this will fail if the icon passed in does not have a .
+        # in the file name 
         iconfilename, iconfileext = iconfile.split(".")
         if not self.get_acc_is_unlocked(accomID):
             iconfilename = iconfilename + '-locked'

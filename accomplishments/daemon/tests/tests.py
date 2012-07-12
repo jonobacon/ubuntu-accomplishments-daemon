@@ -5,8 +5,6 @@ import unittest
 import sys, os
 import tempfile
 import shutil
-import dbus
-import time
 import subprocess
 import ConfigParser
 
@@ -14,9 +12,44 @@ sys.path.insert(0, os.path.join(os.path.split(__file__)[0], "../../.."))
 from accomplishments.daemon import app, api
 
 # future tests
-# 1) change config file
-# 2) write_config_file_item()
-# 4) bad accomplishment shouldn't show in the list
+# bad accomplishment shouldn't show in the list
+# get all extra information
+# get all extra information required
+# create extra information files
+# invalidate extra information
+# get extra information
+# get acc data
+# get acc exists
+# get acc title
+# get acc needs signing
+# get acc depends
+# get acc isunlocked
+# get trophy path
+# get acc is completed
+# get acc script path
+# get acc needs info
+# get acc collection
+# get acc categories
+# get acc date completed
+# get trophy data
+# get collection name
+# get collection exists
+# get collection authors
+# get collection categories
+# get collection data
+# list trophies
+# list opportunities
+# list depending on
+# list unlocked
+# list unlocked not completed
+# list collections
+# run scripts/runscript
+# build viewer database
+# get published status
+# set daemon session start
+# get daemon session start
+# set block u1 notification bubbles
+# get block u1 notification bubbles
 
 class TestDaemon(unittest.TestCase):
 
@@ -26,14 +59,14 @@ class TestDaemon(unittest.TestCase):
     def util_write_about_file(self, accomp_dir):
         fp = open(os.path.join(accomp_dir, "ABOUT"), "w")
         fp.write("""[general]
-name = Ubuntu Community
+name = Test Collection
 langdefault=%s""" % self.LANG)
         fp.close()
 
     def util_write_config_file(self, accomp_dir):
         fp = open(os.path.join(accomp_dir, ".accomplishments"), "w")
         fp.write("""[config]
-has_u1 = True
+has_u1 = true
 has_verif = 1
 accompath = %s/accomplishments
 trophypath = %s/accomplishments/.local/share/accomplishments/trophies
@@ -48,8 +81,6 @@ extrainfo_seen = 1""" % (self.td, self.td))
 
     def setUp(self):
         self.td = tempfile.mkdtemp()
-        self.td = "/tmp/foo"
-        print "Test Dir is %s" % self.td
 
         # /tmp/foo/accomplishments
         self.accomps_root = os.path.join(self.td, "accomplishments",
@@ -88,12 +119,87 @@ extrainfo_seen = 1""" % (self.td, self.td))
         if not os.path.exists(self.script_root):
             os.makedirs(self.script_root)
 
-        # XXX ?
-        # /tmp/foo/accomplishments/scripts/testaccomp
+        # XXX - not sure this is correct
+        # /tmp/foo/accomplishments/scripts/testaccomp/trophies
         self.trophy_dir = os.path.join(self.td, "trophies")
         if not os.path.exists(self.trophy_dir):
             os.makedirs(self.trophy_dir)
 
+        #self.util_write_file(self.script_root, "third.py", "print 'hello'")
+
+        self.util_write_about_file(self.accomp_root)
+
+        self.util_write_config_file(self.config_dir)
+
+        os.environ['ACCOMPLISHMENTS_ROOT_DIR'] = self.td
+
+    def tearDown(self):
+        del os.environ['ACCOMPLISHMENTS_ROOT_DIR']
+        shutil.rmtree(self.td)
+
+    def test_get_media_file(self):
+        a = api.Accomplishments(None)
+        mf = a.get_media_file("non-existant.jpg")
+        self.assertTrue(mf == None)
+
+        mf = a.get_media_file("lock.png")
+        self.assertTrue(mf.endswith("lock.png"))
+
+    def test_get_API_version(self):
+        a = api.Accomplishments(None)
+        version = a.get_API_version()
+        self.assertTrue(isinstance(version, basestring))
+
+    # also tests get_acc_icon_path
+    def test_get_acc_icon(self):
+        self.util_write_file(self.accomp_dir, "first.accomplishment",
+            "[accomplishment]\n"\
+            "title=My First Accomplishment\n"\
+            "icon=test.jpg\n"\
+            "description=An example accomplishment for the test suite\n")
+        a = api.Accomplishments(None)
+        self.assertEquals(a.get_acc_icon('%s/first' % self.ACCOMP_SET),
+           'test.jpg')
+        icon_path = a.get_acc_icon_path('%s/first' % self.ACCOMP_SET)
+        self.assertTrue(icon_path.endswith("test-opportunity.jpg"))
+
+    def test_build_viewer_database(self):
+        self.util_write_file(self.accomp_dir, "first.accomplishment",
+            "[accomplishment]\n"\
+            "title=My First Accomplishment\n"\
+            "icon=test.jpg\n"\
+            "description=An example accomplishment for the test suite\n")
+
+        self.util_write_file(self.accomp_dir, "second.accomplishment",
+            "[accomplishment]\n"\
+            "title=My Second Accomplishment\n"\
+            "icon=test.jpg\n"\
+            "description=example for the test suite, with dependency\n"\
+            "depends=%s/first\n" % (self.ACCOMP_SET))
+        a = api.Accomplishments(None)
+        viewer_db = a.build_viewer_database()
+        self.assertEquals(len(viewer_db), 2)
+
+        # these match what is in the ABOUT file
+        self.assertEquals(viewer_db[0]['collection-human'],
+            "Test Collection")
+        self.assertEquals(viewer_db[1]['collection-human'],
+            "Test Collection")
+
+        # test a few random fields
+        for item in viewer_db:
+            if item['title'] == "My First Accomplishment":
+                self.assertTrue("opportunity" in item['iconpath'])
+                self.assertTrue(item['id'] == "%s/first" % self.ACCOMP_SET)
+            elif item['title'] == "My Second Accomplishment":
+                self.assertTrue("locked" in item['iconpath'])
+                self.assertTrue(item['id'] == "%s/second" % self.ACCOMP_SET)
+            # this shouldn't happen
+            else:
+                self.assertTrue(False)
+
+    # also tests reloading the database
+    def test_list_all(self):
         self.util_write_file(self.accomp_dir, "first.accomplishment",
             "[accomplishment]\n"\
             "title=My First Accomplishment\n"\
@@ -109,39 +215,37 @@ extrainfo_seen = 1""" % (self.td, self.td))
             "[accomplishment]\n"\
             "title=My Third Accomplishment\n"\
             "description=example for the test suite, no dependency\n")
+        a = api.Accomplishments(None)
+        self.assertEqual(len(a.list_accomplishments()), 3)
 
-        self.util_write_file(self.script_root, "third.py", "print 'hello'")
+        # add a new accomp
+        self.util_write_file(self.accomp_dir, "fourth.accomplishment",
+            "[accomplishment]\n"\
+            "title=My Fourth Accomplishment\n"\
+            "description=An example accomplishment for the test suite\n")
+        self.assertEqual(len(a.list_accomplishments()), 3)
+        a.reload_accom_database()
+        self.assertEqual(len(a.list_accomplishments()), 4)
 
-        self.util_write_about_file(self.accomp_root)
+        # remove the new accomp
+        os.remove(os.path.join(self.accomp_dir, "fourth.accomplishment"))
+        a.reload_accom_database()
+        self.assertEqual(len(a.list_accomplishments()), 3)
 
-        self.util_write_config_file(self.config_dir)
-
-        os.environ['ACCOMPLISHMENTS_ROOT_DIR'] = self.td
-        self.d = api.Accomplishments(None)
-
-    def tearDown(self):
-        del os.environ['ACCOMPLISHMENTS_ROOT_DIR']
-#        shutil.rmtree(self.td)
-
-    def test_list_all(self):
-        accomps = self.d.list_accomplishments()
-        self.assertEqual(len(accomps), 3)
-        for accomp in accomps:
-            self.assertTrue(
-                accomp == "%s/first" % self.ACCOMP_SET or
-                accomp == "%s/second" % self.ACCOMP_SET or
-                accomp == "%s/third" % self.ACCOMP_SET)
-
+    @unittest.skip("need the daemon running")
     def test_accomplish(self):
-        self.assertEqual(len(self.d.list_trophies()), 0)
-        self.d.accomplish("%s/first" % self.ACCOMP_SET)
-        trophies = self.d.list_trophies()
+        a = api.Accomplishments(None)
+        self.assertEqual(len(a.list_trophies()), 0)
+        a.accomplish("%s/first" % self.ACCOMP_SET)
+        trophies = a.list_trophies()
         self.assertEqual(len(trophies), 1)
         self.assertEqual(trophies[0]["title"], "My First Accomplishment")
 
     def test_missing_about_file(self):
         os.remove(os.path.join(self.accomp_root, "ABOUT"))
         self.assertRaises(LookupError, api.Accomplishments, (None))
+
+        # put the file back
         self.util_write_about_file(self.accomp_root)
 
     def test_bad_accomplishment_parse(self):
@@ -152,88 +256,29 @@ extrainfo_seen = 1""" % (self.td, self.td))
         os.remove(os.path.join(self.accomp_dir, "bad.accomplishment"))
 
         self.util_write_file(self.accomp_dir, "bad.accomplishment",
-            "[foo]\n"\
-            "title=whatever\n"\
+            "[accomplishment]\n"\
+            "titlewhatever\n"\
             "description=bad desc\n")
         self.assertRaises(ConfigParser.ParsingError, api.Accomplishments,(None))
         os.remove(os.path.join(self.accomp_dir, "bad.accomplishment"))
 
-#    def test_accomplishments_got_or_not(self):
-#        # First, check that we haven't accomplished anything yet
-#        got_or_not = self.d.listAllAccomplishmentsAndStatus()
-#        self.assertEqual(len(got_or_not), 3)
-#        for accomplishment in got_or_not:
-#            if accomplishment["_filename"].endswith("first.accomplishment"):
-#                self.assertEqual(accomplishment["accomplished"], False)
-#                self.assertEqual(accomplishment["locked"], False)
-#            elif accomplishment["_filename"].endswith("second.accomplishment"):
-#                self.assertEqual(accomplishment["accomplished"], False)
-#                self.assertEqual(accomplishment["locked"], True)
-#            elif accomplishment["_filename"].endswith("third.accomplishment"):
-#                self.assertEqual(accomplishment["accomplished"], False)
-#                self.assertEqual(accomplishment["locked"], False)
-#            else:
-#                # shouldn't happen
-#                self.assert_("Found an accomplishment that shouldn't exist")
-#
-#        # And now accomplish one
-#        self.d.accomplish("app1", "third")
-#        # Now, first should be unaccomplished but available, second should
-#        # be unaccomplished and locked (because first is not accomplished),
-#        # and third is accomplished
-#        got_or_not = self.d.listAllAccomplishmentsAndStatus()
-#        self.assertEqual(len(got_or_not), 3)
-#        for accomplishment in got_or_not:
-#            if accomplishment["_filename"].endswith("first.accomplishment"):
-#                self.assertEqual(accomplishment["accomplished"], False)
-#                self.assertEqual(accomplishment["locked"], False)
-#            elif accomplishment["_filename"].endswith("second.accomplishment"):
-#                self.assertEqual(accomplishment["accomplished"], False)
-#                self.assertEqual(accomplishment["locked"], True)
-#            elif accomplishment["_filename"].endswith("third.accomplishment"):
-#                self.assertEqual(accomplishment["accomplished"], True)
-#                self.assertEqual(accomplishment["locked"], False)
-#            else:
-#                # shouldn't happen
-#                self.assert_("Found an accomplishment that shouldn't exist")
-#
-#    def test_cannot_accomplished_locked(self):
-#        self.assertRaises(app.AccomplishmentLocked, self.d.accomplish, "app1", "second")
-#
-#    def test_all_available_accomplishments_with_scripts(self):
-#        asa = self.d.listAllAvailableAccomplishmentsWithScripts()
-#        self.assertEqual(len(asa), 1)
-#        self.assertTrue(asa[0]["_filename"].endswith("third.accomplishment"))
-#        self.assertTrue(asa[0]["_script"].endswith("third.py"))
-#
-#class TestDaemonDBus(TestDaemon):
-#    def setUp(self):
-#        TestDaemon.setUp(self)
-#        env = os.environ.copy()
-#        path = os.path.join(os.path.split(__file__)[0], "..", "app.py")
-#        self.p = subprocess.Popen(['python', path,
-#            "--accomplishments-path=%s" % os.path.join(self.td, "accomplishments"),
-#            "--trophies-path=%s" % os.path.join(self.td, "trophies"),
-#            "--scripts-path=%s" % os.path.join(self.td, "scripts"),
-#            "--suppress-notifications"
-#            ], env=env)
-#        # Wait for the service to become available
-#        time.sleep(1)
-#        assert self.p.stdout == None
-#        assert self.p.stderr == None
-#        obj = dbus.SessionBus().get_object("org.ubuntu.accomplishments", "/")
-#        self.d = dbus.Interface(obj, "org.ubuntu.accomplishments")
-#
-#    def test_bad_accomplishment_award_rejected(self):
-#        self.assertRaises(dbus.DBusException, self.d.accomplish,
-#            "app1", "nonexistent")
-#
-#    def test_cannot_accomplished_locked(self):
-#        self.assertRaises(dbus.DBusException, self.d.accomplish, "app1", "second")
-#
-#    def tearDown(self):
-#        os.kill(self.p.pid, 15)
-#        TestDaemon.tearDown(self)
-#
+    # also tests get_config_value()
+    def test_write_config_file_item(self):
+        a = api.Accomplishments(None)
+        a.write_config_file_item('config', 'has_verif', False)
+        self.assertEquals(a.get_config_value('config', 'has_verif'), False)
+        self.assertEqual(a.has_verif, False)
+        a.write_config_file_item('config', 'has_verif', True)
+        self.assertEquals(a.get_config_value('config', 'has_verif'), True)
+        self.assertEqual(a.has_verif, True)
+
+        a.write_config_file_item('config', 'trophypath', '/tmp')
+        self.assertEquals(a.get_config_value('config', 'trophypath'), '/tmp')
+        self.assertEqual(a.trophies_path, '/tmp')
+
+        # restore the original
+        self.util_write_config_file(self.config_dir)
+        return
+
 if __name__ == "__main__":
     unittest.main()
