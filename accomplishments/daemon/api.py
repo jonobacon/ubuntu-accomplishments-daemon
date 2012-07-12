@@ -609,9 +609,23 @@ class Accomplishments(object):
 
     def get_all_extra_information(self):
         """
-        Return a dictionary of all information for the accomplishments
-        to authticate. Returns {application, needs-information, label,
-        description, value}.
+        This function is used to retrieve all extra-information data, along with its name, description - as provided by the accomplishment collection - and it's current value.
+        
+        Returns:
+            * **array(dict(str:str))** - A list of all extra-information items used by currently installed accomplishments collections. Note that a single item can be present several times, if more than one collection uses the same extra-information data (see example).
+            * The list of fields in returned dictionaries:
+                * *collection* - the name of colletion that uses this extra-information (e.g. ubuntu-community)
+                * *needs-information* - the name of extra-information data bit (e.g. launchpad-email)
+                * *label* - the user-readable name of this extra-information field. It is provided by the **collection** so may vary. It should be translated according to user's locale.
+                * *description* - an user-readable, one line long description for this extra-information item. It is also provided by the **collection**, and a translated string is provided, if available.
+                * *example* - a example value for this extra-information, provided by the collection (e.g. launchpad-email might have an example: foo@bar.com). If no example is provided, it will be an empty string.
+                * *regex* - a regular expression used to check whether the value of this extra-information field uses a correct format. If collection provides no regexp, it will be an empty string.
+                * *value* - the current value of this field, as set by the user. It will be the same for all collections that use this extra-information item.
+        Example::
+            >>> acc.get_all_extra_information()
+            [{"collection" : "ubuntu-community", "needs-information" : "launchpad-email", "label" : "Launchpad e-mail", "description" : "The e-mail address you use to log in to Launchpad", "example" : "foo@bar.com", "regex" : "", "value" : "someuser@somehost.org"},
+             {"collection" : "ubuntu-italiano", "needs-information" : "launchpad-email", "label" : "Launchpad e-mail", "description" : "Type in your LP e-mail, amigo!", "example" : "some@email.com", "regex" : "", "value" : "someuser@somehost.org"},
+             {"collection" : "ubuntu-community", "needs-information" : "askubuntu-user-url", "label" : "AskUbuntu user profile URL", "description" : "The URL of your AskUbuntu usr profile page", "example" : "http://askubuntu.com/users/42/nick", "regex" : "", "value" : ""}]
         """
         # get a list of all accomplishments
         accomplishments = self.list_accomplishments()
@@ -696,9 +710,15 @@ class Accomplishments(object):
 
     def get_all_extra_information_required(self):
         """
-        Return a dictionary of all information required for the accomplishments
-        to authticate that has not been set yet. Returns {application,
-        needs-information, label, description} Returns only these, which value is not set.
+        This function does pretty much the same as get_all_extra_information() , but it filters out entries that have no value set. This way it can be easily used to get a list of all extra-information that user still has to provide.
+        
+        Returns:
+            * **array(dict(str:str))** - A list of all extra-information items used by currently installed accomplishments collections **that are not yet set**. Details are the same as in get_all_extra_information()
+        
+        Example::
+            >>> acc.get_all_extra_information_required()
+            [{"collection" : "ubuntu-community", "needs-information" : "askubuntu-user-url", "label" : "AskUbuntu user profile URL", "description" : "The URL of your AskUbuntu usr profile page", "example" : "http://askubuntu.com/users/42/nick", "regex" : "", "value" : ""}]
+        
         """
         #fetch a full list of ExtraInformation
         data = self.get_all_extra_information()

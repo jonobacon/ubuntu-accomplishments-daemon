@@ -106,17 +106,56 @@ like &#8216;category:subcategory&#8217; (e.g. <cite>AskUbuntu:Asking</cite>)).</
 <dl class="method">
 <dt id="accomplishments.daemon.api.Accomplishments.get_all_extra_information">
 <tt class="descname">get_all_extra_information</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_all_extra_information"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_all_extra_information" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a dictionary of all information for the accomplishments
-to authticate. Returns {application, needs-information, label,
-description, value}.</p>
+<dd><p>This function is used to retrieve all extra-information data, along with its name, description - as provided by the accomplishment collection - and it&#8217;s current value.</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd><ul class="first last">
+<li><p class="first"><strong>array(dict(str:str))</strong> - A list of all extra-information items used by currently installed accomplishments collections. Note that a single item can be present several times, if more than one collection uses the same extra-information data (see example).</p>
+</li>
+<li><dl class="first docutils">
+<dt>The list of fields in returned dictionaries:</dt>
+<dd><ul class="first last simple">
+<li><em>collection</em> - the name of colletion that uses this extra-information (e.g. ubuntu-community)</li>
+<li><em>needs-information</em> - the name of extra-information data bit (e.g. launchpad-email)</li>
+<li><em>label</em> - the user-readable name of this extra-information field. It is provided by the <strong>collection</strong> so may vary. It should be translated according to user&#8217;s locale.</li>
+<li><em>description</em> - an user-readable, one line long description for this extra-information item. It is also provided by the <strong>collection</strong>, and a translated string is provided, if available.</li>
+<li><em>example</em> - a example value for this extra-information, provided by the collection (e.g. launchpad-email might have an example: <a class="reference external" href="mailto:foo&#37;&#52;&#48;bar&#46;com">foo<span>&#64;</span>bar<span>&#46;</span>com</a>). If no example is provided, it will be an empty string.</li>
+<li><em>regex</em> - a regular expression used to check whether the value of this extra-information field uses a correct format. If collection provides no regexp, it will be an empty string.</li>
+<li><em>value</em> - the current value of this field, as set by the user. It will be the same for all collections that use this extra-information item.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>Example::</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">get_all_extra_information</span><span class="p">()</span>
+<span class="go">[{&quot;collection&quot; : &quot;ubuntu-community&quot;, &quot;needs-information&quot; : &quot;launchpad-email&quot;, &quot;label&quot; : &quot;Launchpad e-mail&quot;, &quot;description&quot; : &quot;The e-mail address you use to log in to Launchpad&quot;, &quot;example&quot; : &quot;foo@bar.com&quot;, &quot;regex&quot; : &quot;&quot;, &quot;value&quot; : &quot;someuser@somehost.org&quot;},</span>
+<span class="go"> {&quot;collection&quot; : &quot;ubuntu-italiano&quot;, &quot;needs-information&quot; : &quot;launchpad-email&quot;, &quot;label&quot; : &quot;Launchpad e-mail&quot;, &quot;description&quot; : &quot;Type in your LP e-mail, amigo!&quot;, &quot;example&quot; : &quot;some@email.com&quot;, &quot;regex&quot; : &quot;&quot;, &quot;value&quot; : &quot;someuser@somehost.org&quot;},</span>
+<span class="go"> {&quot;collection&quot; : &quot;ubuntu-community&quot;, &quot;needs-information&quot; : &quot;askubuntu-user-url&quot;, &quot;label&quot; : &quot;AskUbuntu user profile URL&quot;, &quot;description&quot; : &quot;The URL of your AskUbuntu usr profile page&quot;, &quot;example&quot; : &quot;http://askubuntu.com/users/42/nick&quot;, &quot;regex&quot; : &quot;&quot;, &quot;value&quot; : &quot;&quot;}]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="accomplishments.daemon.api.Accomplishments.get_all_extra_information_required">
 <tt class="descname">get_all_extra_information_required</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_all_extra_information_required"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_all_extra_information_required" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a dictionary of all information required for the accomplishments
-to authticate that has not been set yet. Returns {application,
-needs-information, label, description} Returns only these, which value is not set.</p>
+<dd><p>This function does pretty much the same as get_all_extra_information() , but it filters out entries that have no value set. This way it can be easily used to get a list of all extra-information that user still has to provide.</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>array(dict(str:str))</strong> - A list of all extra-information items used by currently installed accomplishments collections <strong>that are not yet set</strong>. Details are the same as in get_all_extra_information()</li>
+</ul>
+</dd>
+<dt>Example::</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">get_all_extra_information_required</span><span class="p">()</span>
+<span class="go">[{&quot;collection&quot; : &quot;ubuntu-community&quot;, &quot;needs-information&quot; : &quot;askubuntu-user-url&quot;, &quot;label&quot; : &quot;AskUbuntu user profile URL&quot;, &quot;description&quot; : &quot;The URL of your AskUbuntu usr profile page&quot;, &quot;example&quot; : &quot;http://askubuntu.com/users/42/nick&quot;, &quot;regex&quot; : &quot;&quot;, &quot;value&quot; : &quot;&quot;}]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
