@@ -1,0 +1,7 @@
+[accomplishment]
+title=My Second Accomplishment
+icon=second.jpg
+description=An example accomplishment for the test suite, with dependency
+depends=testaccomp/first
+needs-signing=True
+collection=testaccomp

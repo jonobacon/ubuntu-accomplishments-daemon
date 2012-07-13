@@ -382,13 +382,12 @@ class Accomplishments(object):
         #log.msg(media_file_name)
         #log.msg("MEDIA_DIR:")
         #log.msg(media_dir)
-        #media_filename = get_data_file(media_dir.split, '%s' % (media_file_name,))
         media_filename = os.path.join(media_dir, media_file_name)
         #log.msg("MEDIA_FILENAME:")
         #log.msg(media_filename)
 
         if not os.path.exists(media_filename):
-            media_filename = None
+            return None
 
         final = "file:///" + media_filename
         return final
@@ -458,7 +457,6 @@ class Accomplishments(object):
         """Return a configuration value from the .accomplishments file"""
         log.msg(
             "Returning configuration values for: %s, %s" % (section, item))
-        homedir = os.getenv("HOME")
         config = ConfigParser.RawConfigParser()
         cfile = self.dir_config + "/.accomplishments"
         config.read(cfile)
@@ -487,7 +485,6 @@ class Accomplishments(object):
         log.msg(
             "Set configuration file value in '%s': %s = %s" % (section, item,
             value))
-        homedir = os.getenv("HOME")
         config = ConfigParser.RawConfigParser()
         cfile = self.dir_config + "/.accomplishments"
 
@@ -509,7 +506,6 @@ class Accomplishments(object):
         in ~/.config/accomplishments/.accomplishments."""
         
         log.msg("Writing the configuration file")
-        homedir = os.getenv("HOME")
         config = ConfigParser.RawConfigParser()
         cfile = self.dir_config + "/.accomplishments"
 
@@ -534,8 +530,7 @@ class Accomplishments(object):
         """Load the main configuration file for the daemon. This should be
         located in ~/.config/accomplishments/.accomplishments and it provides
         a ConfigParser INI-style list of values."""
-        
-        homedir = os.environ["HOME"]
+
         config = ConfigParser.RawConfigParser()
         cfile = os.path.join(self.dir_config, ".accomplishments")
 
@@ -1133,6 +1128,8 @@ class Accomplishments(object):
         imagesdir = os.path.join(self.dir_cache,'trophyimages')
         imagesdir = os.path.join(imagesdir,self.get_acc_collection(accomID))
         iconfile = self.get_acc_icon(accomID)
+        # XXX - this will fail if the icon passed in does not have a .
+        # in the file name - LP: 1024012
         iconfilename, iconfileext = iconfile.split(".")
         if not self.get_acc_is_unlocked(accomID):
             iconfilename = iconfilename + '-locked'
@@ -1151,9 +1148,10 @@ class Accomplishments(object):
         
     def get_acc_categories(self,accomID):
         """
-        Returns a list of categories for a given accomplishment. This can include sub-categories (which are formatted
-        like 'category:subcategory' (e.g. `AskUbuntu:Asking`)).
-        
+        Returns a list of categories for a given accomplishment. This can
+        include sub-categories (which are formatted like 'category:subcategory'
+        (e.g. `AskUbuntu:Asking`)).
+
         Args:
             accomID (str):  The Accomplishment ID (e.g. 'ubuntu-community/registered-on-launchpad')
         Returns:
@@ -1167,19 +1165,20 @@ class Accomplishments(object):
 
     def get_acc_date_completed(self,accomID):
         """
-        Returns the date that the accomplishment specified by 'accomID' was completed.
-        
+        Returns the date that the accomplishment specified by 'accomID' was
+        completed.
+
         Args:
             accomID (str):  The Accomplishment ID (e.g. 'ubuntu-community/registered-on-launchpad')
         Returns:
-            (list) The list of categories.
+            (string) The completed date
         Example:
-            >>> obj.get_acc_completed("ubuntu-community/registered-on-launchpad")
-            ["2012-06-15 12:32"]
+            >>> obj.get_acc_date_completed("ubuntu-community/registered-on-launchpad")
+            "2012-06-15 12:32"
         """
-        
+
         return self.accDB[accomID]['date-completed']
-        
+
     def get_trophy_data(self,accomID):
         """
         This function can be used to retrieve all data from a .trophy file. It returns all it's contents as a dict (provided this .trophy exists).
@@ -1406,9 +1405,8 @@ NoDisplay=true"
         u1configdir = os.path.join(
             xdg.BaseDirectory.xdg_config_home, "ubuntuone")
 
-        if os.path.exists(u1configdir):
-            
-            cfile = os.path.join(u1configdir, "syncdaemon.conf")
+        cfile = os.path.join(u1configdir, "syncdaemon.conf")
+        if os.path.exists(cfile):
 
             config = ConfigParser.ConfigParser()
             config.read(cfile)
@@ -1530,8 +1528,8 @@ NoDisplay=true"
         config.read(cfile)
 
         if config.has_option("trophy", "date-accomplished"):
-            return config.get("trophy", "date-accomplished")            
-            
+            return config.get("trophy", "date-accomplished")
+
     def _mark_as_completed(self,accomID):
         # Marks accomplishments as completed int the accDB, and returns a list
         # of accomIDs that just got unlocked.
