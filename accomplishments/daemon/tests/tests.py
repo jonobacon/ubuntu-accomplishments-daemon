@@ -46,7 +46,9 @@ class TestDaemon(unittest.TestCase):
     LANG = "en"
 
     def util_copy_accomp(self, accomp_dir, accomp_name):
-        src = os.path.join("accomps", "%s.accomplishment" % accomp_name)
+        testdir = os.path.dirname(__file__)
+        src = os.path.join("%s/accomps" % testdir,
+            "%s.accomplishment" % accomp_name)
         dest = os.path.join(accomp_dir, "%s.accomplishment" % accomp_name)
         shutil.copyfile(src, dest)
 
