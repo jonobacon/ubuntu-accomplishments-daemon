@@ -47,7 +47,7 @@ class TestDaemon(unittest.TestCase):
 
     def util_copy_accomp(self, accomp_dir, accomp_name):
         testdir = os.path.dirname(__file__)
-        src = os.path.join("%s/accomps" % testdir,
+        src = os.path.join(testdir, "accomps",
             "%s.accomplishment" % accomp_name)
         dest = os.path.join(accomp_dir, "%s.accomplishment" % accomp_name)
         shutil.copyfile(src, dest)
@@ -337,29 +337,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         val = a.get_daemon_session_start()
         self.assertTrue(isinstance(val, bool))
         a.write_config_file_item('config', 'daemon_sessionstart', False)
-
-    def test_get_block_ubuntuone_notification_bubbles(self):
-        a = api.Accomplishments(None)
-        val = a.get_block_ubuntuone_notification_bubbles()
-        self.assertTrue(isinstance(val, bool))
-        # don't write the config file here because it's using U1's
-        # config file which will overwrite the user's prefs
-
-    @unittest.skip("this will modify the user's environment, skipping")
-    def test_set_block_ubuntuone_notifiction_bubbles(self):
-        # there's no current way to test this in /tmp, so we don't do
-        # it currently.
-        return
-
-    def test_get_daemon_session_start(self):
-        a = api.Accomplishments(None)
-        val = a.get_daemon_session_start()
-        self.assertTrue(isinstance(val, bool))
-        a.write_config_file_item('config', 'daemon_sessionstart', False)
-        val = a.get_daemon_session_start()
-        self.assertFalse(val)
-        self.assertEquals(a.get_config_value('config', 'daemon_sessionstart'),
-            False)
+        self.assertFalse(a.get_daemon_session_start())
 
     @unittest.skip("this will modify the user's environment, skipping")
     def test_set_daemon_session_start(self):

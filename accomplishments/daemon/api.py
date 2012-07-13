@@ -1316,9 +1316,8 @@ NoDisplay=true"
         u1configdir = os.path.join(
             xdg.BaseDirectory.xdg_config_home, "ubuntuone")
 
-        if os.path.exists(u1configdir):
-            
-            cfile = os.path.join(u1configdir, "syncdaemon.conf")
+        cfile = os.path.join(u1configdir, "syncdaemon.conf")
+        if os.path.exists(cfile):
 
             config = ConfigParser.ConfigParser()
             config.read(cfile)
