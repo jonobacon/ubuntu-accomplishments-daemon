@@ -167,8 +167,46 @@ like &#8216;category:subcategory&#8217; (e.g. <cite>AskUbuntu:Asking</cite>)).</
 <dl class="method">
 <dt id="accomplishments.daemon.api.Accomplishments.get_extra_information">
 <tt class="descname">get_extra_information</tt><big>(</big><em>coll</em>, <em>item</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_extra_information"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_extra_information" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function is particularly sensitive.
-It is used by all global accomplishment scripts.</p>
+<dd><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function is particularly sensitive - accomplishment scripts use it to fetch credentials they need.</p>
+</div>
+<p>This function returns extra-information&#8217;s value, as set by user. It also provides it with translated label of this extra-information.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li><strong>coll</strong> - (str) the name of collection that needs this item. Depending on this, different label may be returned, if collections provide different extrainformation details.</li>
+<li><strong>item</strong> - (str) the name of requested item.</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt><strong>dict(str:str)</strong> - output is wrapped in a dictionary:</dt>
+<dd><ul class="first last simple">
+<li><em>item</em> - the value of this item. (e.g. <tt class="docutils literal"><span class="pre">&quot;askubuntu-user-url&quot;</span> <span class="pre">:</span> <span class="pre">&quot;askubuntu.com/users/12345/nickname&quot;</span></tt>).</li>
+<li><strong>label</strong> - a translated label, as provided by chosen collection.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">get_extra_information</span><span class="p">(</span><span class="s">&quot;ubuntu-community&quot;</span><span class="p">,</span><span class="s">&quot;launchpad-email&quot;</span><span class="p">)</span>
+<span class="go">{&quot;launchpad-email&quot; : &quot;user@host.org&quot;, &quot;label&quot; : &quot;Adres e-mail uzywany do logowania w portalu Launchpad&quot;}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">get_extra_information</span><span class="p">(</span><span class="s">&quot;ubuntu-italiano&quot;</span><span class="p">,</span><span class="s">&quot;launchpad-email&quot;</span><span class="p">)</span>
+<span class="go">{&quot;launchpad-email&quot; : &quot;user@host.org&quot;, &quot;label&quot; : &quot;E-mail address used to log into Launchpad&quot;}</span>
+</pre></div>
+</div>
+</dd>
+<dt>In above example user has an outdated ubuntu-italiano collection, and it doesn&#8217;t yet have a Polish label - therefore it differs from previous call.</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">get_extra_information</span><span class="p">(</span><span class="s">&quot;ubuntu-community&quot;</span><span class="p">,</span><span class="s">&quot;askubuntu-user-url&quot;</span><span class="p">)</span>
+<span class="go">{&quot;askubuntu-user-url&quot; : &quot;http://askubuntu.com/users/12345/nickname&quot;, &quot;label&quot; : &quot;URL of your AskUbuntu profile page&quot;}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -179,10 +217,91 @@ True if we are or False if we are not.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.get_trophy_data">
+<tt class="descname">get_trophy_data</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_trophy_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_trophy_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function can be used to retrieve all data from a .trophy file. It returns all it&#8217;s contents as a dict (provided this .trophy exists).</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) The accomplishmendID.</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li>None - in case this accomplishment hasn&#8217;t been completed.</li>
+<li><strong>dict(str:str)</strong> - in case this accomplishment has been awarded. It represents all keys and it&#8217;s values in a .trophy file.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">get_trophy_data</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">{&#39;needs-signing&#39;: &#39;true&#39;, &#39;date-accomplished&#39;: &#39;1990-04-12 02:22&#39;, &#39;needs-information&#39;: &#39;launchpad-email&#39;, &#39;version&#39;: &#39;0.2&#39;, &#39;__name__&#39;: &#39;trophy&#39;, &#39;launchpad-email&#39;: &#39;launchpaduser@ubuntu.com&#39;, &#39;id&#39;: &#39;ubuntu-community/registered-on-launchpad&#39;}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.get_trophy_path">
+<tt class="descname">get_trophy_path</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_trophy_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_trophy_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns a path to the .trophy file related to given <strong>accomplishmentID</strong>. The trophy file may or may not exist.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) The accomplishmentID.</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>(str)</strong> - A path to .trophy file of this accomplishment.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">get_trophy_path</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">/home/cielak/.local/share/accomplishments/trophies/ubuntu-community/registered-on-launchpad.trophy</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="accomplishments.daemon.api.Accomplishments.invalidate_extra_information">
 <tt class="descname">invalidate_extra_information</tt><big>(</big><em>extrainfo</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.invalidate_extra_information"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.invalidate_extra_information" title="Permalink to this definition">¶</a></dt>
-<dd><p>This used to remove all trophies, but since it is essential to
-preserve them, this is no longer the case</p>
+<dd><div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This function is deprecated.</p>
+</div>
+<p>This function was used to remove all trophies that were accomplished using given extra-information. For example, if I used launchpad-email <a class="reference external" href="mailto:userA&#37;&#52;&#48;mail&#46;com">userA<span>&#64;</span>mail<span>&#46;</span>com</a> and then switched to <a class="reference external" href="mailto:userB&#37;&#52;&#48;mail&#46;com">userB<span>&#64;</span>mail<span>&#46;</span>com</a>, it was useful to call this function to remove all trophies that were awarded to <a class="reference external" href="mailto:userA&#37;&#52;&#48;mail&#46;com">userA<span>&#64;</span>mail<span>&#46;</span>com</a>. However, since 0.2 throphies may not be deleted automatically under no circumstances, this function <strong>does nothing</strong> now.</p>
+<dl class="docutils">
+<dt>Args: </dt>
+<dd><ul class="first last simple">
+<li><strong>extrainfo</strong> - (str) the extra-information field that is no more valid (e.g. launchpad-email)</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.reload_accom_database">
+<tt class="descname">reload_accom_database</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.reload_accom_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.reload_accom_database" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the function that builds up the <em>accDB</em> accomplishments database. It scans all accomplishment installation directories (as set in the config file), looks for all installed collections, and caches all accomplishments&#8217; data in memory. If a translated .accomplishment file is available, it&#8217;s contents are loaded instead.</p>
+<p>It also groups collection categories, authors, finds accomplishment script paths, and counts accomplishments in collections.</p>
+<p>All results are stored in an internal variable, <em>self.accDB</em>. They can be accessed afterwards using <a href="#id1"><span class="problematic" id="id2">get_acc_</span></a>... functions.</p>
+<p>Running this function also calls _update_all_locked_and_completed_statuses(), which completes initialising the <em>accDB</em>, as it fills in it&#8217;s &#8220;completed&#8221; and &#8220;locked&#8221; fields.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">There is no need for clients to run this method manually when the daemon is started - this function is called by this class&#8217; __init__.</p>
+</div>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><em>None.</em></dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li>Nothing.</li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">

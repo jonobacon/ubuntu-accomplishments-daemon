@@ -832,7 +832,7 @@
 		
     <span class="c"># =================================================================</span>
         </div>
-    <span class="k">def</span> <span class="nf">reload_accom_database</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Accomplishments.reload_accom_database"><a class="viewcode-back" href="../../../daemonref.html#accomplishments.daemon.api.Accomplishments.reload_accom_database">[docs]</a>    <span class="k">def</span> <span class="nf">reload_accom_database</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     
     <span class="c"># First, clear the database.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">accDB</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1015,7 +1015,7 @@
         <span class="c"># print self.accDB\</span>
         
     <span class="c"># ======= Access functions =======</span>
-        
+        </div>
     <span class="k">def</span> <span class="nf">get_acc_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">accomID</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">accDB</span><span class="p">[</span><span class="n">accomID</span><span class="p">]</span>
         
@@ -1045,13 +1045,13 @@
     <span class="k">def</span> <span class="nf">get_acc_is_unlocked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">accomID</span><span class="p">):</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">accDB</span><span class="p">[</span><span class="n">accomID</span><span class="p">][</span><span class="s">&#39;locked&#39;</span><span class="p">]</span>
     
-    <span class="k">def</span> <span class="nf">get_trophy_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">accomID</span><span class="p">):</span>
+<div class="viewcode-block" id="Accomplishments.get_trophy_path"><a class="viewcode-back" href="../../../daemonref.html#accomplishments.daemon.api.Accomplishments.get_trophy_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_trophy_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">accomID</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_acc_exists</span><span class="p">(</span><span class="n">accomID</span><span class="p">):</span>
             <span class="c"># hopefully an empty path will break something...</span>
             <span class="k">return</span> <span class="s">&quot;&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trophies_path</span><span class="p">,</span><span class="n">accomID</span> <span class="o">+</span> <span class="s">&quot;.trophy&quot;</span><span class="p">)</span>
-        
+        </div>
     <span class="k">def</span> <span class="nf">get_acc_is_completed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">accomID</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">accDB</span><span class="p">[</span><span class="n">accomID</span><span class="p">][</span><span class="s">&#39;completed&#39;</span><span class="p">]</span>
         
@@ -1085,14 +1085,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">accDB</span><span class="p">[</span><span class="n">accomID</span><span class="p">][</span><span class="s">&#39;categories&#39;</span><span class="p">]</span>
     
     </div>
-    <span class="k">def</span> <span class="nf">get_trophy_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">accomID</span><span class="p">):</span>
+<div class="viewcode-block" id="Accomplishments.get_trophy_data"><a class="viewcode-back" href="../../../daemonref.html#accomplishments.daemon.api.Accomplishments.get_trophy_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_trophy_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">accomID</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_acc_is_completed</span><span class="p">(</span><span class="n">accomID</span><span class="p">):</span>
             <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cfg</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="o">.</span><span class="n">RawConfigParser</span><span class="p">()</span>
             <span class="n">cfg</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_trophy_path</span><span class="p">(</span><span class="n">accomID</span><span class="p">))</span>
             <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">_sections</span><span class="p">[</span><span class="s">&quot;trophy&quot;</span><span class="p">])</span>
-    
+    </div>
     <span class="k">def</span> <span class="nf">get_collection_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">accDB</span><span class="p">[</span><span class="n">collection</span><span class="p">][</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
         

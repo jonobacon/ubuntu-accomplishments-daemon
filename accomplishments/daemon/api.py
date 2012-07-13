@@ -789,15 +789,40 @@ class Accomplishments(object):
             
     def invalidate_extra_information(self,extrainfo):
         """
-        This used to remove all trophies, but since it is essential to
-        preserve them, this is no longer the case
+        .. warning::
+            This function is deprecated.
+            
+        This function was used to remove all trophies that were accomplished using given extra-information. For example, if I used launchpad-email userA@mail.com and then switched to userB@mail.com, it was useful to call this function to remove all trophies that were awarded to userA@mail.com. However, since 0.2 throphies may not be deleted automatically under no circumstances, this function **does nothing** now.
+        
+        Args: 
+            * **extrainfo** - (str) the extra-information field that is no more valid (e.g. launchpad-email)
         """
         pass
             
     def get_extra_information(self, coll, item):
         """
-        This function is particularly sensitive.
-        It is used by all global accomplishment scripts.
+        .. note::
+            This function is particularly sensitive - accomplishment scripts use it to fetch credentials they need.
+            
+        This function returns extra-information's value, as set by user. It also provides it with translated label of this extra-information.
+        
+        Args:
+            * **coll** - (str) the name of collection that needs this item. Depending on this, different label may be returned, if collections provide different extrainformation details.
+            * **item** - (str) the name of requested item.
+            
+        Returns:
+            * **dict(str:str)** - output is wrapped in a dictionary:
+                - *item* - the value of this item. (e.g. ``"askubuntu-user-url" : "askubuntu.com/users/12345/nickname"``).
+                - **label** - a translated label, as provided by chosen collection.
+                
+        Example:
+            >>> acc.get_extra_information("ubuntu-community","launchpad-email")
+            {"launchpad-email" : "user@host.org", "label" : "Adres e-mail uzywany do logowania w portalu Launchpad"}
+            >>> acc.get_extra_information("ubuntu-italiano","launchpad-email")
+            {"launchpad-email" : "user@host.org", "label" : "E-mail address used to log into Launchpad"}
+        In above example user has an outdated ubuntu-italiano collection, and it doesn't yet have a Polish label - therefore it differs from previous call.
+            >>> acc.get_extra_information("ubuntu-community","askubuntu-user-url")
+            {"askubuntu-user-url" : "http://askubuntu.com/users/12345/nickname", "label" : "URL of your AskUbuntu profile page"}
         """
         extrainfopath = os.path.join(self.trophies_path, ".extrainformation/")
         authfile = os.path.join(extrainfopath, item)
@@ -820,8 +845,26 @@ class Accomplishments(object):
     # =================================================================
         
     def reload_accom_database(self):
-    
-    # First, clear the database.
+        """
+        This is the function that builds up the *accDB* accomplishments database. It scans all accomplishment installation directories (as set in the config file), looks for all installed collections, and caches all accomplishments' data in memory. If a translated .accomplishment file is available, it's contents are loaded instead.
+        
+        It also groups collection categories, authors, finds accomplishment script paths, and counts accomplishments in collections.
+        
+        All results are stored in an internal variable, *self.accDB*. They can be accessed afterwards using get_acc_... functions.
+        
+        Running this function also calls _update_all_locked_and_completed_statuses(), which completes initialising the *accDB*, as it fills in it's "completed" and "locked" fields.
+        
+        .. note::
+            There is no need for clients to run this method manually when the daemon is started - this function is called by this class' __init__.
+        
+        Args:
+            *None.*
+            
+        Returns:
+            * Nothing.
+        
+        """
+        # First, clear the database.
         self.accDB = {}
         # Get the list of all paths where accomplishments may be
         # installed...
@@ -1054,6 +1097,19 @@ class Accomplishments(object):
         return not self.accDB[accomID]['locked']
     
     def get_trophy_path(self,accomID):
+        """
+        This function returns a path to the .trophy file related to given **accomplishmentID**. The trophy file may or may not exist.
+        
+        Args:
+            * **accomID** - (str) The accomplishmentID.
+            
+        Returns:
+            * **(str)** - A path to .trophy file of this accomplishment.
+            
+        Example:
+            >>> acc.get_trophy_path("ubuntu-community/registered-on-launchpad")
+            /home/cielak/.local/share/accomplishments/trophies/ubuntu-community/registered-on-launchpad.trophy
+        """
         if not self.get_acc_exists(accomID):
             # hopefully an empty path will break something...
             return ""
@@ -1125,6 +1181,19 @@ class Accomplishments(object):
         return self.accDB[accomID]['date-completed']
         
     def get_trophy_data(self,accomID):
+        """
+        This function can be used to retrieve all data from a .trophy file. It returns all it's contents as a dict (provided this .trophy exists).
+        
+        Args:
+            * **accomID** - (str) The accomplishmendID.
+            
+        Returns:
+            - None - in case this accomplishment hasn't been completed.
+            - **dict(str:str)** - in case this accomplishment has been awarded. It represents all keys and it's values in a .trophy file.
+        Example:
+            >>> acc.get_trophy_data("ubuntu-community/registered-on-launchpad")
+            {'needs-signing': 'true', 'date-accomplished': '1990-04-12 02:22', 'needs-information': 'launchpad-email', 'version': '0.2', '__name__': 'trophy', 'launchpad-email': 'launchpaduser@ubuntu.com', 'id': 'ubuntu-community/registered-on-launchpad'}
+        """
         if not self.get_acc_is_completed(accomID):
             return
         else:
