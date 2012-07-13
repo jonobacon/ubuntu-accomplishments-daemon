@@ -11,39 +11,40 @@ import ConfigParser
 sys.path.insert(0, os.path.join(os.path.split(__file__)[0], "../../.."))
 from accomplishments.daemon import app, api
 
-# future tests
+# future tests:
+# create extra information files - marked for removal in the code
 # get_acc_date_completed - needs accomplish() to work to be useful
-# get all extra information
-# get all extra information required
-# create extra information files
-# invalidate extra information
-# get extra information
-# get trophy path
 # get trophy data
-# get collection name
-# get collection exists
-# get collection authors
-# get collection categories
-# get collection data
 # list trophies
 # list opportunities
 # list depending on
 # list unlocked
 # list unlocked not completed
-# list collections
 # run scripts/runscript
-# build viewer database
 # get published status
+# invalidate extra information
 
 # These tests will modify the user's envrionment, outside of the test
 # dir and so are not written/skipped:
 #  - set daemon session start
 #  - set block u1 notification bubbles
 
+# Debugging:
+# To debug tests, the following changes are recommended:
+# 1) comment out the shutil.rmtree in tearDown()
+# 2) in setUp, set self.td to a known place, like /tmp/foo (you will need
+#    to create this directory as well)
+
 class TestDaemon(unittest.TestCase):
 
     ACCOMP_SET = "testaccomp"
     LANG = "en"
+
+    def util_copy_extrainfo(self, extrainfo_dir, extrainfo_name):
+        testdir = os.path.dirname(__file__)
+        src = os.path.join(testdir, "extrainformation", extrainfo_name)
+        dest = os.path.join(extrainfo_dir, extrainfo_name)
+        shutil.copyfile(src, dest)
 
     def util_copy_accomp(self, accomp_dir, accomp_name):
         testdir = os.path.dirname(__file__)
@@ -52,6 +53,10 @@ class TestDaemon(unittest.TestCase):
         dest = os.path.join(accomp_dir, "%s.accomplishment" % accomp_name)
         shutil.copyfile(src, dest)
 
+    # This function is not really needed because when tearDown runs it
+    # removes the entire tree, but when debugging tests it's useful to comment
+    # out the rmtree in tearDown, so then this is critical to make the tests
+    # work.
     def util_remove_all_accomps(self, accomp_dir):
         for f in os.listdir(accomp_dir):
             os.remove(os.path.join(self.accomp_dir, f))
@@ -119,9 +124,9 @@ extrainfo_seen = 1""" % (self.td, self.td))
         if not os.path.exists(self.script_root):
             os.makedirs(self.script_root)
 
-        # XXX - not sure this is correct or needed
-        # /tmp/foo/accomplishments/accomplishments/testaccomp/trophies
-        self.trophy_dir = os.path.join(self.td, "trophies")
+        # /tmp/foo/accomplishments/.local/share/accomplishments/trophies
+        self.trophy_dir = os.path.join(self.td, "accomplishments", ".local",
+            "share", "accomplishments", "trophies")
         if not os.path.exists(self.trophy_dir):
             os.makedirs(self.trophy_dir)
 
@@ -171,14 +176,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
             "My Second Accomplishment")
         self.assertEquals(a.get_acc_title("%s/third" % self.ACCOMP_SET),
             "My Third Accomplishment")
-
-        # XXX - assertRaises isn't working here the way I think it
-        # should, this is a substitute
-        try:
-            a.get_acc_title("wrong")
-            self.assertTrue(False)
-        except KeyError:
-            self.assertTrue(True)
+        self.assertRaises(KeyError, a.get_acc_title, "wrong")
 
         # get_acc_description
         self.assertTrue("example" in a.get_acc_description("%s/first" %
@@ -187,27 +185,13 @@ extrainfo_seen = 1""" % (self.td, self.td))
             self.ACCOMP_SET))
         self.assertTrue("example" in a.get_acc_description("%s/third" %
             self.ACCOMP_SET))
-
-        # XXX - assertRaises isn't working here the way I think it
-        # should, this is a substitute
-        try:
-            a.get_acc_description("wrong")
-            self.assertTrue(False)
-        except KeyError:
-            self.assertTrue(True)
+        self.assertRaises(KeyError, a.get_acc_description, "wrong")
 
         # get_acc_needs_signing
         self.assertFalse(a.get_acc_needs_signing("%s/first" % self.ACCOMP_SET))
         self.assertTrue(a.get_acc_needs_signing("%s/second" % self.ACCOMP_SET))
         self.assertFalse(a.get_acc_needs_signing("%s/first" % self.ACCOMP_SET))
-
-        # XXX - assertRaises isn't working here the way I think it
-        # should, this is a substitute
-        try:
-            a.get_acc_needs_signing("wrong")
-            self.assertTrue(False)
-        except KeyError:
-            self.assertTrue(True)
+        self.assertRaises(KeyError, a.get_acc_needs_signing, "wrong")
 
         # get_acc_depends
         self.assertTrue(a.get_acc_depends("%s/first" % self.ACCOMP_SET) == [])
@@ -215,27 +199,13 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.assertEquals(len(deps), 1)
         self.assertTrue(deps[0] == "%s/first" % self.ACCOMP_SET)
         self.assertTrue(a.get_acc_depends("%s/third" % self.ACCOMP_SET) == [])
-
-        # XXX - assertRaises isn't working here the way I think it
-        # should, this is a substitute
-        try:
-            a.get_acc_depends("wrong")
-            self.assertTrue(False)
-        except KeyError:
-            self.assertTrue(True)
+        self.assertRaises(KeyError, a.get_acc_depends, "wrong")
 
         # get_acc_is_unlocked
         self.assertTrue(a.get_acc_is_unlocked("%s/first" % self.ACCOMP_SET))
         self.assertFalse(a.get_acc_is_unlocked("%s/second" % self.ACCOMP_SET))
         self.assertTrue(a.get_acc_is_unlocked("%s/third" % self.ACCOMP_SET))
-
-        # XXX - assertRaises isn't working here the way I think it
-        # should, this is a substitute
-        try:
-            a.get_acc_is_unlocked("wrong")
-            self.assertTrue(False)
-        except KeyError:
-            self.assertTrue(True)
+        self.assertRaises(KeyError, a.get_acc_is_unlocked, "wrong")
 
         # get_acc_is_completed
         # XXX - when we get the accomplish() code working, make some of these
@@ -243,14 +213,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.assertFalse(a.get_acc_is_completed("%s/first" % self.ACCOMP_SET))
         self.assertFalse(a.get_acc_is_completed("%s/second" % self.ACCOMP_SET))
         self.assertFalse(a.get_acc_is_completed("%s/third" % self.ACCOMP_SET))
-
-        # XXX - assertRaises isn't working here the way I think it
-        # should, this is a substitute
-        try:
-            a.get_acc_is_completed("wrong")
-            self.assertTrue(False)
-        except KeyError:
-            self.assertTrue(True)
+        self.assertRaises(KeyError, a.get_acc_is_completed, "wrong")
 
         # get_acc_script_path
         self.assertEqual(a.get_acc_script_path("%s/first" % self.ACCOMP_SET),
@@ -260,30 +223,18 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.util_write_file(self.script_root, "third.py", "print 'hello'")
         sp = a.get_acc_script_path("%s/third" % self.ACCOMP_SET)
         self.assertTrue(sp.endswith("third.py"))
-
-        try:
-            a.get_acc_script_path("wrong")
-            self.assertTrue(False)
-        except KeyError:
-            self.assertTrue(True)
+        self.assertRaises(KeyError, a.get_acc_script_path, "wrong")
 
         # get_acc_needs_info
         info = a.get_acc_needs_info("%s/first" % self.ACCOMP_SET)
         self.assertEqual(len(info),2)
-        self.assertEqual(info[0], "info")
-        self.assertEqual(info[1], "more info")
+        for i in info:
+           self.assertTrue(i in ["info", "info2"])
         self.assertEqual(a.get_acc_needs_info("%s/second" % self.ACCOMP_SET),
             [])
         self.assertEqual(a.get_acc_needs_info("%s/third" % self.ACCOMP_SET),
             [])
-
-        # XXX - assertRaises isn't working here the way I think it
-        # should, this is a substitute
-        try:
-            a.get_acc_needs_info("wrong")
-            self.assertTrue(False)
-        except KeyError:
-            self.assertTrue(True)
+        self.assertRaises(KeyError, a.get_acc_needs_info, "wrong")
 
         # get_acc_collection
         self.assertEqual(a.get_acc_collection("%s/first" % self.ACCOMP_SET),
@@ -292,32 +243,17 @@ extrainfo_seen = 1""" % (self.td, self.td))
             self.ACCOMP_SET)
         self.assertEqual(a.get_acc_collection("%s/third" % self.ACCOMP_SET),
             self.ACCOMP_SET)
-
-        # XXX - assertRaises isn't working here the way I think it
-        # should, this is a substitute
-        try:
-            a.get_acc_collection("wrong")
-            self.assertTrue(False)
-        except KeyError:
-            self.assertTrue(True)
+        self.assertRaises(KeyError, a.get_acc_collection, "wrong")
 
         # get_acc_categories
         self.assertEqual(a.get_acc_categories("%s/first" % self.ACCOMP_SET), [])
         self.assertEqual(a.get_acc_categories("%s/second" % self.ACCOMP_SET),
             [])
-        info = a.get_acc_categories("%s/third" % self.ACCOMP_SET)
+        categories = a.get_acc_categories("%s/third" % self.ACCOMP_SET)
         self.assertEqual(len(info),2)
-        self.assertEqual(info[0], "testing")
-        self.assertEqual(info[1], "unit test")
-
-        # XXX - assertRaises isn't working here the way I think it
-        # should, this is a substitute
-        try:
-            a.get_acc_categories("wrong")
-            self.assertTrue(False)
-        except KeyError:
-            self.assertTrue(True)
-
+        for category in categories:
+           self.assertTrue(category in ["testing", "unit test"])
+        self.assertRaises(KeyError, a.get_acc_categories, "wrong")
 
     def test_get_block_ubuntuone_notification_bubbles(self):
         a = api.Accomplishments(None)
@@ -488,6 +424,157 @@ extrainfo_seen = 1""" % (self.td, self.td))
         # restore the original
         self.util_write_config_file(self.config_dir)
         return
+
+    # this tests the get_collection_* functions and list_collections():
+    def test_get_collection_all_funcs(self):
+        self.util_remove_all_accomps(self.accomp_dir)
+        self.util_copy_accomp(self.accomp_dir, "first")
+        self.util_copy_accomp(self.accomp_dir, "second")
+        self.util_copy_accomp(self.accomp_dir, "third")
+        a = api.Accomplishments(None)
+
+        # list_collections
+        collections = a.list_collections()
+        self.assertEqual(len(collections), 1)
+        self.assertEqual(collections[0], self.ACCOMP_SET)
+
+        # get_collection_name
+        self.assertEqual(a.get_collection_name(collections[0]),
+            "Test Collection")
+        self.assertRaises(KeyError, a.get_collection_name, "wrong")
+
+        # get_collection_exists
+        self.assertTrue(a.get_collection_exists(collections[0]))
+        self.assertFalse(a.get_collection_exists("wrong"))
+        self.assertFalse(a.get_collection_exists(""))
+        self.assertFalse(a.get_collection_exists(None))
+
+        # get_collection_authors
+        authors = a.get_collection_authors(collections[0])
+        # we have only 2 authors because dupes are removed
+        self.assertEqual(len(authors), 2)
+        for author in authors:
+           self.assertTrue(author in ["Someone", "Tester <tester@tester>"])
+        self.assertRaises(KeyError, a.get_collection_authors, "wrong")
+
+        # get_collection_categories
+        categories = a.get_collection_categories(collections[0])
+        self.assertEqual(len(categories), 2)
+        for category in categories:
+           self.assertTrue(category in ["testing", "unit test"])
+        self.assertRaises(KeyError, a.get_collection_categories, "wrong")
+
+        # get_collection_data
+        data = a.get_collection_data(collections[0])
+        self.assertTrue(isinstance(data, dict))
+        self.assertNotEquals(data['authors'], None)
+        self.assertNotEquals(data['name'], None)
+        self.assertNotEquals(data['categories'], None)
+        self.assertRaises(KeyError, a.get_collection_data, "wrong")
+
+    # get trophy path
+    def test_get_trophy_path(self):
+        self.util_remove_all_accomps(self.accomp_dir)
+        self.util_copy_accomp(self.accomp_dir, "first")
+        self.util_copy_accomp(self.accomp_dir, "second")
+        self.util_copy_accomp(self.accomp_dir, "third")
+        a = api.Accomplishments(None)
+
+        self.assertTrue(a.get_trophy_path("%s/first" %
+            self.ACCOMP_SET).endswith("first.trophy"))
+        self.assertTrue(a.get_trophy_path("%s/second" %
+            self.ACCOMP_SET).endswith("second.trophy"))
+        self.assertTrue(a.get_trophy_path("%s/third" %
+            self.ACCOMP_SET).endswith("third.trophy"))
+
+    def test_write_extra_information_file(self):
+        a = api.Accomplishments(None)
+
+        # write extra information will make the directory for us if needed,
+        # so lets remove it (if present and force it to)
+        extrainfo_path = os.path.join(a.trophies_path, ".extrainformation")
+        if os.path.exists(extrainfo_path):
+           shutil.rmtree(extrainfo_path)
+
+        a.write_extra_information_file("whatever", "abcdefg")
+        path = os.path.join(extrainfo_path, "whatever")
+        self.assertTrue(os.path.exists(path))
+
+        # write extra info will remove a file if you don't pass in data
+        a.write_extra_information_file("whatever", None)
+        self.assertFalse(os.path.exists(path))
+
+    # tests:
+    # get_extra_information()
+    # get_all_extra_information()
+    # get_all_extra_information_required()
+    def test_get_extra_information_all_funcs(self):
+        a = api.Accomplishments(None)
+        self.util_copy_extrainfo(self.extrainfo_dir, "info")
+        self.util_copy_extrainfo(self.extrainfo_dir, "info2")
+        self.util_copy_accomp(self.accomp_dir, "first")
+
+        # get extra information
+        # these won't show up until we reload
+        self.assertRaises(KeyError, a.get_extra_information, self.ACCOMP_SET,
+            "info")
+
+        # should return None when the collection doesn't exist
+        self.assertEqual(a.get_extra_information("wrong", "info"), None)
+
+        # reloading should make them show up
+        a.reload_accom_database()
+
+        # will throw a KeyError if collection is right, but extrainfo is
+        # wrong
+        self.assertRaises(KeyError, a.get_extra_information, self.ACCOMP_SET,
+            "wrong")
+
+        ei = a.get_extra_information(self.ACCOMP_SET, "info")
+        self.assertTrue(isinstance(ei, list))
+        self.assertTrue(len(ei) == 1)
+        self.assertEqual(ei[0]['info'], '')
+        self.assertEqual(ei[0]['label'], 'Some info')
+        ei = a.get_extra_information(self.ACCOMP_SET, "info2")
+        self.assertTrue(isinstance(ei, list))
+        self.assertTrue(len(ei) == 1)
+        self.assertEqual(ei[0]['info2'], '')
+        self.assertEqual(ei[0]['label'], 'More info')
+
+        # write some data out and reload the DB
+        a.write_extra_information_file("info", "whatever")
+        ei = a.get_extra_information(self.ACCOMP_SET, "info")
+        self.assertEqual(ei[0]['info'], 'whatever')
+        a.write_extra_information_file("info2", "whatever2")
+        ei = a.get_extra_information(self.ACCOMP_SET, "info2")
+        self.assertEqual(ei[0]['info2'], 'whatever2')
+
+        # get all extra information
+        all_extra_info = a.get_all_extra_information()
+        self.assertTrue(isinstance(all_extra_info, list))
+        self.assertTrue(len(all_extra_info) == 2)
+        for ei in all_extra_info:
+            self.assertTrue(isinstance(ei, dict))
+            self.assertEquals(ei['collection'], self.ACCOMP_SET)
+            self.assertTrue(ei['description'] is not None)
+            self.assertTrue(ei['example'] is not None)
+            self.assertTrue(ei['needs-information'] is not None)
+            self.assertTrue(ei['regex'] is '')
+
+        # get all extra information required
+        # clear out the extra info files, so everything is required
+        a.write_extra_information_file("info", None)
+        a.write_extra_information_file("info2", None)
+        all_extra_info_required = a.get_all_extra_information_required()
+        self.assertTrue(isinstance(all_extra_info, list))
+        self.assertTrue(len(all_extra_info) == 2)
+
+        # now mark fill them in with info
+        a.write_extra_information_file("info", "whatever")
+        a.write_extra_information_file("info2", "whatever2")
+        all_extra_info_required = a.get_all_extra_information_required()
+        self.assertTrue(isinstance(all_extra_info_required, list))
+        self.assertTrue(len(all_extra_info_required) == 0)
 
 if __name__ == "__main__":
     unittest.main()

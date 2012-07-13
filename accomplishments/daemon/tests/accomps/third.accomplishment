@@ -7,3 +7,4 @@ collection=testaccomp
 category=testing,                                              unit test
 # comment should be ignored
 # comment
+author = Someone
