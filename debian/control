@@ -4,6 +4,7 @@ Priority: extra
 Build-Depends: cdbs (>= 0.4.43),
  debhelper (>= 6),
  python (>= 2.6.6-3~),
+ python-nose,
  python-distutils-extra (>= 2.10)
 Maintainer: Jono Bacon <jono@ubuntu.com>
 Standards-Version: 3.9.3
