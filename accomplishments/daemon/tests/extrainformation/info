@@ -1,0 +1,9 @@
+[label]
+en = Some info
+
+[description]
+en = Some description
+# a comment
+
+[example]
+en = Some example

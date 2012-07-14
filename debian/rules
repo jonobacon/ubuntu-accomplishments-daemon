@@ -6,4 +6,9 @@ else
 	dh $@ --with python2
 endif
 
-
+override_dh_auto_test:
+ifeq ($(filter nocheck,$(DEB_BUILD_OPTIONS)),)
+	set -ex; for python in $(shell pyversions -r) ; do \
+		$$python /usr/bin/nosetests -v ; \
+	done
+endif

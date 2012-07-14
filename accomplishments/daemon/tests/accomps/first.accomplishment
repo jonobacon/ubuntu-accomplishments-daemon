@@ -2,5 +2,6 @@
 title=My First Accomplishment
 icon=first.jpg
 description=An example accomplishment for the test suite
-needs-information=info,more info
+needs-information=info,info2
 collection = testaccomp
+author = Tester <tester@tester>
