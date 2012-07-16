@@ -69,16 +69,49 @@ overwrite any existing data</p>
 <dl class="method">
 <dt id="accomplishments.daemon.api.Accomplishments.get_acc_categories">
 <tt class="descname">get_acc_categories</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_acc_categories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_acc_categories" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of categories for a given accomplishment. This can include sub-categories (which are formatted
-like &#8216;category:subcategory&#8217; (e.g. <cite>AskUbuntu:Asking</cite>)).</p>
+<dd><p>Returns a list of categories for a given accomplishment. This can
+include sub-categories (which are formatted like &#8216;category:subcategory&#8217;
+(e.g. <cite>AskUbuntu:Asking</cite>)).</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>accomID (str):  The Accomplishment ID (e.g. &#8216;ubuntu-community/registered-on-launchpad&#8217;)</dd>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) The Accomplishment ID (e.g. &#8216;ubuntu-community/registered-on-launchpad&#8217;)</li>
+</ul>
+</dd>
 <dt>Returns:</dt>
-<dd>(list) The list of categories.</dd>
+<dd><ul class="first last simple">
+<li><strong>list(str)</strong> The list of categories.</li>
+</ul>
+</dd>
 <dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_categories</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
 <span class="go">[&quot;Launchpad&quot;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_categories</span><span class="p">(</span><span class="s">&quot;some_other_collection/another-accomplishment&quot;</span><span class="p">)</span>
+<span class="go">[&quot;Category One&quot;, &quot;Category Two:Subcategory&quot;]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.get_acc_collection">
+<tt class="descname">get_acc_collection</tt><big>(</big><em>accomID</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_acc_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_acc_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name of the collection this accomplishment orginates from.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li><strong>accomID</strong> - (str) The Accomplishment ID (e.g. &#8216;ubuntu-community/registered-on-launchpad&#8217;)</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>str</strong> - Collection name.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">get_acc_collection</span><span class="p">(</span><span class="s">&quot;ubuntu-community/signed-code-of-conduct&quot;</span><span class="p">)</span>
+<span class="go">ubuntu-community</span>
 </pre></div>
 </div>
 </dd>
@@ -88,15 +121,16 @@ like &#8216;category:subcategory&#8217; (e.g. <cite>AskUbuntu:Asking</cite>)).</
 <dl class="method">
 <dt id="accomplishments.daemon.api.Accomplishments.get_acc_date_completed">
 <tt class="descname">get_acc_date_completed</tt><big>(</big><em>accomID</em><big>)</big><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_acc_date_completed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the date that the accomplishment specified by &#8216;accomID&#8217; was completed.</p>
+<dd><p>Returns the date that the accomplishment specified by &#8216;accomID&#8217; was
+completed.</p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd>accomID (str):  The Accomplishment ID (e.g. &#8216;ubuntu-community/registered-on-launchpad&#8217;)</dd>
 <dt>Returns:</dt>
-<dd>(list) The list of categories.</dd>
+<dd>(string) The completed date</dd>
 <dt>Example:</dt>
-<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_completed</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
-<span class="go">[&quot;2012-06-15 12:32&quot;]</span>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_acc_date_completed</span><span class="p">(</span><span class="s">&quot;ubuntu-community/registered-on-launchpad&quot;</span><span class="p">)</span>
+<span class="go">&quot;2012-06-15 12:32&quot;</span>
 </pre></div>
 </div>
 </dd>
@@ -128,7 +162,7 @@ like &#8216;category:subcategory&#8217; (e.g. <cite>AskUbuntu:Asking</cite>)).</
 </li>
 </ul>
 </dd>
-<dt>Example::</dt>
+<dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">get_all_extra_information</span><span class="p">()</span>
 <span class="go">[{&quot;collection&quot; : &quot;ubuntu-community&quot;, &quot;needs-information&quot; : &quot;launchpad-email&quot;, &quot;label&quot; : &quot;Launchpad e-mail&quot;, &quot;description&quot; : &quot;The e-mail address you use to log in to Launchpad&quot;, &quot;example&quot; : &quot;foo@bar.com&quot;, &quot;regex&quot; : &quot;&quot;, &quot;value&quot; : &quot;someuser@somehost.org&quot;},</span>
 <span class="go"> {&quot;collection&quot; : &quot;ubuntu-italiano&quot;, &quot;needs-information&quot; : &quot;launchpad-email&quot;, &quot;label&quot; : &quot;Launchpad e-mail&quot;, &quot;description&quot; : &quot;Type in your LP e-mail, amigo!&quot;, &quot;example&quot; : &quot;some@email.com&quot;, &quot;regex&quot; : &quot;&quot;, &quot;value&quot; : &quot;someuser@somehost.org&quot;},</span>
@@ -149,9 +183,150 @@ like &#8216;category:subcategory&#8217; (e.g. <cite>AskUbuntu:Asking</cite>)).</
 <li><strong>array(dict(str:str))</strong> - A list of all extra-information items used by currently installed accomplishments collections <strong>that are not yet set</strong>. Details are the same as in get_all_extra_information()</li>
 </ul>
 </dd>
-<dt>Example::</dt>
+<dt>Example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">get_all_extra_information_required</span><span class="p">()</span>
 <span class="go">[{&quot;collection&quot; : &quot;ubuntu-community&quot;, &quot;needs-information&quot; : &quot;askubuntu-user-url&quot;, &quot;label&quot; : &quot;AskUbuntu user profile URL&quot;, &quot;description&quot; : &quot;The URL of your AskUbuntu usr profile page&quot;, &quot;example&quot; : &quot;http://askubuntu.com/users/42/nick&quot;, &quot;regex&quot; : &quot;&quot;, &quot;value&quot; : &quot;&quot;}]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.get_collection_authors">
+<tt class="descname">get_collection_authors</tt><big>(</big><em>collection</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_collection_authors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_collection_authors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of accomplishment contributors that have written accomplishments for given collection.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li><strong>collection</strong> - (str) Sellected collection name (e.g. &#8220;ubuntu-community&#8221;)</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>set(str)</strong> - A list of accomplishment contributors names along with their e-mails (debian maintainter format).</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">get_collection_authors</span><span class="p">(</span><span class="s">&quot;ubuntu-community&quot;</span><span class="p">)</span>
+<span class="go">set([&#39;Surgemcgee &lt;RobertSteckroth@gmail.com&gt;&#39;, &#39;Silver Fox &lt;silver-fox@ubuntu.com&gt;&#39;, &#39;Hernando Torque &lt;sirius@sonnenkinder.org&gt;&#39;, &#39;Nathan Osman &lt;admin@quickmediasolutions.com&gt;&#39;, &#39;Rafał Cieślak &lt;rafalcieslak256@ubuntu.com&gt;&#39;, &#39;Michael Hall &lt;mhall119@ubuntu.com&gt;&#39;, &#39;Angelo Compagnucci &lt;angelo.compagnucci@gmail.com&gt;&#39;, &#39;Matt Fischer &lt;matthew.fischer@canonical.com&gt;&#39;, &#39;Bruno Girin &lt;brunogirin@gmail.com&gt;&#39;, &#39;Jorge O. Castro &lt;jorge@ubuntu.com&gt;&#39;, &#39;Andrea Grandi &lt;a.grandi@gmail.com&gt;&#39;, &#39;Marco Ceppi &lt;marco@ceppi.net&gt;&#39;, &#39;Agmenor &lt;agmenor@laposte.net&gt;&#39;, &#39;Christopher Kyle Horton &lt;christhehorton@gmail.com&gt;&#39;, &#39;José Antonio Rey &lt;joseeantonior@ubuntu-pe.org&gt;&#39;, &#39;s.fox &lt;silver-fox@ubuntu.com&gt;&#39;, &#39;Jono Bacon &lt;jono@ubuntu.com&gt;&#39;])</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.get_collection_categories">
+<tt class="descname">get_collection_categories</tt><big>(</big><em>collection</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_collection_categories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_collection_categories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lists all categories within a given collection, as well as their subcategories.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li><strong>collection</strong> - (str) Sellected collection name (e.g. &#8220;ubuntu-community&#8221;)</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>dict(str:list(str))</strong> - A dictionary that translates all categories into a list of their subcategories.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">get_collection_categories</span><span class="p">(</span><span class="s">&quot;ubuntu-community&quot;</span><span class="p">)</span>
+<span class="go">{&#39;Development&#39;: [&#39;Ubuntu Accomplishments&#39;, &#39;Packaging&#39;],</span>
+<span class="go"> &#39;QA&#39;: [],</span>
+<span class="go"> &#39;Launchpad&#39;: [&#39;Your Profile&#39;, &#39;Code Hosting&#39;],</span>
+<span class="go"> &#39;LoCo Teams&#39;: [&#39;Events&#39;],</span>
+<span class="go"> &#39;Documentation&#39;: [],</span>
+<span class="go"> &#39;Governance&#39;: [],</span>
+<span class="go"> &#39;General&#39;: [],</span>
+<span class="go"> &#39;Juju&#39;: [],</span>
+<span class="go"> &#39;Ask Ubuntu&#39;: [&#39;Membership&#39;, &#39;Starter Badges&#39;, &#39;Asking &amp; Answering&#39;, &#39;Unrecognized Contributions&#39;, &#39;Publicity&#39;, &#39;Popularity&#39;, &#39;Starter badges&#39;, &#39;Chat&#39;, &#39;Flagging &amp; Cleanup&#39;, &#39;Visiting&#39;, &#39;Comment&#39;, &#39;Tagging&#39;, &#39;Meta Participation&#39;, &#39;Voting&#39;, &#39;Starter&#39;, &#39;Editing badges&#39;],</span>
+<span class="go"> &#39;IRC&#39;: [],</span>
+<span class="go"> &#39;Forums&#39;: [],</span>
+<span class="go"> &#39;Events&#39;: []  }</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.get_collection_data">
+<tt class="descname">get_collection_data</tt><big>(</big><em>collection</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_collection_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_collection_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns all data stored in accDB for a given collection. It may be only useful if you need to access any data that don&#8217;t have their own get_collection_* function.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li><strong>collection</strong> - (str) Sellected collection name (e.g. &#8220;ubuntu-community&#8221;)</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt><strong>dict(str:variable)</strong> - A dictionary of all data related to this collection. List of its fields:</dt>
+<dd><ul class="first last simple">
+<li><em>langdefault</em> - (str) the default language of this collection, as specified in it&#8217;s ABOUT file</li>
+<li><em>acc_num</em> - (int) the number of accomplishments in this collection</li>
+<li><em>base_path</em> - (str) the path where this collection is installed</li>
+<li><em>type</em> - (str) always equal to &#8220;collection&#8221;</li>
+<li><em>name</em> - (str) human-readable name, use get_collection_name instead</li>
+<li><em>authors</em> - set(str) list of authors, use get_collection_authors instead</li>
+<li><em>extra-information</em> - dict(str:dict(str:str)) list of all extra-information used with it&#8217;s medatada, use get_extra_information or get_all_extra_information instead</li>
+<li><em>categories</em> - dict(str:list(str)) list of all categories and subcategories, use get_collection_categories instead</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.get_collection_exists">
+<tt class="descname">get_collection_exists</tt><big>(</big><em>collection</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_collection_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_collection_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a collection is a valid name and is installed in the system.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li><strong>collection</strong> - (str) Sellected collection name (e.g. &#8220;ubuntu-community&#8221;)</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>bool</strong> - Whether such collection exists or not.</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">get_collection_exists</span><span class="p">(</span><span class="s">&quot;ubuntu-desktop&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">get_collection_exists</span><span class="p">(</span><span class="s">&quot;a totally wrong name&quot;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="accomplishments.daemon.api.Accomplishments.get_collection_name">
+<tt class="descname">get_collection_name</tt><big>(</big><em>collection</em><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.get_collection_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.get_collection_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a human-readable collection name, as it provides in it&#8217;s ABOUT file.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li><strong>collection</strong> - (str) Sellected collection name (e.g. &#8220;ubuntu-community&#8221;)</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li><strong>str</strong> - Human-readable name (e.g. &#8220;Ubuntu Comunity&#8221;)</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">acc</span><span class="o">.</span><span class="n">get_collection_name</span><span class="p">(</span><span class="s">&quot;ubuntu-desktop&quot;</span><span class="p">)</span>
+<span class="go">Ubuntu Desktop</span>
 </pre></div>
 </div>
 </dd>
@@ -287,7 +462,7 @@ True if we are or False if we are not.</p>
 <tt class="descname">reload_accom_database</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/accomplishments/daemon/api.html#Accomplishments.reload_accom_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accomplishments.daemon.api.Accomplishments.reload_accom_database" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the function that builds up the <em>accDB</em> accomplishments database. It scans all accomplishment installation directories (as set in the config file), looks for all installed collections, and caches all accomplishments&#8217; data in memory. If a translated .accomplishment file is available, it&#8217;s contents are loaded instead.</p>
 <p>It also groups collection categories, authors, finds accomplishment script paths, and counts accomplishments in collections.</p>
-<p>All results are stored in an internal variable, <em>self.accDB</em>. They can be accessed afterwards using <a href="#id1"><span class="problematic" id="id2">get_acc_</span></a>... functions.</p>
+<p>All results are stored in an internal variable, <em>self.accDB</em>. They can be accessed afterwards using get_acc_* functions.</p>
 <p>Running this function also calls _update_all_locked_and_completed_statuses(), which completes initialising the <em>accDB</em>, as it fills in it&#8217;s &#8220;completed&#8221; and &#8220;locked&#8221; fields.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>

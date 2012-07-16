@@ -184,6 +184,8 @@ class AsyncAPI(object):
             log.msg("The folder is shared, with: %s" % ", ".join(
                 shared_to))
             return
+        
+        self.parent._refresh_share_data()
 
     # XXX let's rewrite this to use deferreds explicitly
     @defer.inlineCallbacks
@@ -321,6 +323,9 @@ class Accomplishments(object):
         self.has_verif = None
         
         self.matrix_username = ""
+        self.share_found = False
+        self.share_id = ""
+        self.share_name = ""
         
         self.lang = locale.getdefaultlocale()[0]
         
@@ -383,6 +388,8 @@ class Accomplishments(object):
             self.sd.connect_signal("DownloadFinished", self._process_recieved_asc_file)
 
         self._create_all_trophy_icons()
+        
+        self._refresh_share_data()
 
     def get_media_file(self, media_file_name):
         #log.msg("MEDIA_FILE_NAME:")
@@ -582,7 +589,12 @@ class Accomplishments(object):
 
             self._write_config_file()
 
-    def _get_active_share(self, shares):
+    def _refresh_share_data(self):
+        if not self.test_mode:
+            l = self.sd.list_shared()
+        l.addCallback(self._complete_refreshing_share_data)
+        
+    def _complete_refreshing_share_data(self,shares):
         matchingshares = []
 
         for s in shares:
@@ -590,21 +602,38 @@ class Accomplishments(object):
                 if s["subscribed"] == "True":
                     matchingshares.append( { "name" : s["name"], "share_id" : s["volume_id"] } )
 
-        trophydir = self.get_config_value("config", "trophypath")
-
         if len(matchingshares) > 1:
-            log.msg("Error Publishing Online: could not find unique active share")
+            log.msg("Could not find unique active share.")
+            self.share_found = False
         else:
+            self.share_name = matchingshares[0]["name"]
+            self.share_id = matchingshares[0]["share_id"]
+            self.share_found = True
+    
+    def get_share_name(self):
+        if self.share_found:
+            return self.share_name
+        else:
+            return ""
+    def get_share_id(self):
+        if self.share_found:
+            return self.share_id
+        else:
+            return ""
+    
+    def publish_trophies_online(self):
+        if self.share_found:
+            trophydir = self.get_config_value("config", "trophypath")
             webviewfile = open(os.path.join(trophydir, "WEBVIEW"), 'w')
             string = " "
             webviewfile.write(string)
-            url = "http://" + ONLINETROPHIESHOST + "/user/addshare?share_name=" + matchingshares[0]["name"] + "&share_id=" + matchingshares[0]["share_id"]
+            url = "http://" + ONLINETROPHIESHOST + "/user/addshare?share_name=" + self.share_name + "&share_id=" + self.share_id
+            
             self.service.publish_trophies_online_completed(url)
-
-    def publish_trophies_online(self):
-        if not self.test_mode:
-            l = self.sd.list_shared()
-        l.addCallback(self._get_active_share)
+            return url
+        else:  
+            log.msg("Unable to publish trophies - no share found.")
+            return ""
 
     def unpublish_trophies_online(self):
         trophydir = self.get_config_value("config", "trophypath")
@@ -624,7 +653,7 @@ class Accomplishments(object):
                 * *example* - a example value for this extra-information, provided by the collection (e.g. launchpad-email might have an example: foo@bar.com). If no example is provided, it will be an empty string.
                 * *regex* - a regular expression used to check whether the value of this extra-information field uses a correct format. If collection provides no regexp, it will be an empty string.
                 * *value* - the current value of this field, as set by the user. It will be the same for all collections that use this extra-information item.
-        Example::
+        Example:
             >>> acc.get_all_extra_information()
             [{"collection" : "ubuntu-community", "needs-information" : "launchpad-email", "label" : "Launchpad e-mail", "description" : "The e-mail address you use to log in to Launchpad", "example" : "foo@bar.com", "regex" : "", "value" : "someuser@somehost.org"},
              {"collection" : "ubuntu-italiano", "needs-information" : "launchpad-email", "label" : "Launchpad e-mail", "description" : "Type in your LP e-mail, amigo!", "example" : "some@email.com", "regex" : "", "value" : "someuser@somehost.org"},
@@ -718,7 +747,7 @@ class Accomplishments(object):
         Returns:
             * **array(dict(str:str))** - A list of all extra-information items used by currently installed accomplishments collections **that are not yet set**. Details are the same as in get_all_extra_information()
         
-        Example::
+        Example:
             >>> acc.get_all_extra_information_required()
             [{"collection" : "ubuntu-community", "needs-information" : "askubuntu-user-url", "label" : "AskUbuntu user profile URL", "description" : "The URL of your AskUbuntu usr profile page", "example" : "http://askubuntu.com/users/42/nick", "regex" : "", "value" : ""}]
         
@@ -853,7 +882,7 @@ class Accomplishments(object):
         
         It also groups collection categories, authors, finds accomplishment script paths, and counts accomplishments in collections.
         
-        All results are stored in an internal variable, *self.accDB*. They can be accessed afterwards using get_acc_... functions.
+        All results are stored in an internal variable, *self.accDB*. They can be accessed afterwards using get_acc_* functions.
         
         Running this function also calls _update_all_locked_and_completed_statuses(), which completes initialising the *accDB*, as it fills in it's "completed" and "locked" fields.
         
@@ -1152,6 +1181,17 @@ class Accomplishments(object):
         return [a.rstrip().lstrip() for a in self.accDB[accomID]['needs-information'].split(",")]
     
     def get_acc_collection(self,accomID):
+        """
+        Returns the name of the collection this accomplishment orginates from.
+        
+        Args:
+            * **accomID** - (str) The Accomplishment ID (e.g. 'ubuntu-community/registered-on-launchpad')
+        Returns:
+            * **str** - Collection name.
+        Example:
+            >>> acc.get_acc_collection("ubuntu-community/signed-code-of-conduct")
+            ubuntu-community
+        """
         return self.accDB[accomID]['collection']
         
     def get_acc_categories(self,accomID):
@@ -1161,12 +1201,14 @@ class Accomplishments(object):
         (e.g. `AskUbuntu:Asking`)).
 
         Args:
-            accomID (str):  The Accomplishment ID (e.g. 'ubuntu-community/registered-on-launchpad')
+            * **accomID** - (str) The Accomplishment ID (e.g. 'ubuntu-community/registered-on-launchpad')
         Returns:
-            (list) The list of categories.
+            * **list(str)** The list of categories.
         Example:
             >>> obj.get_acc_categories("ubuntu-community/registered-on-launchpad")
             ["Launchpad"]
+            >>> obj.get_acc_categories("some_other_collection/another-accomplishment")
+            ["Category One", "Category Two:Subcategory"]
         """
 
         return self.accDB[accomID]['categories']
@@ -1209,18 +1251,91 @@ class Accomplishments(object):
             return dict(cfg._sections["trophy"])
     
     def get_collection_name(self,collection):
+        """
+        Returns a human-readable collection name, as it provides in it's ABOUT file.
+        
+        Args:
+            * **collection** - (str) Sellected collection name (e.g. "ubuntu-community")
+        Returns:
+            * **str** - Human-readable name (e.g. "Ubuntu Comunity")
+        Example:
+            >>> acc.get_collection_name("ubuntu-desktop")
+            Ubuntu Desktop
+        """
         return self.accDB[collection]['name']
         
     def get_collection_exists(self,collection):
+        """
+        Checks if a collection is a valid name and is installed in the system.
+        
+        Args:
+            * **collection** - (str) Sellected collection name (e.g. "ubuntu-community")
+        Returns:
+            * **bool** - Whether such collection exists or not.
+        Example:
+            >>> acc.get_collection_exists("ubuntu-desktop")
+            True
+            >>> acc.get_collection_exists("a totally wrong name")
+            False
+        """
         return collection in self.list_collections()
         
     def get_collection_authors(self,collection):
+        """
+        Returns a list of accomplishment contributors that have written accomplishments for given collection.
+        
+        Args:
+            * **collection** - (str) Sellected collection name (e.g. "ubuntu-community")
+        Returns:
+            * **set(str)** - A list of accomplishment contributors names along with their e-mails (debian maintainter format).
+        Example:
+            >>> acc.get_collection_authors("ubuntu-community")
+            set(['Surgemcgee <RobertSteckroth@gmail.com>', 'Silver Fox <silver-fox@ubuntu.com>', 'Hernando Torque <sirius@sonnenkinder.org>', 'Nathan Osman <admin@quickmediasolutions.com>', 'Rafa\xc5\x82 Cie\xc5\x9blak <rafalcieslak256@ubuntu.com>', 'Michael Hall <mhall119@ubuntu.com>', 'Angelo Compagnucci <angelo.compagnucci@gmail.com>', 'Matt Fischer <matthew.fischer@canonical.com>', 'Bruno Girin <brunogirin@gmail.com>', 'Jorge O. Castro <jorge@ubuntu.com>', 'Andrea Grandi <a.grandi@gmail.com>', 'Marco Ceppi <marco@ceppi.net>', 'Agmenor <agmenor@laposte.net>', 'Christopher Kyle Horton <christhehorton@gmail.com>', 'Jos\xc3\xa9 Antonio Rey <joseeantonior@ubuntu-pe.org>', 's.fox <silver-fox@ubuntu.com>', 'Jono Bacon <jono@ubuntu.com>'])
+        """
         return self.accDB[collection]['authors']
         
     def get_collection_categories(self,collection):
+        """
+        Lists all categories within a given collection, as well as their subcategories.
+        
+        Args:
+            * **collection** - (str) Sellected collection name (e.g. "ubuntu-community")
+        Returns:
+            * **dict(str:list(str))** - A dictionary that translates all categories into a list of their subcategories.
+        Example:
+            >>> acc.get_collection_categories("ubuntu-community")
+            {'Development': ['Ubuntu Accomplishments', 'Packaging'],
+             'QA': [],
+             'Launchpad': ['Your Profile', 'Code Hosting'],
+             'LoCo Teams': ['Events'],
+             'Documentation': [],
+             'Governance': [],
+             'General': [],
+             'Juju': [],
+             'Ask Ubuntu': ['Membership', 'Starter Badges', 'Asking & Answering', 'Unrecognized Contributions', 'Publicity', 'Popularity', 'Starter badges', 'Chat', 'Flagging & Cleanup', 'Visiting', 'Comment', 'Tagging', 'Meta Participation', 'Voting', 'Starter', 'Editing badges'],
+             'IRC': [],
+             'Forums': [],
+             'Events': []  }
+        """
         return self.accDB[collection]['categories']
     
     def get_collection_data(self,collection):
+        """
+        This function returns all data stored in accDB for a given collection. It may be only useful if you need to access any data that don't have their own get_collection_* function.
+        
+        Args:
+            * **collection** - (str) Sellected collection name (e.g. "ubuntu-community")
+        Returns:
+            * **dict(str:variable)** - A dictionary of all data related to this collection. List of its fields:
+                * *langdefault* - (str) the default language of this collection, as specified in it's ABOUT file
+                * *acc_num* - (int) the number of accomplishments in this collection
+                * *base_path* - (str) the path where this collection is installed
+                * *type* - (str) always equal to "collection"
+                * *name* - (str) human-readable name, use get_collection_name instead
+                * *authors* - set(str) list of authors, use get_collection_authors instead
+                * *extra-information* - dict(str:dict(str:str)) list of all extra-information used with it's medatada, use get_extra_information or get_all_extra_information instead
+                * *categories* - dict(str:list(str)) list of all categories and subcategories, use get_collection_categories instead
+        """
         return self.accDB[collection]
         
     # ====== Listing functions ======

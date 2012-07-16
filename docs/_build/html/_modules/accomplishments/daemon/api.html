@@ -1078,9 +1078,9 @@
             <span class="k">return</span> <span class="p">[]</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">accDB</span><span class="p">[</span><span class="n">accomID</span><span class="p">][</span><span class="s">&#39;needs-information&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">)]</span>
     
-    <span class="k">def</span> <span class="nf">get_acc_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">accomID</span><span class="p">):</span>
+<div class="viewcode-block" id="Accomplishments.get_acc_collection"><a class="viewcode-back" href="../../../daemonref.html#accomplishments.daemon.api.Accomplishments.get_acc_collection">[docs]</a>    <span class="k">def</span> <span class="nf">get_acc_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">accomID</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">accDB</span><span class="p">[</span><span class="n">accomID</span><span class="p">][</span><span class="s">&#39;collection&#39;</span><span class="p">]</span>
-        
+        </div>
 <div class="viewcode-block" id="Accomplishments.get_acc_categories"><a class="viewcode-back" href="../../../daemonref.html#accomplishments.daemon.api.Accomplishments.get_acc_categories">[docs]</a>    <span class="k">def</span> <span class="nf">get_acc_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">accomID</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">accDB</span><span class="p">[</span><span class="n">accomID</span><span class="p">][</span><span class="s">&#39;categories&#39;</span><span class="p">]</span>
     
@@ -1093,23 +1093,23 @@
             <span class="n">cfg</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_trophy_path</span><span class="p">(</span><span class="n">accomID</span><span class="p">))</span>
             <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">_sections</span><span class="p">[</span><span class="s">&quot;trophy&quot;</span><span class="p">])</span>
     </div>
-    <span class="k">def</span> <span class="nf">get_collection_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
+<div class="viewcode-block" id="Accomplishments.get_collection_name"><a class="viewcode-back" href="../../../daemonref.html#accomplishments.daemon.api.Accomplishments.get_collection_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_collection_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">accDB</span><span class="p">[</span><span class="n">collection</span><span class="p">][</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
-        
-    <span class="k">def</span> <span class="nf">get_collection_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
+        </div>
+<div class="viewcode-block" id="Accomplishments.get_collection_exists"><a class="viewcode-back" href="../../../daemonref.html#accomplishments.daemon.api.Accomplishments.get_collection_exists">[docs]</a>    <span class="k">def</span> <span class="nf">get_collection_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">collection</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_collections</span><span class="p">()</span>
-        
-    <span class="k">def</span> <span class="nf">get_collection_authors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
+        </div>
+<div class="viewcode-block" id="Accomplishments.get_collection_authors"><a class="viewcode-back" href="../../../daemonref.html#accomplishments.daemon.api.Accomplishments.get_collection_authors">[docs]</a>    <span class="k">def</span> <span class="nf">get_collection_authors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">accDB</span><span class="p">[</span><span class="n">collection</span><span class="p">][</span><span class="s">&#39;authors&#39;</span><span class="p">]</span>
-        
-    <span class="k">def</span> <span class="nf">get_collection_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
+        </div>
+<div class="viewcode-block" id="Accomplishments.get_collection_categories"><a class="viewcode-back" href="../../../daemonref.html#accomplishments.daemon.api.Accomplishments.get_collection_categories">[docs]</a>    <span class="k">def</span> <span class="nf">get_collection_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">accDB</span><span class="p">[</span><span class="n">collection</span><span class="p">][</span><span class="s">&#39;categories&#39;</span><span class="p">]</span>
-    
-    <span class="k">def</span> <span class="nf">get_collection_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
+    </div>
+<div class="viewcode-block" id="Accomplishments.get_collection_data"><a class="viewcode-back" href="../../../daemonref.html#accomplishments.daemon.api.Accomplishments.get_collection_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_collection_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">accDB</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
         
     <span class="c"># ====== Listing functions ======</span>
-    
+    </div>
     <span class="k">def</span> <span class="nf">list_accomplishments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">acc</span> <span class="k">for</span> <span class="n">acc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">accomslist</span><span class="p">()]</span>
         
