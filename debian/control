@@ -1,10 +1,18 @@
 Source: accomplishments-daemon
 Section: python
 Priority: extra
-Build-Depends: cdbs (>= 0.4.43),
- debhelper (>= 6),
+Build-Depends: debhelper (>= 6),
  python (>= 2.6.6-3~),
  python-nose,
+ python-twisted-core,
+ python-xdg,
+ python-dbus,
+ python-imaging,
+ python-gobject-2,
+ python-gpgme,
+ ubuntuone-couch,
+ python-ubuntuone-client,
+ python-ubuntu-sso-client,
  python-distutils-extra (>= 2.10)
 Maintainer: Jono Bacon <jono@ubuntu.com>
 Standards-Version: 3.9.3
@@ -19,11 +27,13 @@ Depends: ${misc:Depends},
  gir1.2-gtk-3.0,
  python-dbus,
  python-ubuntuone-client,
+ python-ubuntu-sso-client,
  ubuntuone-couch,
  python-twisted-core,
  python-notify,
  python-gobject-2,
  ubuntuone-client,
+ python-imaging,
  python-gpgme
 Description: Background daemon for running the Ubuntu Accomplishments system.
  This is the background daemon process that is required to run the Ubuntu
