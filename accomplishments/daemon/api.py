@@ -184,6 +184,8 @@ class AsyncAPI(object):
             log.msg("The folder is shared, with: %s" % ", ".join(
                 shared_to))
             return
+        
+        self.parent._refresh_share_data()
 
     # XXX let's rewrite this to use deferreds explicitly
     @defer.inlineCallbacks
@@ -321,6 +323,9 @@ class Accomplishments(object):
         self.has_verif = None
         
         self.matrix_username = ""
+        self.share_found = False
+        self.share_id = ""
+        self.share_name = ""
         
         self.lang = locale.getdefaultlocale()[0]
         
@@ -376,6 +381,8 @@ class Accomplishments(object):
 		
         self.sd.connect_signal("DownloadFinished", self._process_recieved_asc_file)
         self._create_all_trophy_icons()
+        
+        self._refresh_share_data()
 
     def get_media_file(self, media_file_name):
         #log.msg("MEDIA_FILE_NAME:")
@@ -575,7 +582,11 @@ class Accomplishments(object):
 
             self._write_config_file()
 
-    def _get_active_share(self, shares):
+    def _refresh_share_data(self):
+        l = self.sd.list_shared()
+        l.addCallback(self._complete_refreshing_share_data)
+        
+    def _complete_refreshing_share_data(self,shares):
         matchingshares = []
 
         for s in shares:
@@ -583,20 +594,38 @@ class Accomplishments(object):
                 if s["subscribed"] == "True":
                     matchingshares.append( { "name" : s["name"], "share_id" : s["volume_id"] } )
 
-        trophydir = self.get_config_value("config", "trophypath")
-
         if len(matchingshares) > 1:
-            log.msg("Error Publishing Online: could not find unique active share")
+            log.msg("Could not find unique active share.")
+            self.share_found = False
         else:
+            self.share_name = matchingshares[0]["name"]
+            self.share_id = matchingshares[0]["share_id"]
+            self.share_found = True
+    
+    def get_share_name(self):
+        if self.share_found:
+            return self.share_name
+        else:
+            return ""
+    def get_share_id(self):
+        if self.share_found:
+            return self.share_id
+        else:
+            return ""
+    
+    def publish_trophies_online(self):
+        if self.share_found:
+            trophydir = self.get_config_value("config", "trophypath")
             webviewfile = open(os.path.join(trophydir, "WEBVIEW"), 'w')
             string = " "
             webviewfile.write(string)
-            url = "http://" + ONLINETROPHIESHOST + "/user/addshare?share_name=" + matchingshares[0]["name"] + "&share_id=" + matchingshares[0]["share_id"]
+            url = "http://" + ONLINETROPHIESHOST + "/user/addshare?share_name=" + self.share_name + "&share_id=" + self.share_id
+            
             self.service.publish_trophies_online_completed(url)
-
-    def publish_trophies_online(self):
-        l = self.sd.list_shared()
-        l.addCallback(self._get_active_share)
+            return url
+        else:  
+            log.msg("Unable to publish trophies - no share found.")
+            return ""
 
     def unpublish_trophies_online(self):
         trophydir = self.get_config_value("config", "trophypath")
