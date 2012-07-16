@@ -152,7 +152,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.util_copy_accomp(self.accomp_dir, "first")
         self.util_copy_accomp(self.accomp_dir, "second")
         self.util_copy_accomp(self.accomp_dir, "third")
-        a = api.Accomplishments(None)
+        a = api.Accomplishments(None, None, True)
 
         # get_acc_data
         data = a.get_acc_data("%s/first" % self.ACCOMP_SET)
@@ -256,7 +256,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.assertRaises(KeyError, a.get_acc_categories, "wrong")
 
     def test_get_block_ubuntuone_notification_bubbles(self):
-        a = api.Accomplishments(None)
+        a = api.Accomplishments(None, None, True)
         val = a.get_block_ubuntuone_notification_bubbles()
         self.assertTrue(isinstance(val, bool))
         # don't write the config file here because it's using U1's
@@ -269,7 +269,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         return
 
     def test_get_daemon_session_start(self):
-        a = api.Accomplishments(None)
+        a = api.Accomplishments(None, None, True)
         val = a.get_daemon_session_start()
         self.assertTrue(isinstance(val, bool))
         a.write_config_file_item('config', 'daemon_sessionstart', False)
@@ -282,7 +282,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         return
 
     def test_get_media_file(self):
-        a = api.Accomplishments(None)
+        a = api.Accomplishments(None, None, True)
         mf = a.get_media_file("non-existant.jpg")
         self.assertTrue(mf == None)
 
@@ -290,14 +290,14 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.assertTrue(mf.endswith("lock.png"))
 
     def test_get_API_version(self):
-        a = api.Accomplishments(None)
+        a = api.Accomplishments(None, None, True)
         version = a.get_API_version()
         self.assertTrue(isinstance(version, basestring))
 
     # also tests get_acc_icon_path
     def test_get_acc_icon(self):
         self.util_copy_accomp(self.accomp_dir, "first")
-        a = api.Accomplishments(None)
+        a = api.Accomplishments(None, None, True)
         self.assertEquals(a.get_acc_icon('%s/first' % self.ACCOMP_SET),
            'first.jpg')
         icon_path = a.get_acc_icon_path('%s/first' % self.ACCOMP_SET)
@@ -307,7 +307,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.util_remove_all_accomps(self.accomp_dir)
         self.util_copy_accomp(self.accomp_dir, "first")
         self.util_copy_accomp(self.accomp_dir, "second")
-        a = api.Accomplishments(None)
+        a = api.Accomplishments(None, None, True)
         viewer_db = a.build_viewer_database()
         self.assertEquals(len(viewer_db), 2)
 
@@ -339,7 +339,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.util_copy_accomp(self.accomp_dir, "second")
         self.util_copy_accomp(self.accomp_dir, "third")
 
-        a = api.Accomplishments(None)
+        a = api.Accomplishments(None, None, True)
         self.assertEqual(len(a.list_accomplishments()), 3)
 
         # add a new accomp
@@ -360,7 +360,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
 
     @unittest.skip("need the daemon running")
     def test_accomplish(self):
-        a = api.Accomplishments(None)
+        a = api.Accomplishments(None, None, True)
         self.assertEqual(len(a.list_trophies()), 0)
         a.accomplish("%s/first" % self.ACCOMP_SET)
         trophies = a.list_trophies()
@@ -369,7 +369,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
 
     def test_missing_about_file(self):
         os.remove(os.path.join(self.accomp_root, "ABOUT"))
-        self.assertRaises(LookupError, api.Accomplishments, (None))
+        self.assertRaises(LookupError, api.Accomplishments, None, None, True)
 
         # put the file back
         self.util_write_about_file(self.accomp_root)
@@ -382,7 +382,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         # ensure a clean start
         self.util_remove_all_accomps(self.accomp_dir)
         self.util_copy_accomp(self.accomp_dir, "first")
-        a = api.Accomplishments(None)
+        a = api.Accomplishments(None, None, True)
         self.assertEqual(len(a.list_accomplishments()), 1)
         self.util_write_file(self.accomp_dir, "bad.accomplishment",
             "[accomplishment]\n"\
@@ -397,19 +397,21 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.util_write_file(self.accomp_dir, "bad.accomplishment",
             "[accomplishment]\n"\
             "descriptionbad desc\n")
-        self.assertRaises(ConfigParser.ParsingError, api.Accomplishments,(None))
+        self.assertRaises(ConfigParser.ParsingError, api.Accomplishments, None,
+            None, True)
         os.remove(os.path.join(self.accomp_dir, "bad.accomplishment"))
 
         self.util_write_file(self.accomp_dir, "bad.accomplishment",
             "[accomplishment]\n"\
             "titlewhatever\n"\
             "description=bad desc\n")
-        self.assertRaises(ConfigParser.ParsingError, api.Accomplishments,(None))
+        self.assertRaises(ConfigParser.ParsingError, api.Accomplishments, None,
+            None, True)
         os.remove(os.path.join(self.accomp_dir, "bad.accomplishment"))
 
     # also tests get_config_value()
     def test_write_config_file_item(self):
-        a = api.Accomplishments(None)
+        a = api.Accomplishments(None, None, True)
         a.write_config_file_item('config', 'has_verif', False)
         self.assertEquals(a.get_config_value('config', 'has_verif'), False)
         self.assertEqual(a.has_verif, False)
@@ -431,7 +433,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.util_copy_accomp(self.accomp_dir, "first")
         self.util_copy_accomp(self.accomp_dir, "second")
         self.util_copy_accomp(self.accomp_dir, "third")
-        a = api.Accomplishments(None)
+        a = api.Accomplishments(None, None, True)
 
         # list_collections
         collections = a.list_collections()
@@ -478,7 +480,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.util_copy_accomp(self.accomp_dir, "first")
         self.util_copy_accomp(self.accomp_dir, "second")
         self.util_copy_accomp(self.accomp_dir, "third")
-        a = api.Accomplishments(None)
+        a = api.Accomplishments(None, None, True)
 
         self.assertTrue(a.get_trophy_path("%s/first" %
             self.ACCOMP_SET).endswith("first.trophy"))
@@ -488,7 +490,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
             self.ACCOMP_SET).endswith("third.trophy"))
 
     def test_write_extra_information_file(self):
-        a = api.Accomplishments(None)
+        a = api.Accomplishments(None, None, True)
 
         # write extra information will make the directory for us if needed,
         # so lets remove it (if present and force it to)
@@ -509,7 +511,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
     # get_all_extra_information()
     # get_all_extra_information_required()
     def test_get_extra_information_all_funcs(self):
-        a = api.Accomplishments(None)
+        a = api.Accomplishments(None, None, True)
         self.util_copy_extrainfo(self.extrainfo_dir, "info")
         self.util_copy_extrainfo(self.extrainfo_dir, "info2")
         self.util_copy_accomp(self.accomp_dir, "first")

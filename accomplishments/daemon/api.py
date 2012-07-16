@@ -314,7 +314,7 @@ class Accomplishments(object):
 
     No D-Bus required, so that it can be used for testing.
     """
-    def __init__(self, service, show_notifications=None):
+    def __init__(self, service, show_notifications=None, test_mode=False):
         self.accomplishments_installpaths = None
         self.trophies_path = None
         self.has_u1 = False
@@ -331,6 +331,7 @@ class Accomplishments(object):
         self.asyncapi = AsyncAPI(self)
 
         self.scripts_queue = deque()
+        self.test_mode = test_mode
 
         try:
             rootdir = os.environ['ACCOMPLISHMENTS_ROOT_DIR']
@@ -370,11 +371,17 @@ class Accomplishments(object):
 
         self.show_notifications = show_notifications
         log.msg("Connecting to Ubuntu One")
-        self.sd = SyncDaemonTool()
+        if not self.test_mode:
+            self.sd = SyncDaemonTool()
+        else:
+            log.msg("Test mode enabled, not connecting to SyncDaemonTool()")
+            self.sd = None
 
         self.reload_accom_database()
-		
-        self.sd.connect_signal("DownloadFinished", self._process_recieved_asc_file)
+
+        if not self.test_mode:
+            self.sd.connect_signal("DownloadFinished", self._process_recieved_asc_file)
+
         self._create_all_trophy_icons()
 
     def get_media_file(self, media_file_name):
@@ -595,7 +602,8 @@ class Accomplishments(object):
             self.service.publish_trophies_online_completed(url)
 
     def publish_trophies_online(self):
-        l = self.sd.list_shared()
+        if not self.test_mode:
+            l = self.sd.list_shared()
         l.addCallback(self._get_active_share)
 
     def unpublish_trophies_online(self):
