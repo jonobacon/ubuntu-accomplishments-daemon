@@ -592,7 +592,7 @@ class Accomplishments(object):
     def _refresh_share_data(self):
         if not self.test_mode:
             l = self.sd.list_shared()
-        l.addCallback(self._complete_refreshing_share_data)
+            l.addCallback(self._complete_refreshing_share_data)
         
     def _complete_refreshing_share_data(self,shares):
         matchingshares = []
