@@ -161,7 +161,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         d3 = a.get_acc_date_completed("%s/third" % self.ACCOMP_SET)
         self.assertTrue(isinstance(d3, basestring))
         dt3 = datetime.datetime.strptime(d3, "%Y-%m-%d %H:%M")
-        self.assertTrue(dt2 is not None)
+        self.assertTrue(dt3 is not None)
 
     # this tests:
     # accomplish()

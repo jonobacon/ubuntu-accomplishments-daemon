@@ -1666,6 +1666,7 @@ NoDisplay=true"
         # Marks accomplishments as completed int the accDB, and returns a list
         # of accomIDs that just got unlocked.
         self.accDB[accomID]['completed'] = True
+        self.accDB[accomID]['date-completed'] = self._get_trophy_date_completed(accomID)
         accs = self.list_depending_on(accomID)
         res = []
         for acc in accs:
