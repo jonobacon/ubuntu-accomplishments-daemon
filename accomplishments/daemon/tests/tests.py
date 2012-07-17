@@ -7,19 +7,13 @@ import tempfile
 import shutil
 import subprocess
 import ConfigParser
+import datetime
 
 sys.path.insert(0, os.path.join(os.path.split(__file__)[0], "../../.."))
 from accomplishments.daemon import app, api
 
 # future tests:
 # create extra information files - marked for removal in the code
-# get_acc_date_completed - needs accomplish() to work to be useful
-# get trophy data
-# list trophies
-# list opportunities
-# list depending on
-# list unlocked
-# list unlocked not completed
 # run scripts/runscript
 # get published status
 # invalidate extra information
@@ -140,8 +134,129 @@ extrainfo_seen = 1""" % (self.td, self.td))
         del os.environ['ACCOMPLISHMENTS_ROOT_DIR']
         shutil.rmtree(self.td)
 
-    def test_handle_duplicate_accomplishments(self):
-        return
+    def test_get_acc_date_completed(self):
+        self.util_remove_all_accomps(self.accomp_dir)
+        self.util_copy_accomp(self.accomp_dir, "first")
+        self.util_copy_accomp(self.accomp_dir, "second")
+        self.util_copy_accomp(self.accomp_dir, "third")
+        self.util_copy_extrainfo(self.extrainfo_dir, "info")
+        self.util_copy_extrainfo(self.extrainfo_dir, "info2")
+        a = api.Accomplishments(None, None, True)
+
+        self.assertTrue(a.accomplish("%s/first" % self.ACCOMP_SET))
+        self.assertTrue(a.accomplish("%s/second" % self.ACCOMP_SET))
+        self.assertTrue(a.accomplish("%s/third" % self.ACCOMP_SET))
+
+        trophies = a.list_trophies()
+        # since "Second" requires signing, it shouldn't be listed
+        self.assertEqual(len(trophies), 2)
+
+        d1 = a.get_acc_date_completed("%s/first" % self.ACCOMP_SET)
+        self.assertTrue(isinstance(d1, basestring))
+        dt1 = datetime.datetime.strptime(d1, "%Y-%m-%d %H:%M")
+        self.assertTrue(dt1 is not None)
+
+        d3 = a.get_acc_date_completed("%s/third" % self.ACCOMP_SET)
+        self.assertTrue(isinstance(d3, basestring))
+        dt3 = datetime.datetime.strptime(d3, "%Y-%m-%d %H:%M")
+        self.assertTrue(dt2 is not None)
+
+    # this tests:
+    # accomplish()
+    # list_opportunities
+    # list_trophies
+    # list_unlocked
+    # list_unlocked_not_completed
+    # get_trophy_data
+    def test_accomplish(self):
+        self.util_remove_all_accomps(self.accomp_dir)
+        self.util_copy_accomp(self.accomp_dir, "first")
+        self.util_copy_accomp(self.accomp_dir, "second")
+        self.util_copy_accomp(self.accomp_dir, "third")
+        a = api.Accomplishments(None, None, True)
+
+        # before accomplishing
+        opps = a.list_opportunitues()
+        self.assertEqual(len(opps), 3)
+        for accom in opps:
+            self.assertTrue(accom in ["%s/first" % self.ACCOMP_SET,
+                "%s/second" % self.ACCOMP_SET, "%s/third" % self.ACCOMP_SET])
+
+        unlocked = a.list_unlocked()
+        self.assertEqual(len(unlocked), 2)
+        for accom in unlocked:
+            self.assertTrue(accom in ["%s/first" % self.ACCOMP_SET,
+                "%s/third" % self.ACCOMP_SET])
+
+        unlocked_nc = a.list_unlocked_not_completed()
+        self.assertEqual(len(unlocked_nc), 2)
+        for accom in unlocked_nc:
+            self.assertTrue(accom in ["%s/first" % self.ACCOMP_SET,
+                "%s/third" % self.ACCOMP_SET])
+
+        trophies = a.list_trophies()
+        self.assertEqual(len(trophies), 0)
+
+        self.assertTrue(a.get_trophy_data("%s/first" % self.ACCOMP_SET) is None)
+        self.assertTrue(a.get_trophy_data("%s/second" % self.ACCOMP_SET)
+            is None)
+        self.assertTrue(a.get_trophy_data("%s/third" % self.ACCOMP_SET) is None)
+
+        # now let's accomplish something, it should fail without extra info
+        self.assertRaises(KeyError, a.accomplish, "%s/first" % self.ACCOMP_SET)
+
+        # this time it will work
+        self.util_copy_extrainfo(self.extrainfo_dir, "info")
+        self.util_copy_extrainfo(self.extrainfo_dir, "info2")
+        a.reload_accom_database()
+        self.assertTrue(a.accomplish("%s/first" % self.ACCOMP_SET))
+
+        opps = a.list_opportunitues()
+        self.assertEqual(len(opps), 2)
+        for accom in opps:
+            self.assertTrue(accom in ["%s/second" % self.ACCOMP_SET,
+                "%s/third" % self.ACCOMP_SET])
+
+        unlocked = a.list_unlocked()
+        self.assertEqual(len(unlocked), 3)
+        for accom in unlocked:
+            self.assertTrue(accom in ["%s/first" % self.ACCOMP_SET,
+                "%s/second" % self.ACCOMP_SET,
+                "%s/third" % self.ACCOMP_SET])
+
+        unlocked_nc = a.list_unlocked_not_completed()
+        self.assertEqual(len(unlocked_nc), 2)
+        for accom in unlocked_nc:
+            self.assertTrue(accom in ["%s/second" % self.ACCOMP_SET,
+                "%s/third" % self.ACCOMP_SET])
+
+        trophies = a.list_trophies()
+        self.assertEqual(len(trophies), 1)
+        for accom in trophies:
+            self.assertTrue(accom in ["%s/first" % self.ACCOMP_SET])
+
+        td = a.get_trophy_data("%s/first" % self.ACCOMP_SET)
+        self.assertTrue(isinstance(td, dict))
+
+        self.assertTrue(td['date-accomplished'] is not None)
+        self.assertTrue(td['version'] is not None)
+        self.assertTrue(td['__name__'] == "trophy")
+        self.assertTrue(td['id'] == "%s/first" % self.ACCOMP_SET)
+        self.assertTrue(td['needs-information'] is not None)
+
+    def test_list_depending_on(self):
+        self.util_remove_all_accomps(self.accomp_dir)
+        self.util_copy_accomp(self.accomp_dir, "first")
+        self.util_copy_accomp(self.accomp_dir, "second")
+        self.util_copy_accomp(self.accomp_dir, "third")
+        a = api.Accomplishments(None, None, True)
+
+        self.assertEquals(len(a.list_depending_on("%s/first" %
+            self.ACCOMP_SET)), 1)
+        self.assertEquals(len(a.list_depending_on("%s/second" %
+            self.ACCOMP_SET)), 0)
+        self.assertEquals(len(a.list_depending_on("%s/third" %
+            self.ACCOMP_SET)), 0)
 
     # tests all the get_acc_* functions, except for:
     # get_acc_icon
@@ -357,15 +472,6 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.assertEqual(len(a.list_accomplishments()), 3)
 
         self.util_remove_all_accomps(self.accomp_dir)
-
-    @unittest.skip("need the daemon running")
-    def test_accomplish(self):
-        a = api.Accomplishments(None, None, True)
-        self.assertEqual(len(a.list_trophies()), 0)
-        a.accomplish("%s/first" % self.ACCOMP_SET)
-        trophies = a.list_trophies()
-        self.assertEqual(len(trophies), 1)
-        self.assertEqual(trophies[0]["title"], "My First Accomplishment")
 
     def test_missing_about_file(self):
         os.remove(os.path.join(self.accomp_root, "ABOUT"))

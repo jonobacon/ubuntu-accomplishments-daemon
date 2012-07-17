@@ -259,7 +259,8 @@ class AsyncAPI(object):
         
         log.msg("--- Starting Running Scripts - %d items on the queue ---" % (queuesize))
         timestart = time.time()
-        self.parent.service.scriptrunner_start()
+        if not self.parent.test_mode:
+            self.parent.service.scriptrunner_start()
 
         while queuesize > 0:
             accomID = self.parent.scripts_queue.popleft()
@@ -1244,7 +1245,7 @@ class Accomplishments(object):
             {'needs-signing': 'true', 'date-accomplished': '1990-04-12 02:22', 'needs-information': 'launchpad-email', 'version': '0.2', '__name__': 'trophy', 'launchpad-email': 'launchpaduser@ubuntu.com', 'id': 'ubuntu-community/registered-on-launchpad'}
         """
         if not self.get_acc_is_completed(accomID):
-            return
+            return None
         else:
             cfg = ConfigParser.RawConfigParser()
             cfg.read(self.get_trophy_path(accomID))
@@ -1409,38 +1410,54 @@ class Accomplishments(object):
     def get_published_status(self):
         """Detect if we are currently publishing online or not. Returns
         True if we are or False if we are not. """
-        
+
         trophydir = self.get_config_value("config", "trophypath")
         print trophydir
         if os.path.exists(os.path.join(trophydir, "WEBVIEW")):
             return True
         else:
             return False
-    
+
     def accomplish(self,accomID):
         log.msg("Accomplishing: %s" % accomID)
         if not self.get_acc_exists(accomID):
             log.msg("There is no such accomplishment.")
             return False #failure
-            
+
         # Check if is hasn't been already completed
         if self.get_acc_is_completed(accomID):
             log.msg("Not accomplishing " + accomID + ", it has already been completed.")
             return True #success
-            
+
         # Check if this accomplishment is unlocked
         if not self.get_acc_is_unlocked(accomID):
             log.msg("This accomplishment cannot be completed; it's locked.")
             return False
-            
+
         coll = self._coll_from_accomID(accomID)
         accdata = self.get_acc_data(accomID)
-        
+
         # Prepare extra-info
         needsinformation = self.get_acc_needs_info(accomID)
         for i in needsinformation:
             accdata[i] = self.get_extra_information(coll,i)[0][i]
-            
+
+        # Create .trophy file
+        self._create_trophy_file(accdata, accomID)
+
+        if not self.get_acc_needs_signing(accomID):
+            # The accomplishment does not need signing!
+            if not self.test_mode:
+                self.service.trophy_received(accomID)
+            self._display_accomplished_bubble(accomID)
+            self._display_unlocked_bubble(accomID)
+            # Mark as completed and get list of new opportunities
+            just_unlocked = self._mark_as_completed(accomID)
+            self.run_scripts(just_unlocked)
+
+        return True
+
+    def _create_trophy_file(self, accdata, accomID):
         # Create .trophy file
         cp = ConfigParser.RawConfigParser()
         cp.add_section("trophy")
@@ -1463,17 +1480,6 @@ class Accomplishments(object):
         fp = open(trophypath, "w")
         cp.write(fp)
         fp.close()
-        
-        if not self.get_acc_needs_signing(accomID):
-            # The accomplishment does not need signing!
-            self.service.trophy_received(accomID)
-            self._display_accomplished_bubble(accomID)
-            self._display_unlocked_bubble(accomID)
-            # Mark as completed and get list of new opportunities
-            just_unlocked = self._mark_as_completed(accomID)
-            self.run_scripts(just_unlocked)
-            
-        return True
 
     def set_daemon_session_start(self,value):
         log.msg(value)
@@ -1543,10 +1549,10 @@ NoDisplay=true"
                         return False
         else:
             return False
-    
+
     def _coll_from_accomID(self,accomID):
         return accomID.split("/")[0]
-    
+
     def _display_accomplished_bubble(self,accomID):
         if self.show_notifications == True and pynotify and (
             pynotify.is_initted() or pynotify.init("icon-summary-body")):
@@ -1556,7 +1562,7 @@ NoDisplay=true"
                 self.get_acc_icon_path(accomID) )
             n.set_hint_string('append', 'allowed')
             n.show()
-    
+
     def _display_unlocked_bubble(self,accomID):
         unlocked = len(self.list_depending_on(accomID))
         if unlocked is not 0:
