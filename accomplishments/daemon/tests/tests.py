@@ -142,13 +142,15 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.util_copy_extrainfo(self.extrainfo_dir, "info")
         self.util_copy_extrainfo(self.extrainfo_dir, "info2")
         a = api.Accomplishments(None, None, True)
+        a.write_extra_information_file("info", "whatever")
+        a.write_extra_information_file("info2", "whatever2")
 
         self.assertTrue(a.accomplish("%s/first" % self.ACCOMP_SET))
         self.assertTrue(a.accomplish("%s/second" % self.ACCOMP_SET))
         self.assertTrue(a.accomplish("%s/third" % self.ACCOMP_SET))
 
         trophies = a.list_trophies()
-        # since "Second" requires signing, it shouldn't be listed
+        # since "second" requires signing, it shouldn't be listed
         self.assertEqual(len(trophies), 2)
 
         d1 = a.get_acc_date_completed("%s/first" % self.ACCOMP_SET)

@@ -272,24 +272,26 @@ class AsyncAPI(object):
             # present.
             if self.parent._check_if_acc_is_completed(accomID):
                 self.parent.accomplish(accomID)
-                continue
-            # Run the acc script and determine exit code.
-            scriptpath = self.parent.get_acc_script_path(accomID)
-            if scriptpath is None:
-                log.msg("...No script for this accomplishment, skipping")
-                continue
-            exitcode = yield self.run_a_subprocess([scriptpath])
-            if exitcode == 0:
-                log.msg("...Accomplished")
-                self.parent.accomplish(accomID)
-            elif exitcode == 1:
-                log.msg("...Not Accomplished")
-            elif exitcode == 2:
-                log.msg("....Error")
-            elif exitcode == 4:
-                log.msg("...Could not get extra-information")
             else:
-                log.msg("...Error code %d" % exitcode)
+                # Okay, this one hasn't been yet completed.
+                # Run the acc script and determine exit code.
+                scriptpath = self.parent.get_acc_script_path(accomID)
+                if scriptpath is None:
+                    log.msg("...No script for this accomplishment, skipping")
+                else:
+                    # There is a script for this accomplishmend, so run it
+                    exitcode = yield self.run_a_subprocess([scriptpath])
+                    if exitcode == 0:
+                        log.msg("...Accomplished")
+                        self.parent.accomplish(accomID)
+                    elif exitcode == 1:
+                        log.msg("...Not Accomplished")
+                    elif exitcode == 2:
+                        log.msg("....Error")
+                    elif exitcode == 4:
+                        log.msg("...Could not get extra-information")
+                    else:
+                        log.msg("...Error code %d" % exitcode)
                 
             # New queue size is determined on the very end, since accomplish()
             # might have added something new to the queue.
@@ -308,7 +310,8 @@ class AsyncAPI(object):
 
         log.msg(
             "--- Emptied the scripts queue in %.2f seconds---" % timefinal)
-        self.parent.service.scriptrunner_finish()
+        if not self.parent.test_mode:
+            self.parent.service.scriptrunner_finish()
 
         self.scripts_state = NOT_RUNNING
 
