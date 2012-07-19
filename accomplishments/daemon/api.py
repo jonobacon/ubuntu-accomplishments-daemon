@@ -184,20 +184,20 @@ class AsyncAPI(object):
             log.msg("The folder is shared, with: %s" % ", ".join(
                 shared_to))
             return
-        
+
         self.parent._refresh_share_data()
 
     # XXX let's rewrite this to use deferreds explicitly
     @defer.inlineCallbacks
     def start_scriptrunner(self):
-    
+
         # More info on scripts_state can be found in __init__
         if self.scripts_state is RUNNING:
             # Aborting this call - scriptrunner is already working.
             return
-            
+
         self.scripts_state = RUNNING
-            
+
         uid = os.getuid()
         # Is the user currently logged in and running a gnome session?
         # XXX use deferToThread
@@ -254,9 +254,9 @@ class AsyncAPI(object):
         # XXX all parent calls should be refactored out of the AsyncAPI class
         # to keep the code cleaner and the logic more limited to one particular
         # task
-        
+
         queuesize = len(self.parent.scripts_queue)
-        
+
         log.msg("--- Starting Running Scripts - %d items on the queue ---" % (queuesize))
         timestart = time.time()
         if not self.parent.test_mode:
@@ -265,7 +265,7 @@ class AsyncAPI(object):
         while queuesize > 0:
             accomID = self.parent.scripts_queue.popleft()
             log.msg("Running %s, left on queue: %d" % (accomID, queuesize-1))
-            
+
             # First ensure that the acccomplishemt has not yet completed.
             # It happens that the .asc file is present, but we miss the
             # signal it triggers - so here we can re-check if it is not
@@ -292,14 +292,14 @@ class AsyncAPI(object):
                         log.msg("...Could not get extra-information")
                     else:
                         log.msg("...Error code %d" % exitcode)
-                
+
             # New queue size is determined on the very end, since accomplish()
             # might have added something new to the queue.
             queuesize = len(self.parent.scripts_queue)
 
-        
+
         log.msg("The queue is now empty - stopping the scriptrunner.")
-        
+
         os.environ = oldenviron
 
         # XXX eventually the code in this method will be rewritten using
@@ -1364,32 +1364,36 @@ class Accomplishments(object):
     
     def list_collections(self):
         return [col for col in self.accDB if self.accDB[col]['type'] == 'collection']
-        
+
     # ====== Scriptrunner functions ======
-    
+
     def run_script(self,accomID):
         if not self.get_acc_exists(accomID):
             return
         self.run_scripts([accomID])
-        
-    def run_scripts(self,which=None):
-        if which == None:
-            to_schedule = self.list_unlocked_not_completed()
-        elif type(which) is int or type(which) is bool or type(which) is dbus.Boolean:
-            log.msg("Note: This call to run_scripts is incorrect, run_scripts no more takes an int as an argument (it takes - optionally - a list of accomID to run their scripts)")
+
+    def run_scripts(self, which=None):
+        if isinstance(which, list):
+            to_schedule = which
+        elif which == None:
             to_schedule = self.list_unlocked_not_completed()
         else:
-            if len(which) is 0: # am empty list
-                return
-            to_schedule = which
+            log.msg("Note: This call to run_scripts is incorrect, run_scripts takes (optionally) a list of accomID to run their scripts")
+            to_schedule = self.list_unlocked_not_completed()
+
+        if len(to_schedule) == 0:
+            log.msg("No scripts to run, returning without starting "\
+                "scriptrunner")
+            return
+
         log.msg("Adding to scripts queue: %s " % (str(to_schedule)))
         for i in to_schedule:
             if not i in self.scripts_queue:
                 self.scripts_queue.append(i)
         self.asyncapi.start_scriptrunner()
-    
+
     # ====== Viewer-specific functions ======
-        
+
     def build_viewer_database(self):
         accs = self.list_accomplishments()
         db = []

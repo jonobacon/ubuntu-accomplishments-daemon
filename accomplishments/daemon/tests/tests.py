@@ -8,13 +8,14 @@ import shutil
 import subprocess
 import ConfigParser
 import datetime
+import time
+from collections import deque
 
 sys.path.insert(0, os.path.join(os.path.split(__file__)[0], "../../.."))
 from accomplishments.daemon import app, api
 
 # future tests:
 # create extra information files - marked for removal in the code
-# run scripts/runscript
 # get published status
 # invalidate extra information
 
@@ -133,6 +134,39 @@ extrainfo_seen = 1""" % (self.td, self.td))
     def tearDown(self):
         del os.environ['ACCOMPLISHMENTS_ROOT_DIR']
         shutil.rmtree(self.td)
+
+    def test_run_scripts(self):
+        self.util_copy_accomp(self.accomp_dir, "third")
+        a = api.Accomplishments(None, None, True)
+
+        # pass in None
+        self.assertEqual(a.run_scripts(None), None)
+        self.assertEqual(a.scripts_queue, deque(["%s/third" % self.ACCOMP_SET]))
+        self.assertEqual(a.scripts_queue.popleft(),
+            "%s/third" % self.ACCOMP_SET)
+
+        # pass in a bad arg
+        self.assertEqual(a.run_scripts(122), None)
+        self.assertEqual(a.scripts_queue, deque(["%s/third" % self.ACCOMP_SET]))
+        self.assertEqual(a.scripts_queue.popleft(),
+            "%s/third" % self.ACCOMP_SET)
+
+        # pass in a specific item
+        self.assertEqual(a.run_scripts(["%s/third" % self.ACCOMP_SET]), None)
+        self.assertEqual(a.scripts_queue, deque(["%s/third" % self.ACCOMP_SET]))
+        self.assertEqual(a.scripts_queue.popleft(),
+            "%s/third" % self.ACCOMP_SET)
+
+    def test_run_script(self):
+        self.util_copy_accomp(self.accomp_dir, "third")
+        a = api.Accomplishments(None, None, True)
+        self.assertEqual(a.run_script("%s/wrong" % self.ACCOMP_SET), None)
+        self.assertEqual(a.scripts_queue, deque([]))
+        self.assertEqual(a.run_script("wrong"), None)
+        self.assertEqual(a.scripts_queue, deque([]))
+
+        self.assertEqual(a.run_script("%s/third" % self.ACCOMP_SET), None)
+        self.assertEqual(a.scripts_queue, deque(["%s/third" % self.ACCOMP_SET]))
 
     def test_get_acc_date_completed(self):
         self.util_remove_all_accomps(self.accomp_dir)
