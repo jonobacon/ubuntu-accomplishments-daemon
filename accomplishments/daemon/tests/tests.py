@@ -17,7 +17,8 @@ from accomplishments.daemon import app, api
 # future tests:
 # create extra information files - marked for removal in the code
 # get published status
-# invalidate extra information
+# publish and unpublish trophies online
+# get_share_name, get_share_id
 
 # These tests will modify the user's envrionment, outside of the test
 # dir and so are not written/skipped:

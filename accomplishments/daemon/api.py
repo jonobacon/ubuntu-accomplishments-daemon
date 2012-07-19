@@ -97,7 +97,7 @@ class AsyncAPI(object):
 
     @staticmethod
     def run_a_subprocess(command):
-        # Commented out this debug message, as it creates lots of junk, 
+        # Commented out this debug message, as it creates lots of junk,
         # and is not needed for common troubleshooting
         # log.msg("Running subprocess command: " + str(command))
         pprotocol = SubprocessReturnCodeProtocol()
@@ -278,6 +278,8 @@ class AsyncAPI(object):
                 scriptpath = self.parent.get_acc_script_path(accomID)
                 if scriptpath is None:
                     log.msg("...No script for this accomplishment, skipping")
+                if not self.parent._is_all_extra_information_available(accomID):
+                    log.msg("...Extra information required, but not available, skipping")
                 else:
                     # There is a script for this accomplishmend, so run it
                     exitcode = yield self.run_a_subprocess([scriptpath])
@@ -819,38 +821,57 @@ class Accomplishments(object):
             f = open(os.path.join(extrainfodir, item), 'w') #will trunkate the file, in case it exist
             f.write(data)
             f.close()
-        else: 
+        else:
             #file would be empty, remove it instead
             os.remove(os.path.join(extrainfodir, item))
-            
+
+    # Returns True if all extra information is available for an accom,
+    # False otherwise
+    def _is_all_extra_information_available(self, accomID):
+        info_reqd = self.get_acc_needs_info(accomID)
+        if len(info_reqd) == 0:
+            return True
+
+        collection = self._coll_from_accomID(accomID)
+        if not collection:
+            return False
+
+        for info in info_reqd:
+            ei = self.get_extra_information(collection, info)
+            if not ei[0][info]:
+                log.msg("%s is missing for %s, is_all_extra_information_available returning False" % (info, accomID))
+                return False
+
+        return True
+
     def invalidate_extra_information(self,extrainfo):
         """
         .. warning::
             This function is deprecated.
-            
+
         This function was used to remove all trophies that were accomplished using given extra-information. For example, if I used launchpad-email userA@mail.com and then switched to userB@mail.com, it was useful to call this function to remove all trophies that were awarded to userA@mail.com. However, since 0.2 throphies may not be deleted automatically under no circumstances, this function **does nothing** now.
-        
-        Args: 
+
+        Args:
             * **extrainfo** - (str) the extra-information field that is no more valid (e.g. launchpad-email)
         """
         pass
-            
+
     def get_extra_information(self, coll, item):
         """
         .. note::
             This function is particularly sensitive - accomplishment scripts use it to fetch credentials they need.
-            
+
         This function returns extra-information's value, as set by user. It also provides it with translated label of this extra-information.
-        
+
         Args:
             * **coll** - (str) the name of collection that needs this item. Depending on this, different label may be returned, if collections provide different extrainformation details.
             * **item** - (str) the name of requested item.
-            
+
         Returns:
             * **dict(str:str)** - output is wrapped in a dictionary:
                 - *item* - the value of this item. (e.g. ``"askubuntu-user-url" : "askubuntu.com/users/12345/nickname"``).
                 - **label** - a translated label, as provided by chosen collection.
-                
+
         Example:
             >>> acc.get_extra_information("ubuntu-community","launchpad-email")
             {"launchpad-email" : "user@host.org", "label" : "Adres e-mail uzywany do logowania w portalu Launchpad"}
@@ -862,13 +883,13 @@ class Accomplishments(object):
         """
         extrainfopath = os.path.join(self.trophies_path, ".extrainformation/")
         authfile = os.path.join(extrainfopath, item)
-        
+
         if not self.get_collection_exists(coll):
             log.msg("No such collection:" + coll)
             return None
-        
+
         label = self.accDB[coll]['extra-information'][item]['label']
-        
+
         try:
             f = open(authfile, "r")
             data = f.read()
@@ -877,9 +898,9 @@ class Accomplishments(object):
             #print "No data."
             final = [{item : "", "label" : label}]
         return final
-		
+
     # =================================================================
-        
+
     def reload_accom_database(self):
         """
         This is the function that builds up the *accDB* accomplishments database. It scans all accomplishment installation directories (as set in the config file), looks for all installed collections, and caches all accomplishments' data in memory. If a translated .accomplishment file is available, it's contents are loaded instead.
