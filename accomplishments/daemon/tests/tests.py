@@ -449,11 +449,18 @@ extrainfo_seen = 1""" % (self.td, self.td))
     # also tests get_acc_icon_path
     def test_get_acc_icon(self):
         self.util_copy_accomp(self.accomp_dir, "first")
+        self.util_copy_accomp(self.accomp_dir, "second")
         a = api.Accomplishments(None, None, True)
         self.assertEquals(a.get_acc_icon('%s/first' % self.ACCOMP_SET),
            'first.jpg')
         icon_path = a.get_acc_icon_path('%s/first' % self.ACCOMP_SET)
         self.assertTrue(icon_path.endswith("first-opportunity.jpg"))
+
+        # LP 1024052 - make sure this works without a . in the filename
+        self.assertEquals(a.get_acc_icon('%s/second' % self.ACCOMP_SET),
+           'second')
+        icon_path = a.get_acc_icon_path('%s/second' % self.ACCOMP_SET)
+        self.assertTrue(icon_path.endswith("second-locked"))
 
     def test_build_viewer_database(self):
         self.util_remove_all_accomps(self.accomp_dir)

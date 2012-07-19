@@ -1182,24 +1182,26 @@ class Accomplishments(object):
             return None
         else:
             return res
-        
+
     def get_acc_icon(self,accomID):
         return self.accDB[accomID]['icon']
-        
+
     def get_acc_icon_path(self,accomID):
         imagesdir = os.path.join(self.dir_cache,'trophyimages')
         imagesdir = os.path.join(imagesdir,self.get_acc_collection(accomID))
         iconfile = self.get_acc_icon(accomID)
-        # XXX - this will fail if the icon passed in does not have a .
-        # in the file name - LP: 1024012
-        iconfilename, iconfileext = iconfile.split(".")
+        iconfilename, iconfileext = os.path.splitext(iconfile)
+
+        # safely handle files without extensions
+        if not iconfileext:
+            iconfileext = ""
         if not self.get_acc_is_unlocked(accomID):
             iconfilename = iconfilename + '-locked'
         elif not self.get_acc_is_completed(accomID):
             iconfilename = iconfilename + '-opportunity'
-        iconfile = iconfilename + "." + iconfileext
+        iconfile = iconfilename + iconfileext
         return os.path.join(imagesdir,iconfile)
-    
+
     def get_acc_needs_info(self,accomID):
         if not 'needs-information' in self.accDB[accomID]:
             return []
