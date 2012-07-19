@@ -1556,10 +1556,10 @@ NoDisplay=true"
         elif value == False:
             if config.has_section("notifications"):
                 config.set('notifications', 'show_all_notifications', "True")
-        
+
         with open(cfile, 'wb') as configfile:
             config.write(configfile)
-            
+
     def get_block_ubuntuone_notification_bubbles(self):
         u1configdir = os.path.join(
             xdg.BaseDirectory.xdg_config_home, "ubuntuone")
@@ -1570,15 +1570,13 @@ NoDisplay=true"
             config = ConfigParser.ConfigParser()
             config.read(cfile)
 
-            if(config.read(cfile)):
+            if (config.read(cfile)):
                 if config.has_section("notifications"):
-                    val = config.get('notifications', 'show_all_notifications')
-                    if val == "false" or val == "False":
-                        return True
-                    else:
-                        return False
-        else:
-            return False
+                    val = config.getboolean('notifications',
+                            'show_all_notifications')
+                    return val
+
+        return False
 
     def _coll_from_accomID(self,accomID):
         return accomID.split("/")[0]
