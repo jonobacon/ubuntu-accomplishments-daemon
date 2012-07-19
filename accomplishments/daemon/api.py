@@ -278,7 +278,7 @@ class AsyncAPI(object):
                 scriptpath = self.parent.get_acc_script_path(accomID)
                 if scriptpath is None:
                     log.msg("...No script for this accomplishment, skipping")
-                if not self.parent._is_all_extra_information_available(accomID):
+                elif not self.parent._is_all_extra_information_available(accomID):
                     log.msg("...Extra information required, but not available, skipping")
                 else:
                     # There is a script for this accomplishmend, so run it
