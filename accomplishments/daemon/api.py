@@ -97,7 +97,7 @@ class AsyncAPI(object):
 
     @staticmethod
     def run_a_subprocess(command):
-        # Commented out this debug message, as it creates lots of junk, 
+        # Commented out this debug message, as it creates lots of junk,
         # and is not needed for common troubleshooting
         # log.msg("Running subprocess command: " + str(command))
         pprotocol = SubprocessReturnCodeProtocol()
@@ -184,20 +184,20 @@ class AsyncAPI(object):
             log.msg("The folder is shared, with: %s" % ", ".join(
                 shared_to))
             return
-        
+
         self.parent._refresh_share_data()
 
     # XXX let's rewrite this to use deferreds explicitly
     @defer.inlineCallbacks
     def start_scriptrunner(self):
-    
+
         # More info on scripts_state can be found in __init__
         if self.scripts_state is RUNNING:
             # Aborting this call - scriptrunner is already working.
             return
-            
+
         self.scripts_state = RUNNING
-            
+
         uid = os.getuid()
         # Is the user currently logged in and running a gnome session?
         # XXX use deferToThread
@@ -254,9 +254,9 @@ class AsyncAPI(object):
         # XXX all parent calls should be refactored out of the AsyncAPI class
         # to keep the code cleaner and the logic more limited to one particular
         # task
-        
+
         queuesize = len(self.parent.scripts_queue)
-        
+
         log.msg("--- Starting Running Scripts - %d items on the queue ---" % (queuesize))
         timestart = time.time()
         if not self.parent.test_mode:
@@ -265,7 +265,7 @@ class AsyncAPI(object):
         while queuesize > 0:
             accomID = self.parent.scripts_queue.popleft()
             log.msg("Running %s, left on queue: %d" % (accomID, queuesize-1))
-            
+
             # First ensure that the acccomplishemt has not yet completed.
             # It happens that the .asc file is present, but we miss the
             # signal it triggers - so here we can re-check if it is not
@@ -278,6 +278,8 @@ class AsyncAPI(object):
                 scriptpath = self.parent.get_acc_script_path(accomID)
                 if scriptpath is None:
                     log.msg("...No script for this accomplishment, skipping")
+                elif not self.parent._is_all_extra_information_available(accomID):
+                    log.msg("...Extra information required, but not available, skipping")
                 else:
                     # There is a script for this accomplishmend, so run it
                     exitcode = yield self.run_a_subprocess([scriptpath])
@@ -292,14 +294,14 @@ class AsyncAPI(object):
                         log.msg("...Could not get extra-information")
                     else:
                         log.msg("...Error code %d" % exitcode)
-                
+
             # New queue size is determined on the very end, since accomplish()
             # might have added something new to the queue.
             queuesize = len(self.parent.scripts_queue)
 
-        
+
         log.msg("The queue is now empty - stopping the scriptrunner.")
-        
+
         os.environ = oldenviron
 
         # XXX eventually the code in this method will be rewritten using
@@ -819,38 +821,57 @@ class Accomplishments(object):
             f = open(os.path.join(extrainfodir, item), 'w') #will trunkate the file, in case it exist
             f.write(data)
             f.close()
-        else: 
+        else:
             #file would be empty, remove it instead
             os.remove(os.path.join(extrainfodir, item))
-            
+
+    # Returns True if all extra information is available for an accom,
+    # False otherwise
+    def _is_all_extra_information_available(self, accomID):
+        info_reqd = self.get_acc_needs_info(accomID)
+        if len(info_reqd) == 0:
+            return True
+
+        collection = self._coll_from_accomID(accomID)
+        if not collection:
+            return False
+
+        for info in info_reqd:
+            ei = self.get_extra_information(collection, info)
+            if not ei[0][info]:
+                log.msg("%s is missing for %s, is_all_extra_information_available returning False" % (info, accomID))
+                return False
+
+        return True
+
     def invalidate_extra_information(self,extrainfo):
         """
         .. warning::
             This function is deprecated.
-            
+
         This function was used to remove all trophies that were accomplished using given extra-information. For example, if I used launchpad-email userA@mail.com and then switched to userB@mail.com, it was useful to call this function to remove all trophies that were awarded to userA@mail.com. However, since 0.2 throphies may not be deleted automatically under no circumstances, this function **does nothing** now.
-        
-        Args: 
+
+        Args:
             * **extrainfo** - (str) the extra-information field that is no more valid (e.g. launchpad-email)
         """
         pass
-            
+
     def get_extra_information(self, coll, item):
         """
         .. note::
             This function is particularly sensitive - accomplishment scripts use it to fetch credentials they need.
-            
+
         This function returns extra-information's value, as set by user. It also provides it with translated label of this extra-information.
-        
+
         Args:
             * **coll** - (str) the name of collection that needs this item. Depending on this, different label may be returned, if collections provide different extrainformation details.
             * **item** - (str) the name of requested item.
-            
+
         Returns:
             * **dict(str:str)** - output is wrapped in a dictionary:
                 - *item* - the value of this item. (e.g. ``"askubuntu-user-url" : "askubuntu.com/users/12345/nickname"``).
                 - **label** - a translated label, as provided by chosen collection.
-                
+
         Example:
             >>> acc.get_extra_information("ubuntu-community","launchpad-email")
             {"launchpad-email" : "user@host.org", "label" : "Adres e-mail uzywany do logowania w portalu Launchpad"}
@@ -862,13 +883,13 @@ class Accomplishments(object):
         """
         extrainfopath = os.path.join(self.trophies_path, ".extrainformation/")
         authfile = os.path.join(extrainfopath, item)
-        
+
         if not self.get_collection_exists(coll):
             log.msg("No such collection:" + coll)
             return None
-        
+
         label = self.accDB[coll]['extra-information'][item]['label']
-        
+
         try:
             f = open(authfile, "r")
             data = f.read()
@@ -877,9 +898,9 @@ class Accomplishments(object):
             #print "No data."
             final = [{item : "", "label" : label}]
         return final
-		
+
     # =================================================================
-        
+
     def reload_accom_database(self):
         """
         This is the function that builds up the *accDB* accomplishments database. It scans all accomplishment installation directories (as set in the config file), looks for all installed collections, and caches all accomplishments' data in memory. If a translated .accomplishment file is available, it's contents are loaded instead.
@@ -1364,32 +1385,36 @@ class Accomplishments(object):
     
     def list_collections(self):
         return [col for col in self.accDB if self.accDB[col]['type'] == 'collection']
-        
+
     # ====== Scriptrunner functions ======
-    
+
     def run_script(self,accomID):
         if not self.get_acc_exists(accomID):
             return
         self.run_scripts([accomID])
-        
-    def run_scripts(self,which=None):
-        if which == None:
-            to_schedule = self.list_unlocked_not_completed()
-        elif type(which) is int or type(which) is bool or type(which) is dbus.Boolean:
-            log.msg("Note: This call to run_scripts is incorrect, run_scripts no more takes an int as an argument (it takes - optionally - a list of accomID to run their scripts)")
+
+    def run_scripts(self, which=None):
+        if isinstance(which, list):
+            to_schedule = which
+        elif which == None:
             to_schedule = self.list_unlocked_not_completed()
         else:
-            if len(which) is 0: # am empty list
-                return
-            to_schedule = which
+            log.msg("Note: This call to run_scripts is incorrect, run_scripts takes (optionally) a list of accomID to run their scripts")
+            to_schedule = self.list_unlocked_not_completed()
+
+        if len(to_schedule) == 0:
+            log.msg("No scripts to run, returning without starting "\
+                "scriptrunner")
+            return
+
         log.msg("Adding to scripts queue: %s " % (str(to_schedule)))
         for i in to_schedule:
             if not i in self.scripts_queue:
                 self.scripts_queue.append(i)
         self.asyncapi.start_scriptrunner()
-    
+
     # ====== Viewer-specific functions ======
-        
+
     def build_viewer_database(self):
         accs = self.list_accomplishments()
         db = []
