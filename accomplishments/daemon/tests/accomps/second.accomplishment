@@ -1,6 +1,6 @@
 [accomplishment]
 title=My Second Accomplishment
-icon=second.jpg
+icon=second
 description=An example accomplishment for the test suite, with dependency
 depends=testaccomp/first
 needs-signing=True

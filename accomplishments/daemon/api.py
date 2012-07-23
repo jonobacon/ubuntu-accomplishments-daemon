@@ -1278,24 +1278,26 @@ class Accomplishments(object):
             return None
         else:
             return res
-        
+
     def get_acc_icon(self,accomID):
         return self.accDB[accomID]['icon']
-        
+
     def get_acc_icon_path(self,accomID):
         imagesdir = os.path.join(self.dir_cache,'trophyimages')
         imagesdir = os.path.join(imagesdir,self.get_acc_collection(accomID))
         iconfile = self.get_acc_icon(accomID)
-        # XXX - this will fail if the icon passed in does not have a .
-        # in the file name - LP: 1024012
-        iconfilename, iconfileext = iconfile.split(".")
+        iconfilename, iconfileext = os.path.splitext(iconfile)
+
+        # safely handle files without extensions
+        if not iconfileext:
+            iconfileext = ""
         if not self.get_acc_is_unlocked(accomID):
             iconfilename = iconfilename + '-locked'
         elif not self.get_acc_is_completed(accomID):
             iconfilename = iconfilename + '-opportunity'
-        iconfile = iconfilename + "." + iconfileext
+        iconfile = iconfilename + iconfileext
         return os.path.join(imagesdir,iconfile)
-    
+
     def get_acc_needs_info(self,accomID):
         if not 'needs-information' in self.accDB[accomID]:
             return []
@@ -1650,10 +1652,10 @@ NoDisplay=true"
         elif value == False:
             if config.has_section("notifications"):
                 config.set('notifications', 'show_all_notifications', "True")
-        
+
         with open(cfile, 'wb') as configfile:
             config.write(configfile)
-            
+
     def get_block_ubuntuone_notification_bubbles(self):
         u1configdir = os.path.join(
             xdg.BaseDirectory.xdg_config_home, "ubuntuone")
@@ -1664,15 +1666,13 @@ NoDisplay=true"
             config = ConfigParser.ConfigParser()
             config.read(cfile)
 
-            if(config.read(cfile)):
+            if (config.read(cfile)):
                 if config.has_section("notifications"):
-                    val = config.get('notifications', 'show_all_notifications')
-                    if val == "false" or val == "False":
-                        return True
-                    else:
-                        return False
-        else:
-            return False
+                    val = config.getboolean('notifications',
+                            'show_all_notifications')
+                    return val
+
+        return False
 
     def _coll_from_accomID(self,accomID):
         return accomID.split("/")[0]
