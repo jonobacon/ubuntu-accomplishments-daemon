@@ -1128,7 +1128,33 @@ class Accomplishments(object):
         return self.accDB[accomID]
         
     def get_acc_exists(self,accomID):
-        return accomID in self.accDB
+        """
+        Returns False if given accomplishmentID is not valid, or such accomplishment is not installed on the system.
+        
+        Args:
+            * **accomID** - (str) The accomplishmentID.
+            
+        Returns:
+            * **(bool)** - True if this accomplishmentID is valid AND available for this installation.
+            
+        Example:
+            >>> acc.get_acc_exists("blah")
+            False
+            >>> acc.get_acc_exists("ubuntu-community")
+            False
+            >>> acc.get_acc_exists("ubuntu-community/no-such-accomplishment")
+            False
+            >>> acc.get_acc_exists("ubuntu-community/registered-on-launchpad")
+            True
+        """
+        
+        if not accomID in self.accDB:
+            return False
+            
+        if self.accDB[accomID]['type'] is "accomplishment":
+            return True
+        else:
+            return False
         
     def get_acc_title(self,accomID):
         return self.accDB[accomID]['title']
@@ -1137,6 +1163,21 @@ class Accomplishments(object):
         return self.accDB[accomID]['description']
         
     def get_acc_needs_signing(self,accomID):
+        """
+        This function states whether an accomplishment needs verification by external server. It does not state, hoewver, whether this trophy has been already signed or not, use get_acc_is_completed instead.
+        
+        Args:
+            * **accomID** - (str) The accomplishmentID.
+            
+        Returns:
+            * **(bool)** - True if the accomplishment needs signing.
+            
+        Example:
+            >>> acc.get_acc_needs_signing("ubuntu-community/registered-on-launchpad")
+            True
+            >>> acc.get_acc_needs_signing("ubuntu-desktop/gwibber-twitter")
+            False
+        """
         if not 'needs-signing' in self.accDB[accomID]:
             return False
         elif (self.accDB[accomID]['needs-signing'] == "false" or self.accDB[accomID]['needs-signing'] == "False" or self.accDB[accomID]['needs-signing'] == "no"):
@@ -1145,12 +1186,51 @@ class Accomplishments(object):
             return True
     
     def get_acc_depends(self,accomID):
+        """
+        Returns a list of accomplishments a chosen accomplishment depends on (meaning: they all need to be completed in order to unlock the given one).
+        
+        Args:
+            * **accomID** - (str) The accomplishmentID.
+            
+        Returns:
+            * **(list[str])** - List of accomplishmentIDs of accomplishments that need to be completed before this one is unlocked.
+            
+        Example:
+            >>> acc.get_acc_depends("ubuntu-community/registered-on-launchpad")
+            []
+            >>> acc.get_acc_depends("ubuntu-community/ubuntu-member")
+            ["ubuntu-community/registered-on-launchpad", "ubuntu-community/signed-ubuntu-code-of-conduct"]
+            >>> acc.get_acc_depends("ubuntu-desktop/gnomine_small-5-times")
+            ["ubuntu-desktop/gnomine_win-small"]
+        """
         if 'depends' in self.accDB[accomID]:
             return [a.rstrip().lstrip() for a in self.accDB[accomID]['depends'].split(",")]
         else:
             return []
     
     def get_acc_is_unlocked(self,accomID):
+        """
+        Returns True if this accomplishment is unlocked (ready to be achieved), False otherwise.
+        
+        Args:
+            * **accomID** - (str) The accomplishmentID.
+            
+        Returns:
+            * **(bool)** - Whether this accomplishment is unlocked.
+        
+        Example:
+            >>> acc.get_acc_is_unlocked("ubuntu-community/askubuntu-teacher")
+            False
+            >>> acc.get_acc_depends("ubuntu-community/askubuntu-teacher")
+            ["ubuntu-community/registered-on-askubuntu"]
+            >>> acc.get_acc_is_completed("ubuntu-community/registered-on-askubuntu")
+            False
+            >>> acc.accomplish("ubuntu-community/registered-on-askubuntu")
+            >>> acc.get_acc_is_completed("ubuntu-community/registered-on-askubuntu")
+            True
+            >>> acc.get_acc_is_unlocked("ubuntu-community/askubuntu-teacher")
+            True
+        """
         return not self.accDB[accomID]['locked']
     
     def get_trophy_path(self,accomID):
@@ -1174,6 +1254,22 @@ class Accomplishments(object):
             return os.path.join(self.trophies_path,accomID + ".trophy")
         
     def get_acc_is_completed(self,accomID):
+        """
+        Returns whether this accomplishment is completed (if it needs to be verified by the external server, this will return False if the .asc signature is not present)
+        
+        Args:
+            * **accomID** - (str) The accomplishmentID.
+            
+        Returns:
+            * **(bool)** - Whether this accomplishment is completed.
+            
+        Example:
+            >>> acc.get_acc_is_completed("ubuntu-community/registered-on-askubuntu")
+            False
+            >>> acc.accomplish("ubuntu-community/registered-on-askubuntu")
+            >>> acc.get_acc_is_completed("ubuntu-community/registered-on-askubuntu")
+            True
+        """
         return self.accDB[accomID]['completed']
         
     def get_acc_script_path(self,accomID):
