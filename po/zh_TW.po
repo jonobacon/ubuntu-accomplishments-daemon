@@ -8,18 +8,18 @@ msgstr ""
 "Project-Id-Version: ubuntu-accomplishments-daemon\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-07-09 16:22+0200\n"
-"PO-Revision-Date: 2012-06-26 07:24+0000\n"
-"Last-Translator: extraymond@gmail.com <extraymond@gmail.com>\n"
+"PO-Revision-Date: 2012-07-26 03:58+0000\n"
+"Last-Translator: BT Onedem <btonedem@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-07-18 05:52+0000\n"
-"X-Generator: Launchpad (build 15637)\n"
+"X-Launchpad-Export-Date: 2012-07-26 05:22+0000\n"
+"X-Generator: Launchpad (build 15679)\n"
 
 #: ../accomplishments/util/__init__.py:94
 msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
-msgstr ""
+msgstr "顯示偵錯訊息（-vv 亦檢查 accomplishments_daemon_lib）"
 
 #: ../accomplishments/util/__init__.py:97
 msgid "Clear your trophies collection"
