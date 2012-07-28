@@ -524,7 +524,6 @@ extrainfo_seen = 1""" % (self.td, self.td))
         # put the file back
         self.util_write_about_file(self.accomp_root)
 
-    @unittest.skip("waiting for LP:1024041 to be fixed")
     def test_bad_accomplishment_list(self):
         # this test ensures that a bad accompishment doesn't crash the
         # daemon or get into the list
@@ -540,24 +539,13 @@ extrainfo_seen = 1""" % (self.td, self.td))
         a.reload_accom_database()
         self.assertEqual(len(a.list_accomplishments()), 1)
 
+        self.util_write_file(self.accomp_dir, "bad.accomplishment",
+            "descriptionbad desc\n")
+        a.reload_accom_database()
+        self.assertEqual(len(a.list_accomplishments()), 1)
+
         # cleanup
         self.util_remove_all_accomps(self.accomp_dir)
-
-    def test_bad_accomplishment_parse(self):
-        self.util_write_file(self.accomp_dir, "bad.accomplishment",
-            "[accomplishment]\n"\
-            "descriptionbad desc\n")
-        self.assertRaises(ConfigParser.ParsingError, api.Accomplishments, None,
-            None, True)
-        os.remove(os.path.join(self.accomp_dir, "bad.accomplishment"))
-
-        self.util_write_file(self.accomp_dir, "bad.accomplishment",
-            "[accomplishment]\n"\
-            "titlewhatever\n"\
-            "description=bad desc\n")
-        self.assertRaises(ConfigParser.ParsingError, api.Accomplishments, None,
-            None, True)
-        os.remove(os.path.join(self.accomp_dir, "bad.accomplishment"))
 
     # also tests get_config_value()
     def test_write_config_file_item(self):
