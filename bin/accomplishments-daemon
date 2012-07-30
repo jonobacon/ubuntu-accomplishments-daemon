@@ -5,8 +5,8 @@ Run the Accomplishments daemon!
 import sys
 import os
 
-from twisted.internet import glib2reactor
-glib2reactor.install()
+from twisted.internet import gireactor
+gireactor.install()
 
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
