@@ -986,8 +986,7 @@ class Accomplishments(object):
                             accomcfg.read(readpath)
                         except ConfigParser.ParsingError, e:
                             log.msg("Parse error for %s.  Skipping."\
-                                "Parse error is: %s" % (translatedpath,
-                                e.message))
+                                "Parse error is: %s" % (readpath, e.message))
                             continue
 
                         accomdata = dict(accomcfg._sections["accomplishment"])
@@ -1054,8 +1053,7 @@ class Accomplishments(object):
                                 accomcfg.read(readpath)
                             except ConfigParser.ParsingError, e:
                                 log.msg("Parse error for %s.  Skipping."\
-                                    "Parse error is: %s" % (translatedpath,
-                                    e.message))
+                                    "Parse error is: %s" % (readpath,e.message))
                                 continue
 
                             accomdata = dict(accomcfg._sections["accomplishment"])
