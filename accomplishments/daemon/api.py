@@ -19,7 +19,7 @@ from StringIO import StringIO
 import datetime
 import getpass
 import glob
-import gobject
+#import gobject
 import gpgme
 import json
 import os
@@ -40,9 +40,10 @@ from twisted.python import log
 import xdg.BaseDirectory
 
 try:
-    import pynotify
+    from gi.repository import Notify
+    useNotify = True
 except ImportError:
-    pynotify = None
+    useNotify = False
 
 from ubuntuone.platform.tools import SyncDaemonTool
 from ubuntuone.platform.credentials import CredentialsManagementTool
@@ -1696,9 +1697,9 @@ NoDisplay=true"
         return accomID.split("/")[0]
 
     def _display_accomplished_bubble(self,accomID):
-        if self.show_notifications == True and pynotify and (
-            pynotify.is_initted() or pynotify.init("icon-summary-body")):
-            n = pynotify.Notification(
+        if self.show_notifications == True and useNotify and (
+            Notify.is_initted() or Notify.init("icon-summary-body")):
+            n = Notify.Notification.new(
                 _("You have accomplished something!"),
                 self.get_acc_title(accomID),
                 self.get_acc_icon_path(accomID) )
@@ -1708,10 +1709,10 @@ NoDisplay=true"
     def _display_unlocked_bubble(self,accomID):
         unlocked = len(self.list_depending_on(accomID))
         if unlocked is not 0:
-            if self.show_notifications == True and pynotify and (
-                pynotify.is_initted() or pynotify.init("icon-summary-body")):
+            if self.show_notifications == True and useNotify and (
+                Notify.is_initted() or Notify.init("icon-summary-body")):
                 message = (N_("You have unlocked %s new opportunity.","You have unlocked %s new opportunities.",unlocked) % str(unlocked))
-                n = pynotify.Notification(
+                n = Notify.Notification.new(
                     _("Opportunities Unlocked!"), message,
                     self.get_media_file("unlocked.png"))
                 n.show()
