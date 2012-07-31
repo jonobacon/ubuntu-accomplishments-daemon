@@ -938,24 +938,24 @@ class Accomplishments(object):
                 if collection in self.accDB:
                     # This collection has already been loaded from another install path!
                     continue
-                
+
                 collpath = os.path.join(path,collection)
                 aboutpath = os.path.join(collpath,'ABOUT')
-                
+
                 # Load data from ABOUT file
                 cfg = ConfigParser.RawConfigParser()
                 cfg.read(aboutpath)
-                
+
                 if not (cfg.has_option("general","langdefault") and cfg.has_option("general","name")):
                     print aboutpath
                     raise LookupError("Accomplishment collection with invalid ABOUT file ")
-                
+
                 langdefault = cfg.get("general","langdefault")
                 collectionname = cfg.get("general","name")
-                
+
                 collauthors = set()
                 collcategories = {}
-                
+
                 langdefaultpath = os.path.join(collpath,langdefault)
                 setsslist = os.listdir(langdefaultpath)
                 accno = 0
@@ -968,18 +968,27 @@ class Accomplishments(object):
                         translatedpath = os.path.join(os.path.join(collpath,self.lang),accomset)
                         if os.path.exists(translatedpath):
                             # yes, so use the translated file
-                            accomcfg.read(translatedpath)
+                            readpath = translatedpath
                             langused = self.lang
                         else:
                             # no. maybe there is a shorter language code?
                             translatedpath = os.path.join(os.path.join(collpath,self.lang.split("_")[0]),accomset)
                             if os.path.exists(translatedpath):
-                                accomcfg.read(translatedpath)
+                                readpath = translatedpath
                                 langused = self.lang.split("_")[0]
                             else:
                                 # no. fallback to default one
-                                accomcfg.read(accompath)
+                                readpath = accompath
                                 langused = langdefault
+
+                        # do the parse
+                        try:
+                            accomcfg.read(readpath)
+                        except ConfigParser.ParsingError, e:
+                            log.msg("Parse error for %s.  Skipping."\
+                                "Parse error is: %s" % (readpath, e.message))
+                            continue
+
                         accomdata = dict(accomcfg._sections["accomplishment"])
                         accomID = collection + "/" + accomset[:-15]
                         if 'author' in accomdata:
@@ -1026,18 +1035,27 @@ class Accomplishments(object):
                             translatedpath = os.path.join(os.path.join(collpath,self.lang),os.path.join(accomset,accomfile))
                             if os.path.exists(translatedpath):
                                 # yes, so use the translated file
-                                accomcfg.read(translatedpath)
+                                readpath = translatedpath
                                 langused = self.lang
                             else:
                                 # no. maybe there is a shorter language code?
                                 translatedpath = os.path.join(os.path.join(collpath,self.lang.split("_")[0]),os.path.join(accomset,accomfile))
                                 if os.path.exists(translatedpath):
-                                    accomcfg.read(translatedpath)
+                                    readpath = translatedpath
                                     langused = self.lang.split("_")[0]
                                 else:
                                     # no. fallback to default one
-                                    accomcfg.read(accompath)
+                                    readpath = accompath
                                     langused = langdefault
+
+                            # do the parse
+                            try:
+                                accomcfg.read(readpath)
+                            except ConfigParser.ParsingError, e:
+                                log.msg("Parse error for %s.  Skipping."\
+                                    "Parse error is: %s" % (readpath,e.message))
+                                continue
+
                             accomdata = dict(accomcfg._sections["accomplishment"])
                             accomID = collection + "/" + accomfile[:-15]
                             if 'author' in accomdata:
@@ -1069,7 +1087,7 @@ class Accomplishments(object):
                                 accomdata['categories'] = []
                             self.accDB[accomID] = accomdata
                             accno = accno + 1
-                            
+
                 # Look for extrainformation dir
                 extrainfodir = os.path.join(collpath,"extrainformation")
                 extrainfolist = os.listdir(extrainfodir)
@@ -1092,7 +1110,7 @@ class Accomplishments(object):
                         description = eicfg.get("description",self.lang.split("_")[0])
                     else:
                         description = eicfg.get("description",langdefault)
-                        
+
                     if eicfg.has_option("example", self.lang):
                         example = eicfg.get("example", self.lang)
                     elif eicfg.has_option("example", self.lang.split("_")[0]):
@@ -1101,29 +1119,29 @@ class Accomplishments(object):
                         example = eicfg.get("example", langdefault)
                     else:
                         example = None
-                        
+
                     if eicfg.has_option("regex", "value"):
                         regex = eicfg.get("regex", "value")
                     else:
                         regex = None
-                        
+
                     extrainfo[extrainfofile] = {
                             'label': label,
                             'description': description,
                             'example': example,
                             'regex': regex,
                             }
-                
+
                 # Store data about this colection
                 collectiondata = {'langdefault':langdefault,'name':collectionname, 'acc_num':accno, 'type':"collection", 'base-path': collpath, 'categories' : collcategories, 'extra-information': extrainfo, 'authors':collauthors}
                 self.accDB[collection] = collectiondata
-          
+
         self._update_all_locked_and_completed_statuses()
         # Uncomment following for debugging
         # print self.accDB\
-        
+
     # ======= Access functions =======
-        
+
     def get_acc_data(self,accomID):
         return self.accDB[accomID]
         

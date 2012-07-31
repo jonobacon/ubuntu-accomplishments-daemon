@@ -137,37 +137,33 @@ extrainfo_seen = 1""" % (self.td, self.td))
         shutil.rmtree(self.td)
 
     def test_run_scripts(self):
+        # due to LP1030208, if the daemon is running (like on a dev box)
+        # it will pop off the test, but in a pbuilder or build system
+        # there will be no daemon, so we can just ensure that this
+        # doesn't crash
         self.util_copy_accomp(self.accomp_dir, "third")
         a = api.Accomplishments(None, None, True)
 
         # pass in None
         self.assertEqual(a.run_scripts(None), None)
-        self.assertEqual(a.scripts_queue, deque(["%s/third" % self.ACCOMP_SET]))
-        self.assertEqual(a.scripts_queue.popleft(),
-            "%s/third" % self.ACCOMP_SET)
 
         # pass in a bad arg
         self.assertEqual(a.run_scripts(122), None)
-        self.assertEqual(a.scripts_queue, deque(["%s/third" % self.ACCOMP_SET]))
-        self.assertEqual(a.scripts_queue.popleft(),
-            "%s/third" % self.ACCOMP_SET)
 
         # pass in a specific item
         self.assertEqual(a.run_scripts(["%s/third" % self.ACCOMP_SET]), None)
-        self.assertEqual(a.scripts_queue, deque(["%s/third" % self.ACCOMP_SET]))
-        self.assertEqual(a.scripts_queue.popleft(),
-            "%s/third" % self.ACCOMP_SET)
 
     def test_run_script(self):
+        # due to LP1030208, if the daemon is running (like on a dev box)
+        # it will pop off the test, but in a pbuilder or build system
+        # there will be no daemon, so we can just ensure that this
+        # doesn't crash
         self.util_copy_accomp(self.accomp_dir, "third")
         a = api.Accomplishments(None, None, True)
         self.assertEqual(a.run_script("%s/wrong" % self.ACCOMP_SET), None)
-        self.assertEqual(a.scripts_queue, deque([]))
         self.assertEqual(a.run_script("wrong"), None)
-        self.assertEqual(a.scripts_queue, deque([]))
 
         self.assertEqual(a.run_script("%s/third" % self.ACCOMP_SET), None)
-        self.assertEqual(a.scripts_queue, deque(["%s/third" % self.ACCOMP_SET]))
 
     def test_get_acc_date_completed(self):
         self.util_remove_all_accomps(self.accomp_dir)
@@ -524,7 +520,6 @@ extrainfo_seen = 1""" % (self.td, self.td))
         # put the file back
         self.util_write_about_file(self.accomp_root)
 
-    @unittest.skip("waiting for LP:1024041 to be fixed")
     def test_bad_accomplishment_list(self):
         # this test ensures that a bad accompishment doesn't crash the
         # daemon or get into the list
@@ -540,24 +535,13 @@ extrainfo_seen = 1""" % (self.td, self.td))
         a.reload_accom_database()
         self.assertEqual(len(a.list_accomplishments()), 1)
 
+        self.util_write_file(self.accomp_dir, "bad.accomplishment",
+            "descriptionbad desc\n")
+        a.reload_accom_database()
+        self.assertEqual(len(a.list_accomplishments()), 1)
+
         # cleanup
         self.util_remove_all_accomps(self.accomp_dir)
-
-    def test_bad_accomplishment_parse(self):
-        self.util_write_file(self.accomp_dir, "bad.accomplishment",
-            "[accomplishment]\n"\
-            "descriptionbad desc\n")
-        self.assertRaises(ConfigParser.ParsingError, api.Accomplishments, None,
-            None, True)
-        os.remove(os.path.join(self.accomp_dir, "bad.accomplishment"))
-
-        self.util_write_file(self.accomp_dir, "bad.accomplishment",
-            "[accomplishment]\n"\
-            "titlewhatever\n"\
-            "description=bad desc\n")
-        self.assertRaises(ConfigParser.ParsingError, api.Accomplishments, None,
-            None, True)
-        os.remove(os.path.join(self.accomp_dir, "bad.accomplishment"))
 
     # also tests get_config_value()
     def test_write_config_file_item(self):
