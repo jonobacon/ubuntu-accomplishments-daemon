@@ -2,9 +2,12 @@ Source: accomplishments-daemon
 Section: python
 Priority: extra
 Build-Depends: debhelper (>= 6),
+ gir1.2-glib-2.0,
+ gir1.2-notify-0.7,
  python (>= 2.6.6-3~),
  python-nose,
  python-twisted-core,
+ python-gi,
  python-xdg,
  python-dbus,
  python-imaging,
