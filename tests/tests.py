@@ -11,7 +11,7 @@ import datetime
 import time
 from collections import deque
 
-sys.path.insert(0, os.path.join(os.path.split(__file__)[0], "../../.."))
+sys.path.insert(0, os.path.join(os.path.split(__file__)[0], ".."))
 from accomplishments.daemon import app, api
 
 # future tests:
