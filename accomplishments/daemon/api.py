@@ -1674,6 +1674,20 @@ NoDisplay=true"
 
         with open(cfile, 'wb') as configfile:
             config.write(configfile)
+            
+        # restart SyncDaemonTool to use new settings immediately, fixes LP#1011903
+        self.ubuntuone_restart_syncdaemontool()
+        
+    def ubuntuone_restart_syncdaemontool(self):
+        if self.sd:
+            log.msg("Stopping syncdaemontool")
+            d = self.sd.quit()
+            d.addCallback(self.ubuntuone_start_syncdaemontool)
+
+    def ubuntuone_start_syncdaemontool(self, value):
+        if self.sd:
+            log.msg("Starting syncdaemontool")
+            self.sd.start()
 
     def get_block_ubuntuone_notification_bubbles(self):
         u1configdir = os.path.join(
