@@ -16,3 +16,7 @@ ifeq ($(filter nocheck,$(DEB_BUILD_OPTIONS)),)
 		$$python /usr/bin/nosetests -v ; \
 	done
 endif
+
+override_dh_auto_clean:
+	-find . -name '*.py[co]' | xargs rm -f
+
