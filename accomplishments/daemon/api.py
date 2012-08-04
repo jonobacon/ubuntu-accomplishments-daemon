@@ -1703,9 +1703,9 @@ NoDisplay=true"
                 if config.has_section("notifications"):
                     val = config.getboolean('notifications',
                             'show_all_notifications')
-                    return val
+                    return not val
 
-        return False
+        return True
 
     def _coll_from_accomID(self,accomID):
         return accomID.split("/")[0]
