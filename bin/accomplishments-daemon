@@ -3,7 +3,8 @@
 import sys
 import os
 
-# Importing from accomplishments.{daemon,util} would fail, if the path is set wrongly.
+# Importing from accomplishments.{daemon,util} would fail, if the path 
+# is set incorrectly.
 # We need to ensure that the script will load the correct version of
 # accomplishment.* that is installed with this script.
 scriptpath = os.path.abspath(__file__)

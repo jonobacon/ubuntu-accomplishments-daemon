@@ -1139,7 +1139,8 @@ class Accomplishments(object):
 
         self._update_all_locked_and_completed_statuses()
         
-        self.service.accomplishments_collections_reloaded()
+        if not self.test_mode:
+            self.service.accomplishments_collections_reloaded()
         # Uncomment following for debugging
         # print self.accDB\
 
@@ -1633,7 +1634,7 @@ class Accomplishments(object):
         log.msg(type(value))
         if value == True:
             log.msg("setting")
-            command = "twistd -noy " + daemon_exec_dir + "/accomplishments-daemon --logfile=" + os.path.join(self.dir_cache, "logs", "daemon.log")
+            command = os.path.join(daemon_exec_dir, "accomplishments-daemon") + " --start"
             filetext = "[Desktop Entry]\n\
 Type=Application\n\
 Encoding=UTF-8\n\
@@ -1838,6 +1839,6 @@ NoDisplay=true"
         return "0.2"
     
     def stop_daemon(self):
-        print "Stopping the daemon as stop_daemo() got called."
+        print "Stopping the daemon as stop_daemon() got called."
         from twisted.internet import reactor
         reactor.stop()
