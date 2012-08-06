@@ -18,16 +18,11 @@ from accomplishments.daemon import service
 
 
 def daemon_is_registered():
-    """
-    """
     try:
         obj = dbus.SessionBus().get_object(
             "org.ubuntu.accomplishments", "/")
         return True
     except dbus.exceptions.DBusException:
-        log.msg(
-            "User does not have the accomplishments daemon "
-            "available")
         return False
 
 
@@ -883,6 +878,11 @@ class AccomplishmentsDBusService(service.DBusExportService):
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="")
+    def stop_daemon(self):
+        return self.api.stop_daemon()
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+        in_signature="", out_signature="")
     def publish_trophies_online(self):
         return self.api.publish_trophies_online()
 
@@ -926,3 +926,8 @@ class AccomplishmentsDBusService(service.DBusExportService):
     @dbus.service.signal(dbus_interface='org.ubuntu.accomplishments')
     def ubuntu_one_account_ready(self):
         pass
+
+    @dbus.service.signal(dbus_interface='org.ubuntu.accomplishments')
+    def accomplishments_collections_reloaded(self):
+        pass
+        

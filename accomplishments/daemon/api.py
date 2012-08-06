@@ -1138,6 +1138,8 @@ class Accomplishments(object):
                 self.accDB[collection] = collectiondata
 
         self._update_all_locked_and_completed_statuses()
+        
+        self.service.accomplishments_collections_reloaded()
         # Uncomment following for debugging
         # print self.accDB\
 
@@ -1834,3 +1836,8 @@ NoDisplay=true"
     #Other significant system functions
     def get_API_version(self):
         return "0.2"
+    
+    def stop_daemon(self):
+        print "Stopping the daemon as stop_daemo() got called."
+        from twisted.internet import reactor
+        reactor.stop()
