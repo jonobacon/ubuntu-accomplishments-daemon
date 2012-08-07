@@ -1,0 +1,22 @@
+Please add items to this changelog that are:
+
+ * New features.
+ * Bugs that have been fixed.
+
+Add items using the following format:
+
+-------------------------------------------------------------------------
+
+Next Version Target: 0.3
+
+-------------------------------------------------------------------------
+
+ * Bug #1033453: The daemon needs a more elgant way to launch/stop (Rafal Cieślak)
+ * Bug #1031913: Get Ubuntu One setting from daemon for hiding notification (Brian Mastell)
+ * Bug #1011903: The "Hide Ubuntu One notifications" preference has no *immediate* effect. (Jason Robinson)
+ * Fix for pynotify when daemon run deamonized (Rafal Cieślak)
+ * Bug #1024041: parsing errors in an accomplishment file will crash the daemon (Matt Fischer)
+ * Bug #1030208: run_script(s) unit tests succeed in pbuilder/build system but fail when run from the command line (Matt Fischer)
+ * Unit Tests added. (Matt Fischer)
+ * Client and Developer documentation added (Jono Bacon / Rafal Cieślak)
+
