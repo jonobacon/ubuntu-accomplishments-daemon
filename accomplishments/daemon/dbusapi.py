@@ -290,7 +290,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="a{sv}")
-    def get_acc_data(self,accomID):
+    def get_accom_data(self,accomID):
         """
         Returns a database of accomplishment information on the system.
 
@@ -310,11 +310,11 @@ class AccomplishmentsDBusService(service.DBusExportService):
             >>> obj.build_viewer_database()
             { dbus.String(u'lang'): dbus.String(u'en', variant_level=1), dbus.String(u'needs-signing'): dbus.String(u'true', variant_level=1), dbus.String(u'date-completed'): dbus.String(u'2012-06-12 22:12', variant_level=1), dbus.String(u'set'): dbus.String(u'infrastructure', variant_level=1), dbus.String(u'locked'): dbus.Boolean(False, variant_level=1), dbus.String(u'help'): dbus.String(u'#launchpad on Freenode', variant_level=1), dbus.String(u'links'): dbus.String(u'http://www.launchpad.net', variant_level=1), dbus.String(u'title'): dbus.String(u'Registered on Launchpad', variant_level=1), dbus.String(u'script-path'): dbus.String(u'/home/jono/source/ubuntu-community-accomplishments/scripts/ubuntu-community/infrastructure/registered-on-launchpad.py', variant_level=1), dbus.String(u'base-path'): dbus.String(u'/home/jono/source/ubuntu-community-accomplishments/accomplishments/ubuntu-community', variant_level=1), dbus.String(u'completed'): dbus.Boolean(True, variant_level=1), dbus.String(u'author'): dbus.String(u'Jono Bacon <jono@ubuntu.com>', variant_level=1), dbus.String(u'collection'): dbus.String(u'ubuntu-community', variant_level=1), dbus.String(u'summary'): dbus.String(u'Launchpad is a website in which we do much of our work in Ubuntu. There we build packages, file and fix bugs, perform translations, manage code, and other activities.\\nYou will need to register an account with Launchpad to participate in much of the Ubuntu community. Fortunately, registering is simple, safe, and free.', variant_level=1), dbus.String(u'needs-information'): dbus.String(u'launchpad-email', variant_level=1), dbus.String(u'steps'): dbus.String(u'Load a web browser on your computer.\\nIn your web browser go to <tt>http://www.launchpad.net</tt>.\\nClick the <i>Register</i> link in the corner of the screen to register.', variant_level=1), dbus.String(u'icon'): dbus.String(u'default.png', variant_level=1), dbus.String(u'type'): dbus.String(u'accomplishment', variant_level=1), dbus.String(u'categories'): dbus.Array([dbus.String(u'Launchpad')], signature=dbus.Signature('s'), variant_level=1), dbus.String(u'description'): dbus.String(u'Registered a Launchpad account', variant_level=1) }
         """
-        return self.api.get_acc_data(accomID)
+        return self.api.get_accom_data(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="b")   
-    def get_acc_exists(self,accomID):
+    def get_accom_exists(self,accomID):
         """
         Returns whether the specified accomplishment is recognized on the system.
         
@@ -328,15 +328,15 @@ class AccomplishmentsDBusService(service.DBusExportService):
         Returns:
             * **(bool)** - returns `True` is the accomplishment exists, and `False` if not.
         Example:
-            >>> obj.get_acc_exists("ubuntu-community/registered-on-launchpad")
+            >>> obj.get_accom_exists("ubuntu-community/registered-on-launchpad")
             True
         """
         
-        return self.api.get_acc_exists(accomID)
+        return self.api.get_accom_exists(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="s")
-    def get_acc_title(self,accomID):
+    def get_accom_title(self,accomID):
         """
         Returns the title name of the specified accomplishment.
         
@@ -350,20 +350,20 @@ class AccomplishmentsDBusService(service.DBusExportService):
         Returns:
             * **(str)** - the title of the accomplishment.
         Example:
-            >>> obj.get_acc_exists("ubuntu-community/registered-on-launchpad")
+            >>> obj.get_accom_exists("ubuntu-community/registered-on-launchpad")
             'Registered on Launchpad'
         """
         
-        return self.api.get_acc_title(accomID)
+        return self.api.get_accom_title(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="s")
-    def get_acc_description(self,accomID):
-        return self.api.get_acc_description(accomID)
+    def get_accom_description(self,accomID):
+        return self.api.get_accom_description(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="s")
-    def get_acc_collection(self,accomID):
+    def get_accom_collection(self,accomID):
         """
         Returns the collection that a given accomplishment is part of.
         
@@ -379,15 +379,15 @@ class AccomplishmentsDBusService(service.DBusExportService):
         Returns:
             * **(str)** - the collection name.
         Example:
-            >>> obj.get_acc_collection("ubuntu-community/registered-on-launchpad")
+            >>> obj.get_accom_collection("ubuntu-community/registered-on-launchpad")
             ubuntu-community
         """
         
-        return self.api.get_acc_collection(accomID)
+        return self.api.get_accom_collection(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="as")
-    def get_acc_categories(self,accomID):
+    def get_accom_categories(self,accomID):
         """
         Returns a list of categories that the specified accomplishment is part of.
         
@@ -404,14 +404,14 @@ class AccomplishmentsDBusService(service.DBusExportService):
         Returns:
             * **(list)** - the list of categories.
         Example:
-            >>> obj.get_acc_categories("ubuntu-community/registered-on-launchpad")
+            >>> obj.get_accom_categories("ubuntu-community/registered-on-launchpad")
             ["Launchpad"]
         """
-        return self.api.get_acc_categories(accomID)
+        return self.api.get_accom_categories(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="b")
-    def get_acc_needs_signing(self,accomID):
+    def get_accom_needs_signing(self,accomID):
         """
         Returns whether the specified accomplishment needs to be signed (verified) or not.
         
@@ -431,15 +431,15 @@ class AccomplishmentsDBusService(service.DBusExportService):
         Returns:
             * **(bool)** - `True` if the accomplishment needs signing, `False` if not.
         Example:
-            >>> obj.get_acc_categories("ubuntu-community/registered-on-launchpad")
+            >>> obj.get_accom_categories("ubuntu-community/registered-on-launchpad")
             True
         """
         
-        return self.api.get_acc_needs_signing(accomID)
+        return self.api.get_accom_needs_signing(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="as")
-    def get_acc_depends(self,accomID):
+    def get_accom_depends(self,accomID):
         """
         Returns a list of accomplishments that the accomplishment you pass depends on.
         
@@ -460,15 +460,15 @@ class AccomplishmentsDBusService(service.DBusExportService):
         Returns:
             * **(list)** - the list of dependencies for the accomplishment.
         Example:
-            >>> obj.get_acc_depends("ubuntu-community/ubuntu-member")
+            >>> obj.get_accom_depends("ubuntu-community/ubuntu-member")
             ["ubuntu-community/registered-on-launchpad"]
         """
         
-        return self.api.get_acc_depends(accomID)
+        return self.api.get_accom_depends(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="b")
-    def get_acc_is_unlocked(self,accomID):
+    def get_accom_is_unlocked(self,accomID):
         """
         Returns whether the specified accomplishment is unlocked or not (whether it's dependencies have been satisfied or not).
         
@@ -486,11 +486,11 @@ class AccomplishmentsDBusService(service.DBusExportService):
         Returns:
             * **(bool)** - `True` if the dependencies have been completed, `False` if not.
         Example:
-            >>> obj.get_acc_is_unlocked("ubuntu-community/registered-on-launchpad")
+            >>> obj.get_accom_is_unlocked("ubuntu-community/registered-on-launchpad")
             True
         """
         
-        return self.api.get_acc_is_unlocked(accomID)
+        return self.api.get_accom_is_unlocked(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="s")
@@ -499,7 +499,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="b")
-    def get_acc_is_completed(self,accomID):
+    def get_accom_is_completed(self,accomID):
         """
         Returns whether the specified accomplishment is accomplished or not.
         
@@ -513,11 +513,11 @@ class AccomplishmentsDBusService(service.DBusExportService):
         Returns:
             * **(bool)** - `True` if the accomplishment has been completed, `False` if not.
         Example:
-            >>> obj.get_acc_is_completed("ubuntu-community/registered-on-launchpad")
+            >>> obj.get_accom_is_completed("ubuntu-community/registered-on-launchpad")
             True
         """
         
-        return self.api.get_acc_is_completed(accomID)
+        return self.api.get_accom_is_completed(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="b")
@@ -538,7 +538,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="s")
-    def get_acc_script_path(self,accomID):
+    def get_accom_script_path(self,accomID):
         """
         Returns the corrosponsing script for the accomplishment.
         
@@ -555,15 +555,15 @@ class AccomplishmentsDBusService(service.DBusExportService):
         Returns:
             * **(str)** - the full path to the script.
         Example:
-            >>> obj.get_acc_script_path("ubuntu-community/registered-on-launchpad")
+            >>> obj.get_accom_script_path("ubuntu-community/registered-on-launchpad")
             /usr/share/accomplishments/scripts/ubuntu-community/infrastructure/registered-on-launchpad.py
         """
         
-        return self.api.get_acc_script_path(accomID)
+        return self.api.get_accom_script_path(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="s")
-    def get_acc_icon(self,accomID):
+    def get_accom_icon(self,accomID):
         """
         Returns the icon name for the specified accomplishment.
         
@@ -573,21 +573,21 @@ class AccomplishmentsDBusService(service.DBusExportService):
         `Accomplishment ID` as it's parameter.
         
         Note: this function only passes the icon name and not the full path to the icon. If you need this you should use
-        `get_acc_icon_path()`.
+        `get_accom_icon_path()`.
                         
         Args:
             * **accomID** - (str) the `Accomplishment ID` for a given accomplishment (e.g. `ubuntu-community/registered-on-launchpad`).
         Returns:
             * **(str)** - the name of the icon.
         Example:
-            >>> obj.get_acc_icon("ubuntu-community/registered-on-launchpad")
+            >>> obj.get_accom_icon("ubuntu-community/registered-on-launchpad")
             default.png
         """
-        return self.api.get_acc_icon(accomID)        
+        return self.api.get_accom_icon(accomID)        
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="s")
-    def get_acc_icon_path(self,accomID):
+    def get_accom_icon_path(self,accomID):
         """
         Returns the icon name for the specified accomplishment.
         
@@ -596,23 +596,23 @@ class AccomplishmentsDBusService(service.DBusExportService):
         accomplishment has an accomplishment ID of `ubuntu-community/registered-on-launchpad`). You pass this function this
         `Accomplishment ID` as it's parameter.
         
-        If you don't need the full path and just need the icon name, use `get_acc_icon()`.
+        If you don't need the full path and just need the icon name, use `get_accom_icon()`.
                                 
         Args:
             * **accomID** - (str) the `Accomplishment ID` for a given accomplishment (e.g. `ubuntu-community/registered-on-launchpad`).
         Returns:
             * **(str)** - the full path to the icon.
         Example:
-            >>> obj.get_acc_icon_path("ubuntu-community/registered-on-launchpad")
+            >>> obj.get_accom_icon_path("ubuntu-community/registered-on-launchpad")
             /home/jono/.cache/accomplishments/trophyimages/ubuntu-community/default.png
         """
-        return self.api.get_acc_icon_path(accomID)
+        return self.api.get_accom_icon_path(accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="v")
-    def get_acc_needs_info(self,accomID):
+    def get_accom_needs_info(self,accomID):
         """DOCS NEEDED"""
-        return self.api.get_acc_needs_info(self,accomID)
+        return self.api.get_accom_needs_info(self,accomID)
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="a{sv}")
@@ -719,7 +719,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="as")
-    def list_accomplishments(self):
+    def list_accoms(self):
         """
         Returns a list of accomplishment IDs for the all available accomplishments. This includes all accomplishment IDs
         from all collections.
@@ -729,11 +729,11 @@ class AccomplishmentsDBusService(service.DBusExportService):
         Returns:
             * **(list)** - the list of accomplishment IDs.
         Example:
-            >>> obj.list_accomplishments()
+            >>> obj.list_accoms()
             ["ubuntu-community/registered-on-launchpad", "ubuntu-community/ubuntu-member", . . .]
         """
         
-        return self.api.list_accomplishments()
+        return self.api.list_accoms()
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="as")
@@ -928,6 +928,6 @@ class AccomplishmentsDBusService(service.DBusExportService):
         pass
 
     @dbus.service.signal(dbus_interface='org.ubuntu.accomplishments')
-    def accomplishments_collections_reloaded(self):
+    def accoms_collections_reloaded(self):
         pass
         
