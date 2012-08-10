@@ -1623,7 +1623,7 @@ class Accomplishments(object):
             if len(needsinfo) > 0:
                 for i in needsinfo:
                     if not (cfg.get("trophy",i).strip() == self.get_extra_information(coll,i)[0][i].strip()):
-                        # At least on extrainformation has changed since this file was written.
+                        # At least one extrainformation has changed since this file was written.
                         # Therefore overwrite the file anyway.
                         force_overwrite = True
                         log.msg("Trophy file %s already exists, but contains different extra-information." % trophypath)
