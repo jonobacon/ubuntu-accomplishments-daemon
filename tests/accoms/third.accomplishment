@@ -3,7 +3,7 @@ title=My Third Accomplishment
 icon=third.jpg
 description=An example accomplishment for the test suite, no dependency
 needs-signing=False
-collection=testaccomp
+collection=testaccom
 category=testing,                                              unit test
 # comment should be ignored
 # comment

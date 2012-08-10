@@ -2,7 +2,7 @@
 title=My Second Accomplishment
 icon=second
 description=An example accomplishment for the test suite, with dependency
-depends=testaccomp/first
+depends=testaccom/first
 needs-signing=True
-collection=testaccomp
+collection=testaccom
 author = Tester <tester@tester>
