@@ -1611,9 +1611,9 @@ class Accomplishments(object):
         # appear everytime scripts are run for all accomplishments that
         # the validation server refuses to sign - such notifications 
         # are quite annoying.
-        force_overwrite = True
+        overwrite = True
         if needssigning and os.path.exists(trophypath):
-            force_overwrite = False
+            overwrite = False
             # Okay, there is a .trophy file already present. We will
             # overwrite it anyway if there was a change in extrainformation
             # provided by the user. To recognise this situation, we'll 
@@ -1625,11 +1625,11 @@ class Accomplishments(object):
                     if not (cfg.get("trophy",i).strip() == self.get_extra_information(coll,i)[0][i].strip()):
                         # At least one extrainformation has changed since this file was written.
                         # Therefore overwrite the file anyway.
-                        force_overwrite = True
+                        overwrite = True
                         log.msg("Trophy file %s already exists, but contains different extra-information." % trophypath)
                         break
                     
-        if not force_overwrite:
+        if not overwrite:
             log.msg("Not overwriting %s as it already exists." % trophypath)
             return
         
