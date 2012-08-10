@@ -1622,11 +1622,11 @@ class Accomplishments(object):
             cfg.read(trophypath)
             if len(needsinfo) > 0:
                 for i in needsinfo:
-                    if cfg.get("trophy",i) != self.get_extra_information(coll,i)[0][i]:
+                    if not (cfg.get("trophy",i).strip() == self.get_extra_information(coll,i)[0][i].strip()):
                         # At least on extrainformation has changed since this file was written.
                         # Therefore overwrite the file anyway.
                         force_overwrite = True
-                        log.msg("Trophy file %s already exists, but contains different extra-information" % trophypath)
+                        log.msg("Trophy file %s already exists, but contains different extra-information." % trophypath)
                         break
                     
         if not force_overwrite:
