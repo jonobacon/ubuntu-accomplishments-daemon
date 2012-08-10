@@ -27,6 +27,7 @@ def main():
     mode.add_argument('--stop',action='store_true',help="Stop the daemon gracefully.")
     mode.add_argument('--kill',action='store_true',help="Kill the daemon process.")
     mode.add_argument('--reload',action='store_true',help="Reload accomplishments collections.")
+    parser.add_argument('-f','--foreground',action='store_true',help="When starting the daemon, run it in the foreground, with logs directed to stdout.")
     args = parser.parse_args()
     
     import xdg.BaseDirectory
@@ -42,6 +43,7 @@ def main():
     pidfile_path = os.path.join(cache_dir,"accomplishments-daemon.pid")
         
     if args.start or not (args.start or args.stop or args.kill or args.reload):
+        # Start the daemon
         from accomplishments.util.paths import daemon_exec_dir
         
         # Check if the daemon is already running.
@@ -65,11 +67,17 @@ def main():
                 # Successfully killed daemon removes the pidfile himself.
                 os.remove(pidfile_path)
         
-        command = "twistd -y " + os.path.join(daemon_exec_dir, "accomplishments-daemon") + " --logfile=" + os.path.join(cache_dir, "logs", "daemon.log") + " --pidfile=" + pidfile_path
+        if not args.foreground:
+            command = "twistd -y " + os.path.join(daemon_exec_dir, "accomplishments-daemon") + " --logfile=" + os.path.join(cache_dir, "logs", "daemon.log") + " --pidfile=" + pidfile_path
+        else:
+            command = "twistd -noy " + os.path.join(daemon_exec_dir, "accomplishments-daemon") + " --pidfile=" + pidfile_path
+        
+        print command
         
         os.system(command)
     
     elif args.stop:
+        # Stop the daemon
         if not is_daemon_running():
             print "The daemon is not running."
             return
@@ -80,7 +88,7 @@ def main():
         api.stop_daemon()
     
     elif args.kill:
-        # Killing the daemon
+        # Kill the daemon
         res = kill_daemon_process()
         if res is 0:
             print "Daemon killed."
@@ -110,7 +118,7 @@ def kill_daemon_process():
     pid = int(pidfile.read())
     i = os.system("kill " + str(pid))
     if i is not 0:
-        print "Failed to kill daemon, PID:" + str(pid)
+        # Error message is provided by `kill` itself
         return -2
     return 0
     
