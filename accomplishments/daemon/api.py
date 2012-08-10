@@ -1323,7 +1323,7 @@ class Accomplishments(object):
     def get_accom_needs_info(self,accomID):
         if not 'needs-information' in self.accomDB[accomID]:
             return []
-        return [a.rstrip().lstrip() for a in self.accomDB[accomID]['needs-information'].split(",")]
+        return [a.strip() for a in self.accomDB[accomID]['needs-information'].split(",")]
     
     def get_accom_collection(self,accomID):
         """
@@ -1582,16 +1582,8 @@ class Accomplishments(object):
             log.msg("This accomplishment cannot be completed; it's locked.")
             return False
 
-        coll = self._coll_from_accomID(accomID)
-        accdata = self.get_accom_data(accomID)
-
-        # Prepare extra-info
-        needsinformation = self.get_accom_needs_info(accomID)
-        for i in needsinformation:
-            accdata[i] = self.get_extra_information(coll,i)[0][i]
-
         # Create .trophy file
-        self._create_trophy_file(accdata, accomID)
+        self._create_trophy_file(accomID)
 
         if not self.get_accom_needs_signing(accomID):
             # The accomplishment does not need signing!
@@ -1605,26 +1597,61 @@ class Accomplishments(object):
 
         return True
 
-    def _create_trophy_file(self, accdata, accomID):
-        # Create .trophy file
+    def _create_trophy_file(self, accomID):
+        # Get the path where the .trophy file should be placed
+        trophypath = self.get_trophy_path(accomID)
+        # And other data
+        needssigning = self.get_accom_needs_signing(accomID)
+        needsinfo = self.get_accom_needs_info(accomID)
+        coll = self.get_accom_collection(accomID)
+        
+        # Check if the .trophy file already exists.
+        # If it does, then we'll try to avoid overwriting it in case it
+        # needs-signing - if we would, a U1 notification bubble would
+        # appear everytime scripts are run for all accomplishments that
+        # the validation server refuses to sign - such notifications 
+        # are quite annoying.
+        force_overwrite = True
+        if needssigning and os.path.exists(trophypath):
+            force_overwrite = False
+            # Okay, there is a .trophy file already present. We will
+            # overwrite it anyway if there was a change in extrainformation
+            # provided by the user. To recognise this situation, we'll 
+            # need to read this file.
+            cfg = ConfigParser.RawConfigParser()
+            cfg.read(trophypath)
+            if len(needsinfo) > 0:
+                for i in needsinfo:
+                    if cfg.get("trophy",i) != self.get_extra_information(coll,i)[0][i]:
+                        # At least on extrainformation has changed since this file was written.
+                        # Therefore overwrite the file anyway.
+                        force_overwrite = True
+                        log.msg("Trophy file %s already exists, but contains different extra-information" % trophypath)
+                        break
+                    
+        if not force_overwrite:
+            log.msg("Not overwriting %s as it already exists." % trophypath)
+            return
+        
+        # Gather all data for the .trophy file
         cp = ConfigParser.RawConfigParser()
         cp.add_section("trophy")
         cp.set("trophy", "version", "0.2")
         cp.set("trophy", "id", accomID)
         now = datetime.datetime.now()
         cp.set("trophy", "date-accomplished", now.strftime("%Y-%m-%d %H:%M"))
-        if 'needs-signing' in accdata:
-            cp.set("trophy", 'needs-signing', accdata['needs-signing'])
-        if 'needs-information' in accdata:
-            cp.set("trophy", 'needs-information', accdata['needs-information'])
-            for i in accdata['needs-information'].split(","):
-                a = i.rstrip().lstrip()
-                cp.set("trophy", a, accdata[a])
-        trophypath = self.get_trophy_path(accomID)
+        if needssigning:
+            cp.set("trophy", 'needs-signing', needssigning)
+        if len(needsinfo) > 0:
+            cp.set("trophy", 'needs-information', ", ".join(needsinfo))
+            for i in needsinfo:
+                cp.set("trophy", i, self.get_extra_information(coll,i)[0][i])
+        # Create directories if they don't exist
         dirpath = os.path.split(trophypath)[0]
         if not os.path.exists(dirpath):
             os.makedirs(dirpath)
-        log.msg(trophypath)
+        # Write data to the .trophy file
+        log.msg("Writing to trophy file at %s" % trophypath)
         fp = open(trophypath, "w")
         cp.write(fp)
         fp.close()
