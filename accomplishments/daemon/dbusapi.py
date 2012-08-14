@@ -754,7 +754,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="as")
-    def list_opportunitues(self):
+    def list_opportunities(self):
         """
         Returns a list of accomplishment IDs for the all available opportunities. This includes all accomplishment IDs
         from all sets.
@@ -764,11 +764,11 @@ class AccomplishmentsDBusService(service.DBusExportService):
         Returns:
             * **(list)** - the list of opportunity accomplishment IDs.
         Example:
-            >>> obj.list_opportunitues()
+            >>> obj.list_opportunities()
             ["ubuntu-community/registered-on-launchpad", "ubuntu-community/ubuntu-member", . . .]
         """
         
-        return self.api.list_opportunitues()
+        return self.api.list_opportunities()
         
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="as")

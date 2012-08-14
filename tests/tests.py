@@ -209,7 +209,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         a = api.Accomplishments(None, None, True)
 
         # before accomplishing
-        opps = a.list_opportunitues()
+        opps = a.list_opportunities()
         self.assertEqual(len(opps), 3)
         for accom in opps:
             self.assertTrue(accom in ["%s/first" % self.ACCOM_SET,
@@ -244,7 +244,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         a.reload_accom_database()
         self.assertTrue(a.accomplish("%s/first" % self.ACCOM_SET))
 
-        opps = a.list_opportunitues()
+        opps = a.list_opportunities()
         self.assertEqual(len(opps), 2)
         for accom in opps:
             self.assertTrue(accom in ["%s/second" % self.ACCOM_SET,

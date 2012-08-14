@@ -68,6 +68,8 @@ if installed:
 LOCAL_USERNAME = getpass.getuser()
 SCRIPT_DELAY = 900
 ONLINETROPHIESHOST = "213.138.100.229:8000"
+STAGING_ID = "openiduser204307" # staging ID
+PRODUCTION_ID = "openiduser155707" # production ID
 
 #flags used for scripts_state
 NOT_RUNNING = 0
@@ -97,7 +99,7 @@ class AsyncAPI(object):
         self.scripts_state = NOT_RUNNING
 
     @staticmethod
-    def run_a_subprocess(command):
+    def _run_a_subprocess(command):
         # Commented out this debug message, as it creates lots of junk,
         # and is not needed for common troubleshooting
         # log.msg("Running subprocess command: " + str(command))
@@ -140,7 +142,7 @@ class AsyncAPI(object):
                 folder_is_synced = True
                 break
         if not folder_is_synced:
-            # XXX let's breack this out into a separate sync'ing method
+            # XXX let's break this out into a separate sync'ing method
             log.msg(
                 "...the '%s' folder is not synced with the Matrix" % trophydir)
             log.msg("...creating the share folder on Ubuntu One")
@@ -283,7 +285,7 @@ class AsyncAPI(object):
                     log.msg("...Extra information required, but not available, skipping")
                 else:
                     # There is a script for this accomplishmend, so run it
-                    exitcode = yield self.run_a_subprocess([scriptpath])
+                    exitcode = yield self._run_a_subprocess([scriptpath])
                     if exitcode == 0:
                         log.msg("...Accomplished")
                         self.parent.accomplish(accomID)
@@ -399,13 +401,7 @@ class Accomplishments(object):
         self._refresh_share_data()
 
     def get_media_file(self, media_file_name):
-        #log.msg("MEDIA_FILE_NAME:")
-        #log.msg(media_file_name)
-        #log.msg("MEDIA_DIR:")
-        #log.msg(media_dir)
         media_filename = os.path.join(media_dir, media_file_name)
-        #log.msg("MEDIA_FILENAME:")
-        #log.msg(media_filename)
 
         if not os.path.exists(media_filename):
             return None
@@ -413,6 +409,7 @@ class Accomplishments(object):
         final = "file:///" + media_filename
         return final
 
+    # XXX - NEEDS UNIT TEST
     def _create_all_trophy_icons(self):
         """Iterate through each of the accomplishments on the system
         and generate all of the required icons that we provide to
@@ -420,18 +417,19 @@ class Accomplishments(object):
         cols = self.list_collections()
 
         for col in cols:
-            col_imagespath = os.path.join(self.accomDB[col]['base-path'],"trophyimages")
+            col_imagespath = os.path.join(self.accomDB[col]['base-path'],
+                "trophyimages")
             cache_trophyimagespath = os.path.join(
                 self.dir_cache, "trophyimages", col)
             lock_image_path = os.path.join(media_dir, "lock.png")
             if not os.path.exists(cache_trophyimagespath):
                 os.makedirs(cache_trophyimagespath)
-            
+
             # First, delete all cached images:
             cachedlist=glob.glob(cache_trophyimagespath + "/*")
             for c in cachedlist:
                 os.remove(c)
-            
+
             mark = Image.open(lock_image_path)
             for root, dirs, files in os.walk(col_imagespath):
                 for name in files:
@@ -442,10 +440,11 @@ class Accomplishments(object):
                         filetype = os.path.splitext(filename)[1]
 
                         im.save(filename)
-                        
+
                         # Opacity set to 1.0 until we figure out a better way of
                         # showing opportunities
-                        reduced = self._create_reduced_opacity_trophy_icon(im, 1.0)
+                        reduced = self._create_reduced_opacity_trophy_icon(im,
+                            1.0)
                         reduced.save(filecore + "-opportunity" + filetype)
 
                         if im.mode != 'RGBA':
@@ -461,6 +460,7 @@ class Accomplishments(object):
                         log.msg(msg)
             
 
+    # XXX - NEEDS UNIT TEST
     def _create_reduced_opacity_trophy_icon(self, im, opacity):
         """Returns an image with reduced opacity."""
         
@@ -498,6 +498,7 @@ class Accomplishments(object):
         else:
             return "NoOption"
 
+    # XXX - NEEDS UNIT TEST
     def verify_ubuntu_one_account(self):
         self.asyncapi.verify_ubuntu_one_account()
 
@@ -521,6 +522,7 @@ class Accomplishments(object):
 
         self._load_config_file()
 
+    # XXX - NEEDS UNIT TEST
     def _write_config_file(self):
         """Write the values held in various configuration state variables
         to the main daemon configuration file, which should be located
@@ -549,8 +551,9 @@ class Accomplishments(object):
 
     def _load_config_file(self):
         """Load the main configuration file for the daemon. This should be
-        located in ~/.config/accomplishments/.accomplishments and it provides
-        a ConfigParser INI-style list of values."""
+        located in .config/accomplishments/.accomplishments (relative to ~
+        or ${ACCOMPLISHMENETS_ROOT_DIR} and it provides a ConfigParser
+        INI-style list of values."""
 
         config = ConfigParser.RawConfigParser()
         cfile = os.path.join(self.dir_config, ".accomplishments")
@@ -572,9 +575,9 @@ class Accomplishments(object):
             if config.get('config', 'has_verif'):
                 self.has_verif = config.getboolean('config', 'has_verif')
             if config.has_option('config','staging') and config.get('config', 'staging'):
-                self.matrix_username = "openiduser204307" # staging ID
+                self.matrix_username = STAGING_ID
             else:
-                self.matrix_username = "openiduser155707" # production ID
+                self.matrix_username = PRODUCTION_ID
 
         else:
             # setting accomplishments path to the system default
@@ -616,18 +619,22 @@ class Accomplishments(object):
             self.share_name = matchingshares[0]["name"]
             self.share_id = matchingshares[0]["share_id"]
             self.share_found = True
-    
+
+    # XXX - NEEDS UNIT TEST
     def get_share_name(self):
         if self.share_found:
             return self.share_name
         else:
             return ""
+
+    # XXX - NEEDS UNIT TEST
     def get_share_id(self):
         if self.share_found:
             return self.share_id
         else:
             return ""
-    
+
+    # XXX - NEEDS UNIT TEST (if feasible)
     def publish_trophies_online(self):
         if self.share_found:
             trophydir = self.get_config_value("config", "trophypath")
@@ -635,13 +642,14 @@ class Accomplishments(object):
             string = " "
             webviewfile.write(string)
             url = "http://" + ONLINETROPHIESHOST + "/user/addshare?share_name=" + self.share_name + "&share_id=" + self.share_id
-            
+
             self.service.publish_trophies_online_completed(url)
             return url
-        else:  
+        else:
             log.msg("Unable to publish trophies - no share found.")
             return ""
 
+    # XXX - NEEDS UNIT TEST (if feasible)
     def unpublish_trophies_online(self):
         trophydir = self.get_config_value("config", "trophypath")
         os.remove(os.path.join(trophydir, "WEBVIEW"))
@@ -1491,7 +1499,7 @@ class Accomplishments(object):
     def list_trophies(self):
         return [accom for accom in self.accomslist() if self.get_accom_is_completed(accom)]
         
-    def list_opportunitues(self):
+    def list_opportunities(self):
         return [accom for accom in self.accomslist() if not self.get_accom_is_completed(accom)]
         
     def list_depending_on(self,accomID):
@@ -1597,6 +1605,7 @@ class Accomplishments(object):
 
         return True
 
+    # XXX - NEEDS UNIT TEST
     def _create_trophy_file(self, accomID):
         # Get the path where the .trophy file should be placed
         trophypath = self.get_trophy_path(accomID)
@@ -1708,12 +1717,14 @@ NoDisplay=true"
         # restart SyncDaemonTool to use new settings immediately, fixes LP#1011903
         self.ubuntuone_restart_syncdaemontool()
         
+    # XXX - NEEDS UNIT TEST
     def ubuntuone_restart_syncdaemontool(self):
         if self.sd:
             log.msg("Stopping syncdaemontool")
             d = self.sd.quit()
             d.addCallback(self.ubuntuone_start_syncdaemontool)
 
+    # XXX - NEEDS UNIT TEST
     def ubuntuone_start_syncdaemontool(self, value):
         if self.sd:
             log.msg("Starting syncdaemontool")
@@ -1761,11 +1772,13 @@ NoDisplay=true"
                     self.get_media_file("unlocked.png"))
                 n.show()
     
+    # XXX - NEEDS UNIT TEST
     def accomslist(self):
         for k in self.accomDB:
             if self.accomDB[k]['type'] is "accomplishment":
                 yield k
             
+    # XXX - NEEDS UNIT TEST
     def _get_is_asc_correct(self,filepath):
         if os.path.exists(filepath):
             # the .asc signed file exists, so let's verify that it is correctly
@@ -1793,6 +1806,7 @@ NoDisplay=true"
             log.msg("Cannot check if signature is correct, because file %s does not exist" % filepath)
             return False
             
+    # XXX - NEEDS UNIT TEST
     def _check_if_accom_is_completed(self,accomID):
         trophypath = self.get_trophy_path(accomID)
         if not os.path.exists(trophypath):
@@ -1809,6 +1823,7 @@ NoDisplay=true"
             else:
                 return self._get_is_asc_correct(ascpath)
         
+    # XXX - NEEDS UNIT TEST
     def _check_if_accom_is_locked(self,accomID):
         dep = self.get_accom_depends(accomID)
         if not dep:
@@ -1833,6 +1848,7 @@ NoDisplay=true"
         for accom in accoms:
             self.accomDB[accom]['locked'] = self._check_if_accom_is_locked(accom)
          
+    # XXX - NEEDS UNIT TEST
     def _get_trophy_date_completed(self, accomID):
         trophypath = self.get_trophy_path(accomID)
         if not os.path.exists(trophypath):
@@ -1846,6 +1862,7 @@ NoDisplay=true"
         if config.has_option("trophy", "date-accomplished"):
             return config.get("trophy", "date-accomplished")
 
+    # XXX - NEEDS UNIT TEST
     def _mark_as_completed(self,accomID):
         # Marks accomplishments as completed int the accomDB, and returns a list
         # of accomIDs that just got unlocked.
@@ -1862,6 +1879,7 @@ NoDisplay=true"
         return res
             
     #Other significant system functions
+
     def get_API_version(self):
         return "0.2"
     
