@@ -615,6 +615,9 @@ class Accomplishments(object):
         if len(matchingshares) > 1:
             log.msg("Could not find unique active share.")
             self.share_found = False
+        elif len(matchingshares) == 0:
+            log.msg("Could not find unique active share.")
+            self.share_found = False            
         else:
             self.share_name = matchingshares[0]["name"]
             self.share_id = matchingshares[0]["share_id"]

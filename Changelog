@@ -19,4 +19,4 @@ Next Version Target: 0.3
  * Bug #1030208: run_script(s) unit tests succeed in pbuilder/build system but fail when run from the command line (Matt Fischer)
  * Unit Tests added. (Matt Fischer)
  * Client and Developer documentation added (Jono Bacon / Rafal Cieślak)
-
+ * Bug #1036961: Potential non-starter issue with trophy publishing share check (Jono Bacon)
