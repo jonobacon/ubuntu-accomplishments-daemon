@@ -1552,7 +1552,7 @@ class Accomplishments(object):
             db.append({
                 'title':           self.get_accom_title(accom),
                 'accomplished':    self.get_accom_is_completed(accom),
-                'locked':      not self.get_accom_is_unlocked(accom),
+                'locked': not self.get_accom_is_unlocked(accom),
                 'date-completed':      self.get_accom_date_completed(accom),
                 'iconpath':        self.get_accom_icon_path(accom),
                 'collection':      self.get_accom_collection(accom),

@@ -24,12 +24,12 @@ if installed:
 
     # finally, setting these significant data directories...
     systemdata_dir = os.path.join(basepath, 'share/accomplishments-daemon')
-    media_dir      = os.path.join(basepath, 'share/accomplishments-daemon/media')
+    media_dir = os.path.join(basepath, 'share/accomplishments-daemon/media')
 
     # these two may need to be set for the accomplismhents scripts, so that they
     # can use OUR accomplishments module, using this installation.
-    module_dir1    = os.path.join(basepath, 'lib/python2.7/site-packages')
-    module_dir2    = os.path.join(basepath, 'lib/python2.7/dist-packages')
+    module_dir1 = os.path.join(basepath, 'lib/python2.7/site-packages')
+    module_dir2 = os.path.join(basepath, 'lib/python2.7/dist-packages')
 
     # that's where the daemon launcher is present
     daemon_exec_dir = os.path.join(basepath, 'bin')
@@ -45,9 +45,9 @@ else:
 
     # finally, setting these significant data directories...
     systemdata_dir = os.path.join(basepath, 'data/daemon')
-    media_dir      = os.path.join(basepath, 'data/media')
-    module_dir1    = None # always using default
-    module_dir2    = None # always using default
+    media_dir = os.path.join(basepath, 'data/media')
+    module_dir1 = None # always using default
+    module_dir2 = None # always using default
 
     # that's where the daemon launcher is present
     daemon_exec_dir = os.path.join(basepath, 'bin')
