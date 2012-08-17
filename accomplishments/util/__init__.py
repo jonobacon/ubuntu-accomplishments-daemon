@@ -15,7 +15,7 @@ from accomplishments import config
 from accomplishments import exceptions
 
 from accomplishments.util.paths import locale_dir
-gettext.bindtextdomain('accomplishments-daemon',locale_dir)
+gettext.bindtextdomain('accomplishments-daemon', locale_dir)
 gettext.textdomain('accomplishments-daemon')
 
 

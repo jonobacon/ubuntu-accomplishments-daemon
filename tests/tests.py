@@ -375,7 +375,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
 
         # get_accom_needs_info
         info = a.get_accom_needs_info("%s/first" % self.ACCOM_SET)
-        self.assertEqual(len(info),2)
+        self.assertEqual(len(info), 2)
         for i in info:
            self.assertTrue(i in ["info", "info2"])
         self.assertEqual(a.get_accom_needs_info("%s/second" % self.ACCOM_SET),
@@ -398,7 +398,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.assertEqual(a.get_accom_categories("%s/second" % self.ACCOM_SET),
             [])
         categories = a.get_accom_categories("%s/third" % self.ACCOM_SET)
-        self.assertEqual(len(info),2)
+        self.assertEqual(len(info), 2)
         for category in categories:
            self.assertTrue(category in ["testing", "unit test"])
         self.assertRaises(KeyError, a.get_accom_categories, "wrong")
