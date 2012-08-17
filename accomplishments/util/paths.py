@@ -32,10 +32,10 @@ if installed:
     module_dir2    = os.path.join(basepath, 'lib/python2.7/dist-packages')
 
     # that's where the daemon launcher is present
-    daemon_exec_dir= os.path.join(basepath, 'bin')
+    daemon_exec_dir = os.path.join(basepath, 'bin')
 
     # locale files directory
-    locale_dir= os.path.join(basepath, 'share/locale')
+    locale_dir = os.path.join(basepath, 'share/locale')
 
 else:
     # using branch root directory as the base path
@@ -50,7 +50,7 @@ else:
     module_dir2    = None # always using default
 
     # that's where the daemon launcher is present
-    daemon_exec_dir= os.path.join(basepath, 'bin')
+    daemon_exec_dir = os.path.join(basepath, 'bin')
 
     # If the application has not been installed, the .po files has not been
     # complied to .gmo, and thus gettext will be unable to use translated

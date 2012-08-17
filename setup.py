@@ -16,6 +16,7 @@ except ImportError:
     sys.exit(1)
 assert DistUtilsExtra.auto.__version__ >= '2.18', 'needs DistUtilsExtra.auto >= 2.18'
 
+
 def update_config(values = {}):
 
     oldvalues = {}
@@ -49,11 +50,9 @@ class InstallAndUpdateDataDirectory(DistUtilsExtra.auto.install_auto):
         update_config(previous_values)
 
 
-
 ##################################################################################
 ###################### YOU SHOULD MODIFY ONLY WHAT IS BELOW ######################
 ##################################################################################
-
 DistUtilsExtra.auto.setup(
     name='accomplishments-daemon',
     version='0.1',

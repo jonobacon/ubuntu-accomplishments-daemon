@@ -64,14 +64,14 @@ class AccomplishmentsDBusService(service.DBusExportService):
         self.api = api.Accomplishments(self, self.show_notifications)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="aa{sv}")
+                         in_signature="", out_signature="aa{sv}")
     def get_all_extra_information_required(self):
         """DOCS NEEDED"""
 
         return self.api.get_all_extra_information_required()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="aa{sv}")
+                         in_signature="", out_signature="aa{sv}")
     def get_all_extra_information(self):
         """
         Returns all the extra-information data available for the user.
@@ -104,17 +104,17 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_all_extra_information()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="v", out_signature="")
+                         in_signature="v", out_signature="")
     def run_scripts(self, accomIDlist=None):
         return self.api.run_scripts(accomIDlist)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="")
+                         in_signature="s", out_signature="")
     def run_script(self, accomID):
         return self.api.run_script(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="ss", out_signature="aa{sv}")
+                         in_signature="ss", out_signature="aa{sv}")
     def get_extra_information(self, collection, info):
         """
         Retrieve the data for the current user for the specified extra-information.
@@ -148,7 +148,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_extra_information(collection, info)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="")
+                         in_signature="", out_signature="")
     def create_extra_information_file(self, item, data):
         """
         Create an extra-information file that resides in the user's trophy share.
@@ -173,24 +173,24 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.create_extra_information_file(item, data)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="b", out_signature="")
+                         in_signature="b", out_signature="")
     def set_daemon_session_start(self, value):
         return self.api.set_daemon_session_start(value)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="b", out_signature="")
+                         in_signature="b", out_signature="")
     def set_block_ubuntuone_notification_bubbles(self, value):
         return self.api.set_block_ubuntuone_notification_bubbles(value)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="b")
+                         in_signature="", out_signature="b")
     def get_daemon_session_start(self):
         """DOCS NEEDED"""
 
         return self.api.get_daemon_session_start()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="b")
+                         in_signature="", out_signature="b")
     def get_block_ubuntuone_notification_bubbles(self):
         """
         Returns whether the user has chosen to block Ubuntu One sync-daemon bubbles.
@@ -213,12 +213,12 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_block_ubuntuone_notification_bubbles()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="")
+                         in_signature="", out_signature="")
     def write_extra_information_file(self, item, data):
         return self.api.write_extra_information_file(item, data)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="")
+                         in_signature="s", out_signature="")
     def accomplish(self, accomID):
         """
         This function will accomplish the specified accomplishment.
@@ -241,12 +241,12 @@ class AccomplishmentsDBusService(service.DBusExportService):
         trophy = self.api.accomplish(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="b")
+                         in_signature="s", out_signature="b")
     def register_trophy_dir(self, trophydir):
         return self.api.asyncapi.register_trophy_dir(trophydir)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="vv", out_signature="v")
+                         in_signature="vv", out_signature="v")
     def get_config_value(self, section, item):
         """
         Returns the required value from the configuration file. For a list of available values
@@ -267,29 +267,29 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_config_value(section, item)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="")
+                         in_signature="s", out_signature="")
     def invalidate_extra_information(self, extrainfo):
         """DOCS NEEDED"""
 
         return self.api.invalidate_extra_information(extrainfo)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="vvv", out_signature="")
+                         in_signature="vvv", out_signature="")
     def write_config_file_item(self, section, item, value):
         return self.api.write_config_file_item(section, item, value)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="b")
+                         in_signature="", out_signature="b")
     def verify_ubuntu_one_account(self):
         return self.api.verify_ubuntu_one_account()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="")
+                         in_signature="", out_signature="")
     def reload_accom_database(self):
         return self.api.reload_accom_database()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="a{sv}")
+                         in_signature="s", out_signature="a{sv}")
     def get_accom_data(self, accomID):
         """
         Returns a database of accomplishment information on the system.
@@ -313,7 +313,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_accom_data(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="b")
+                         in_signature="s", out_signature="b")
     def get_accom_exists(self, accomID):
         """
         Returns whether the specified accomplishment is recognized on the system.
@@ -335,7 +335,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_accom_exists(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="s")
+                         in_signature="s", out_signature="s")
     def get_accom_title(self, accomID):
         """
         Returns the title name of the specified accomplishment.
@@ -357,12 +357,12 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_accom_title(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="s")
+                         in_signature="s", out_signature="s")
     def get_accom_description(self, accomID):
         return self.api.get_accom_description(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="s")
+                         in_signature="s", out_signature="s")
     def get_accom_collection(self, accomID):
         """
         Returns the collection that a given accomplishment is part of.
@@ -386,7 +386,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_accom_collection(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="as")
+                         in_signature="s", out_signature="as")
     def get_accom_categories(self, accomID):
         """
         Returns a list of categories that the specified accomplishment is part of.
@@ -410,7 +410,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_accom_categories(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="b")
+                         in_signature="s", out_signature="b")
     def get_accom_needs_signing(self, accomID):
         """
         Returns whether the specified accomplishment needs to be signed (verified) or not.
@@ -438,7 +438,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_accom_needs_signing(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="as")
+                         in_signature="s", out_signature="as")
     def get_accom_depends(self, accomID):
         """
         Returns a list of accomplishments that the accomplishment you pass depends on.
@@ -467,7 +467,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_accom_depends(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="b")
+                         in_signature="s", out_signature="b")
     def get_accom_is_unlocked(self, accomID):
         """
         Returns whether the specified accomplishment is unlocked or not (whether it's dependencies have been satisfied or not).
@@ -493,12 +493,12 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_accom_is_unlocked(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="s")
+                         in_signature="s", out_signature="s")
     def get_trophy_path(self, accomID):
         return self.api.get_trophy_path(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="b")
+                         in_signature="s", out_signature="b")
     def get_accom_is_completed(self, accomID):
         """
         Returns whether the specified accomplishment is accomplished or not.
@@ -520,7 +520,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_accom_is_completed(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="b")
+                         in_signature="", out_signature="b")
     def get_published_status(self):
         """
         Returns whether the user has opted to publish their accomplishments online.
@@ -537,7 +537,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_published_status()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="s")
+                         in_signature="s", out_signature="s")
     def get_accom_script_path(self, accomID):
         """
         Returns the corrosponsing script for the accomplishment.
@@ -562,7 +562,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_accom_script_path(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="s")
+                         in_signature="s", out_signature="s")
     def get_accom_icon(self, accomID):
         """
         Returns the icon name for the specified accomplishment.
@@ -586,7 +586,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_accom_icon(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="s")
+                         in_signature="s", out_signature="s")
     def get_accom_icon_path(self, accomID):
         """
         Returns the icon name for the specified accomplishment.
@@ -609,18 +609,18 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_accom_icon_path(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="v")
+                         in_signature="s", out_signature="v")
     def get_accom_needs_info(self, accomID):
         """DOCS NEEDED"""
         return self.api.get_accom_needs_info(self, accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="a{sv}")
+                         in_signature="s", out_signature="a{sv}")
     def get_trophy_data(self, accomID):
         return self.api.get_trophy_data(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="s")
+                         in_signature="s", out_signature="s")
     def get_collection_name(self, collection):
         """
         Returns the name of the current collection.
@@ -641,7 +641,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_collection_name(collection)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="b")
+                         in_signature="s", out_signature="b")
     def get_collection_exists(self, collection):
         """
         Returns whether the collection exists or not on the disk.
@@ -664,7 +664,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_collection_exists(collection)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="as")
+                         in_signature="s", out_signature="as")
     def get_collection_authors(self, collection):
         """
         Returns a list of authors for a given collection.
@@ -689,7 +689,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_collection_authors(collection)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="a{sas}")
+                         in_signature="s", out_signature="a{sas}")
     def get_collection_categories(self, collection):
         """
         Returns a list of categories for a given collection.
@@ -711,14 +711,14 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_collection_categories(collection)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="v")
+                         in_signature="s", out_signature="v")
     def get_collection_data(self, collection):
         """DOCS NEEDED"""
 
         return self.api.get_collection_data(collection)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="as")
+                         in_signature="", out_signature="as")
     def list_accoms(self):
         """
         Returns a list of accomplishment IDs for the all available accomplishments. This includes all accomplishment IDs
@@ -736,7 +736,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.list_accoms()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="as")
+                         in_signature="", out_signature="as")
     def list_trophies(self):
         """
         Returns a list of trophies for the all available accomplishments in accomplishment ID format.
@@ -753,7 +753,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.list_trophies()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="as")
+                         in_signature="", out_signature="as")
     def list_opportunities(self):
         """
         Returns a list of accomplishment IDs for the all available opportunities. This includes all accomplishment IDs
@@ -771,14 +771,14 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.list_opportunities()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="as")
+                         in_signature="s", out_signature="as")
     def list_depending_on(self, accomID):
         """DOCS NEEDED"""
 
         return self.api.list_depending_on(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="as")
+                         in_signature="", out_signature="as")
     def list_unlocked(self):
         """
         Returns a list of accomplishment IDs for the all unlocked opportunities. This includes all accomplishment IDs
@@ -796,7 +796,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.list_unlocked()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="as")
+                         in_signature="", out_signature="as")
     def list_unlocked_not_completed(self):
         """
         Returns a list of accomplishment IDs for the all unlocked opportunities that are not completed. This includes all accomplishment IDs
@@ -814,7 +814,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.list_unlocked_not_completed()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="as")
+                         in_signature="", out_signature="as")
     def list_collections(self):
         """
         Returns a list of collections available. Collections are listed in their
@@ -832,7 +832,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.list_collections()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="aa{sv}")
+                         in_signature="", out_signature="aa{sv}")
     def build_viewer_database(self):
         """
         Returns a database of accomplishment information on the system.
@@ -854,7 +854,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.build_viewer_database()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="s")
+                         in_signature="", out_signature="s")
     def get_API_version(self):
         """
         Returns the accomplishments API version for the installed daemon.
@@ -877,27 +877,27 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_API_version()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="")
+                         in_signature="", out_signature="")
     def stop_daemon(self):
         return self.api.stop_daemon()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="")
+                         in_signature="", out_signature="")
     def publish_trophies_online(self):
         return self.api.publish_trophies_online()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="")
+                         in_signature="", out_signature="")
     def unpublish_trophies_online(self):
         return self.api.unpublish_trophies_online()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="s")
+                         in_signature="", out_signature="s")
     def get_share_id(self):
         return self.api.get_share_id()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="", out_signature="s")
+                         in_signature="", out_signature="s")
     def get_share_name(self):
         return self.api.get_share_name()
 

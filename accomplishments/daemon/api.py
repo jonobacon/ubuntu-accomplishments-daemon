@@ -78,6 +78,8 @@ RUNNING = 1
 # XXX the source code needs to be updated to use Twisted async calls better:
 # grep the source code for any *.asyncapi.* references, and if they return
 # deferreds, adjust them to use callbacks
+
+
 class AsyncAPI(object):
     """
     This class simply organizes all the Twisted calls into a single location
@@ -180,7 +182,7 @@ class AsyncAPI(object):
                 trophydir, self.parent.matrix_username, LOCAL_USERNAME + " Trophies Folder"
                 + " (" + timeid + ")", "Modify")
             log.msg("...share has been offered (" + trophydir + "" + ", "
-                + self.parent.matrix_username + ", " + LOCAL_USERNAME + ")")
+                    + self.parent.matrix_username + ", " + LOCAL_USERNAME + ")")
             log.msg("...offered the share.")
             return
         else:
@@ -223,7 +225,7 @@ class AsyncAPI(object):
         try:
             envars = dict(
                 [line.split("=", 1) for line in fp.read().split("\0")
-                if line.strip()])
+                 if line.strip()])
         except IOError:
             # user does not have gnome-session running or isn't logged in at
             # all
@@ -267,7 +269,7 @@ class AsyncAPI(object):
 
         while queuesize > 0:
             accomID = self.parent.scripts_queue.popleft()
-            log.msg("Running %s, left on queue: %d" % (accomID, queuesize-1))
+            log.msg("Running %s, left on queue: %d" % (accomID, queuesize - 1))
 
             # First ensure that the acccomplishemt has not yet completed.
             # It happens that the .asc file is present, but we miss the
@@ -302,7 +304,6 @@ class AsyncAPI(object):
             # might have added something new to the queue.
             queuesize = len(self.parent.scripts_queue)
 
-
         log.msg("The queue is now empty - stopping the scriptrunner.")
 
         os.environ = oldenviron
@@ -319,6 +320,7 @@ class AsyncAPI(object):
             self.parent.service.scriptrunner_finish()
 
         self.scripts_state = NOT_RUNNING
+
 
 class Accomplishments(object):
     """The main accomplishments daemon.
@@ -376,7 +378,7 @@ class Accomplishments(object):
             xdg.BaseDirectory.xdg_config_home, "autostart")
 
         print str("------------------- Ubuntu Accomplishments Daemon "
-            "- "+ str(datetime.datetime.now()) +" -------------------")
+                  "- " + str(datetime.datetime.now()) + " -------------------")
 
         self._load_config_file()
 
@@ -418,7 +420,7 @@ class Accomplishments(object):
 
         for col in cols:
             col_imagespath = os.path.join(self.accomDB[col]['base-path'],
-                "trophyimages")
+                                          "trophyimages")
             cache_trophyimagespath = os.path.join(
                 self.dir_cache, "trophyimages", col)
             lock_image_path = os.path.join(media_dir, "lock.png")
@@ -426,7 +428,7 @@ class Accomplishments(object):
                 os.makedirs(cache_trophyimagespath)
 
             # First, delete all cached images:
-            cachedlist=glob.glob(cache_trophyimagespath + "/*")
+            cachedlist = glob.glob(cache_trophyimagespath + "/*")
             for c in cachedlist:
                 os.remove(c)
 
@@ -444,7 +446,7 @@ class Accomplishments(object):
                         # Opacity set to 1.0 until we figure out a better way of
                         # showing opportunities
                         reduced = self._create_reduced_opacity_trophy_icon(im,
-                            1.0)
+                                                                           1.0)
                         reduced.save(filecore + "-opportunity" + filetype)
 
                         if im.mode != 'RGBA':
@@ -458,7 +460,6 @@ class Accomplishments(object):
 
                     except Exception, (msg):
                         log.msg(msg)
-
 
     # XXX - NEEDS UNIT TEST
     def _create_reduced_opacity_trophy_icon(self, im, opacity):
@@ -547,7 +548,6 @@ class Accomplishments(object):
             config.write(configfile)
 
         log.msg("...done.")
-
 
     def _load_config_file(self):
         """Load the main configuration file for the daemon. This should be
@@ -812,7 +812,7 @@ class Accomplishments(object):
                 log.msg("WARNING: invalid .asc signature recieved from the server!")
 
             if valid == True:
-                accomID = path[len(self.trophies_path)+1:-11]
+                accomID = path[len(self.trophies_path) + 1:-11]
                 self.service.trophy_received(accomID)
                 self._display_accomplished_bubble(accomID)
                 self._display_unlocked_bubble(accomID)
@@ -997,7 +997,7 @@ class Accomplishments(object):
                             accomcfg.read(readpath)
                         except ConfigParser.ParsingError, e:
                             log.msg("Parse error for %s.  Skipping."\
-                                "Parse error is: %s" % (readpath, e.message))
+                                    "Parse error is: %s" % (readpath, e.message))
                             continue
 
                         accomdata = dict(accomcfg._sections["accomplishment"])
@@ -1064,7 +1064,7 @@ class Accomplishments(object):
                                 accomcfg.read(readpath)
                             except ConfigParser.ParsingError, e:
                                 log.msg("Parse error for %s.  Skipping."\
-                                    "Parse error is: %s" % (readpath, e.message))
+                                        "Parse error is: %s" % (readpath, e.message))
                                 continue
 
                             accomdata = dict(accomcfg._sections["accomplishment"])
@@ -1534,7 +1534,7 @@ class Accomplishments(object):
 
         if len(to_schedule) == 0:
             log.msg("No scripts to run, returning without starting "\
-                "scriptrunner")
+                    "scriptrunner")
             return
 
         log.msg("Adding to scripts queue: %s " % (str(to_schedule)))
@@ -1745,7 +1745,7 @@ NoDisplay=true"
             if (config.read(cfile)):
                 if config.has_section("notifications"):
                     val = config.getboolean('notifications',
-                            'show_all_notifications')
+                                            'show_all_notifications')
                     return not val
 
         return True

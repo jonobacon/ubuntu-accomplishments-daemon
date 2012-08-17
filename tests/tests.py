@@ -31,6 +31,7 @@ from accomplishments.daemon import app, api
 # 2) in setUp, set self.td to a known place, like /tmp/foo (you will need
 #    to create this directory as well)
 
+
 class TestDaemon(unittest.TestCase):
 
     ACCOM_SET = "testaccom"
@@ -45,7 +46,7 @@ class TestDaemon(unittest.TestCase):
     def util_copy_accom(self, accom_dir, accom_name):
         testdir = os.path.dirname(__file__)
         src = os.path.join(testdir, "accoms",
-            "%s.accomplishment" % accom_name)
+                           "%s.accomplishment" % accom_name)
         dest = os.path.join(accom_dir, "%s.accomplishment" % accom_name)
         shutil.copyfile(src, dest)
 
@@ -85,13 +86,13 @@ extrainfo_seen = 1""" % (self.td, self.td))
 
         # /tmp/foo/accomplishments
         self.accoms_root = os.path.join(self.td, "accomplishments",
-            "accomplishments")
+                                        "accomplishments")
         if not os.path.exists(self.accoms_root):
             os.makedirs(self.accoms_root)
 
         # /tmp/foo/accomplishments/accomplishments/.config
         self.config_dir = os.path.join(self.td, "accomplishments", ".config",
-            "accomplishments")
+                                       "accomplishments")
         if not os.path.exists(self.config_dir):
             os.makedirs(self.config_dir)
 
@@ -122,7 +123,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
 
         # /tmp/foo/accomplishments/.local/share/accomplishments/trophies
         self.trophy_dir = os.path.join(self.td, "accomplishments", ".local",
-            "share", "accomplishments", "trophies")
+                                       "share", "accomplishments", "trophies")
         if not os.path.exists(self.trophy_dir):
             os.makedirs(self.trophy_dir)
 
@@ -213,26 +214,26 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.assertEqual(len(opps), 3)
         for accom in opps:
             self.assertTrue(accom in ["%s/first" % self.ACCOM_SET,
-                "%s/second" % self.ACCOM_SET, "%s/third" % self.ACCOM_SET])
+                                      "%s/second" % self.ACCOM_SET, "%s/third" % self.ACCOM_SET])
 
         unlocked = a.list_unlocked()
         self.assertEqual(len(unlocked), 2)
         for accom in unlocked:
             self.assertTrue(accom in ["%s/first" % self.ACCOM_SET,
-                "%s/third" % self.ACCOM_SET])
+                                      "%s/third" % self.ACCOM_SET])
 
         unlocked_nc = a.list_unlocked_not_completed()
         self.assertEqual(len(unlocked_nc), 2)
         for accom in unlocked_nc:
             self.assertTrue(accom in ["%s/first" % self.ACCOM_SET,
-                "%s/third" % self.ACCOM_SET])
+                                      "%s/third" % self.ACCOM_SET])
 
         trophies = a.list_trophies()
         self.assertEqual(len(trophies), 0)
 
         self.assertTrue(a.get_trophy_data("%s/first" % self.ACCOM_SET) is None)
         self.assertTrue(a.get_trophy_data("%s/second" % self.ACCOM_SET)
-            is None)
+                        is None)
         self.assertTrue(a.get_trophy_data("%s/third" % self.ACCOM_SET) is None)
 
         # now let's accomplish something, it should fail without extra info
@@ -248,20 +249,20 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.assertEqual(len(opps), 2)
         for accom in opps:
             self.assertTrue(accom in ["%s/second" % self.ACCOM_SET,
-                "%s/third" % self.ACCOM_SET])
+                                      "%s/third" % self.ACCOM_SET])
 
         unlocked = a.list_unlocked()
         self.assertEqual(len(unlocked), 3)
         for accom in unlocked:
             self.assertTrue(accom in ["%s/first" % self.ACCOM_SET,
-                "%s/second" % self.ACCOM_SET,
-                "%s/third" % self.ACCOM_SET])
+                                      "%s/second" % self.ACCOM_SET,
+                                      "%s/third" % self.ACCOM_SET])
 
         unlocked_nc = a.list_unlocked_not_completed()
         self.assertEqual(len(unlocked_nc), 2)
         for accom in unlocked_nc:
             self.assertTrue(accom in ["%s/second" % self.ACCOM_SET,
-                "%s/third" % self.ACCOM_SET])
+                                      "%s/third" % self.ACCOM_SET])
 
         trophies = a.list_trophies()
         self.assertEqual(len(trophies), 1)
@@ -285,11 +286,11 @@ extrainfo_seen = 1""" % (self.td, self.td))
         a = api.Accomplishments(None, None, True)
 
         self.assertEquals(len(a.list_depending_on("%s/first" %
-            self.ACCOM_SET)), 1)
+                                                  self.ACCOM_SET)), 1)
         self.assertEquals(len(a.list_depending_on("%s/second" %
-            self.ACCOM_SET)), 0)
+                                                  self.ACCOM_SET)), 0)
         self.assertEquals(len(a.list_depending_on("%s/third" %
-            self.ACCOM_SET)), 0)
+                                                  self.ACCOM_SET)), 0)
 
     # tests all the get_accom_* functions, except for:
     # get_accom_icon
@@ -319,20 +320,20 @@ extrainfo_seen = 1""" % (self.td, self.td))
 
         # get_accom_title
         self.assertEquals(a.get_accom_title("%s/first" % self.ACCOM_SET),
-            "My First Accomplishment")
+                          "My First Accomplishment")
         self.assertEquals(a.get_accom_title("%s/second" % self.ACCOM_SET),
-            "My Second Accomplishment")
+                          "My Second Accomplishment")
         self.assertEquals(a.get_accom_title("%s/third" % self.ACCOM_SET),
-            "My Third Accomplishment")
+                          "My Third Accomplishment")
         self.assertRaises(KeyError, a.get_accom_title, "wrong")
 
         # get_accom_description
         self.assertTrue("example" in a.get_accom_description("%s/first" %
-            self.ACCOM_SET))
+                                                             self.ACCOM_SET))
         self.assertTrue("example" in a.get_accom_description("%s/second" %
-            self.ACCOM_SET))
+                                                             self.ACCOM_SET))
         self.assertTrue("example" in a.get_accom_description("%s/third" %
-            self.ACCOM_SET))
+                                                             self.ACCOM_SET))
         self.assertRaises(KeyError, a.get_accom_description, "wrong")
 
         # get_accom_needs_signing
@@ -365,9 +366,9 @@ extrainfo_seen = 1""" % (self.td, self.td))
 
         # get_accom_script_path
         self.assertEqual(a.get_accom_script_path("%s/first" % self.ACCOM_SET),
-            None)
+                         None)
         self.assertEqual(a.get_accom_script_path("%s/second" % self.ACCOM_SET),
-            None)
+                         None)
         self.util_write_file(self.script_root, "third.py", "print 'hello'")
         sp = a.get_accom_script_path("%s/third" % self.ACCOM_SET)
         self.assertTrue(sp.endswith("third.py"))
@@ -379,24 +380,24 @@ extrainfo_seen = 1""" % (self.td, self.td))
         for i in info:
            self.assertTrue(i in ["info", "info2"])
         self.assertEqual(a.get_accom_needs_info("%s/second" % self.ACCOM_SET),
-            [])
+                         [])
         self.assertEqual(a.get_accom_needs_info("%s/third" % self.ACCOM_SET),
-            [])
+                         [])
         self.assertRaises(KeyError, a.get_accom_needs_info, "wrong")
 
         # get_accom_collection
         self.assertEqual(a.get_accom_collection("%s/first" % self.ACCOM_SET),
-            self.ACCOM_SET)
+                         self.ACCOM_SET)
         self.assertEqual(a.get_accom_collection("%s/second" % self.ACCOM_SET),
-            self.ACCOM_SET)
+                         self.ACCOM_SET)
         self.assertEqual(a.get_accom_collection("%s/third" % self.ACCOM_SET),
-            self.ACCOM_SET)
+                         self.ACCOM_SET)
         self.assertRaises(KeyError, a.get_accom_collection, "wrong")
 
         # get_accom_categories
         self.assertEqual(a.get_accom_categories("%s/first" % self.ACCOM_SET), [])
         self.assertEqual(a.get_accom_categories("%s/second" % self.ACCOM_SET),
-            [])
+                         [])
         categories = a.get_accom_categories("%s/third" % self.ACCOM_SET)
         self.assertEqual(len(info), 2)
         for category in categories:
@@ -448,13 +449,13 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.util_copy_accom(self.accom_dir, "second")
         a = api.Accomplishments(None, None, True)
         self.assertEquals(a.get_accom_icon('%s/first' % self.ACCOM_SET),
-           'first.jpg')
+                          'first.jpg')
         icon_path = a.get_accom_icon_path('%s/first' % self.ACCOM_SET)
         self.assertTrue(icon_path.endswith("first-opportunity.jpg"))
 
         # LP 1024052 - make sure this works without a . in the filename
         self.assertEquals(a.get_accom_icon('%s/second' % self.ACCOM_SET),
-           'second')
+                          'second')
         icon_path = a.get_accom_icon_path('%s/second' % self.ACCOM_SET)
         self.assertTrue(icon_path.endswith("second-locked"))
 
@@ -468,9 +469,9 @@ extrainfo_seen = 1""" % (self.td, self.td))
 
         # these match what is in the ABOUT file
         self.assertEquals(viewer_db[0]['collection-human'],
-            "Test Collection")
+                          "Test Collection")
         self.assertEquals(viewer_db[1]['collection-human'],
-            "Test Collection")
+                          "Test Collection")
 
         self.assertEquals(viewer_db[0]['collection'], "testaccom")
         self.assertEquals(viewer_db[1]['collection'], "testaccom")
@@ -499,9 +500,9 @@ extrainfo_seen = 1""" % (self.td, self.td))
 
         # add a new accomp
         self.util_write_file(self.accom_dir, "fourth.accomplishment",
-            "[accomplishment]\n"\
-            "title=My Fourth Accomplishment\n"\
-            "description=An example accomplishment for the test suite\n")
+                             "[accomplishment]\n"\
+                             "title=My Fourth Accomplishment\n"\
+                             "description=An example accomplishment for the test suite\n")
         self.assertEqual(len(a.list_accoms()), 3)
         a.reload_accom_database()
         self.assertEqual(len(a.list_accoms()), 4)
@@ -530,13 +531,13 @@ extrainfo_seen = 1""" % (self.td, self.td))
         a = api.Accomplishments(None, None, True)
         self.assertEqual(len(a.list_accoms()), 1)
         self.util_write_file(self.accom_dir, "bad.accomplishment",
-            "[accomplishment]\n"\
-            "descriptionbad desc\n")
+                             "[accomplishment]\n"\
+                             "descriptionbad desc\n")
         a.reload_accom_database()
         self.assertEqual(len(a.list_accoms()), 1)
 
         self.util_write_file(self.accom_dir, "bad.accomplishment",
-            "descriptionbad desc\n")
+                             "descriptionbad desc\n")
         a.reload_accom_database()
         self.assertEqual(len(a.list_accoms()), 1)
 
@@ -576,7 +577,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
 
         # get_collection_name
         self.assertEqual(a.get_collection_name(collections[0]),
-            "Test Collection")
+                         "Test Collection")
         self.assertRaises(KeyError, a.get_collection_name, "wrong")
 
         # get_collection_exists
@@ -617,11 +618,11 @@ extrainfo_seen = 1""" % (self.td, self.td))
         a = api.Accomplishments(None, None, True)
 
         self.assertTrue(a.get_trophy_path("%s/first" %
-            self.ACCOM_SET).endswith("first.trophy"))
+                                          self.ACCOM_SET).endswith("first.trophy"))
         self.assertTrue(a.get_trophy_path("%s/second" %
-            self.ACCOM_SET).endswith("second.trophy"))
+                                          self.ACCOM_SET).endswith("second.trophy"))
         self.assertTrue(a.get_trophy_path("%s/third" %
-            self.ACCOM_SET).endswith("third.trophy"))
+                                          self.ACCOM_SET).endswith("third.trophy"))
 
     def test_write_extra_information_file(self):
         a = api.Accomplishments(None, None, True)
@@ -653,7 +654,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         # get extra information
         # these won't show up until we reload
         self.assertRaises(KeyError, a.get_extra_information, self.ACCOM_SET,
-            "info")
+                          "info")
 
         # should return None when the collection doesn't exist
         self.assertEqual(a.get_extra_information("wrong", "info"), None)
@@ -664,7 +665,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         # will throw a KeyError if collection is right, but extrainfo is
         # wrong
         self.assertRaises(KeyError, a.get_extra_information, self.ACCOM_SET,
-            "wrong")
+                          "wrong")
 
         ei = a.get_extra_information(self.ACCOM_SET, "info")
         self.assertTrue(isinstance(ei, list))
