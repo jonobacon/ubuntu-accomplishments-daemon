@@ -14,7 +14,8 @@ import gettext
 from gettext import gettext as _
 from gettext import ngettext as N_
 import ConfigParser
-import Image, ImageEnhance
+import Image
+import ImageEnhance
 from StringIO import StringIO
 import datetime
 import getpass
@@ -68,8 +69,8 @@ if installed:
 LOCAL_USERNAME = getpass.getuser()
 SCRIPT_DELAY = 900
 ONLINETROPHIESHOST = "213.138.100.229:8000"
-STAGING_ID = "openiduser204307" # staging ID
-PRODUCTION_ID = "openiduser155707" # production ID
+STAGING_ID = "openiduser204307"  # staging ID
+PRODUCTION_ID = "openiduser155707"  # production ID
 
 #flags used for scripts_state
 NOT_RUNNING = 0
@@ -724,7 +725,7 @@ class Accomplishments(object):
                         # if we got here without an exception, it means that the file exists
                         # so, we can read it's value
                         value = valuefile.readline()
-                        value = value.rstrip() # get rid of the tailing newline
+                        value = value.rstrip()  # get rid of the tailing newline
                         # and build up the dictionary of all data for a single ExtraInformation field
                         d = {
                             "collection": collection,
@@ -996,7 +997,7 @@ class Accomplishments(object):
                         try:
                             accomcfg.read(readpath)
                         except ConfigParser.ParsingError, e:
-                            log.msg("Parse error for %s.  Skipping."\
+                            log.msg("Parse error for %s.  Skipping."
                                     "Parse error is: %s" % (readpath, e.message))
                             continue
 
@@ -1063,7 +1064,7 @@ class Accomplishments(object):
                             try:
                                 accomcfg.read(readpath)
                             except ConfigParser.ParsingError, e:
-                                log.msg("Parse error for %s.  Skipping."\
+                                log.msg("Parse error for %s.  Skipping."
                                         "Parse error is: %s" % (readpath, e.message))
                                 continue
 
@@ -1137,11 +1138,11 @@ class Accomplishments(object):
                         regex = None
 
                     extrainfo[extrainfofile] = {
-                            'label': label,
-                            'description': description,
-                            'example': example,
-                            'regex': regex,
-                            }
+                        'label': label,
+                        'description': description,
+                        'example': example,
+                        'regex': regex,
+                    }
 
                 # Store data about this colection
                 collectiondata = {'langdefault': langdefault, 'name': collectionname, 'acc_num': accno, 'type': "collection", 'base-path': collpath, 'categories': collcategories, 'extra-information': extrainfo, 'authors': collauthors}
@@ -1526,14 +1527,14 @@ class Accomplishments(object):
     def run_scripts(self, which=None):
         if isinstance(which, list):
             to_schedule = which
-        elif which == None:
+        elif which is None:
             to_schedule = self.list_unlocked_not_completed()
         else:
             log.msg("Note: This call to run_scripts is incorrect, run_scripts takes (optionally) a list of accomID to run their scripts")
             to_schedule = self.list_unlocked_not_completed()
 
         if len(to_schedule) == 0:
-            log.msg("No scripts to run, returning without starting "\
+            log.msg("No scripts to run, returning without starting "
                     "scriptrunner")
             return
 
@@ -1550,17 +1551,17 @@ class Accomplishments(object):
         db = []
         for accom in accoms:
             db.append({
-                'title':           self.get_accom_title(accom),
-                'accomplished':    self.get_accom_is_completed(accom),
+                'title': self.get_accom_title(accom),
+                'accomplished': self.get_accom_is_completed(accom),
                 'locked': not self.get_accom_is_unlocked(accom),
-                'date-completed':      self.get_accom_date_completed(accom),
-                'iconpath':        self.get_accom_icon_path(accom),
-                'collection':      self.get_accom_collection(accom),
+                'date-completed': self.get_accom_date_completed(accom),
+                'iconpath': self.get_accom_icon_path(accom),
+                'collection': self.get_accom_collection(accom),
                 'collection-human': self.get_collection_name(
-                                        self.get_accom_collection(accom)),
-                'categories':      self.get_accom_categories(accom),
-                'id':              accom
-                })
+                self.get_accom_collection(accom)),
+                'categories': self.get_accom_categories(accom),
+                'id': accom
+            })
         return db
 
     # ========= Misc functions ===========

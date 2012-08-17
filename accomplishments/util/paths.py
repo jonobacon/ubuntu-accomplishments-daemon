@@ -46,8 +46,8 @@ else:
     # finally, setting these significant data directories...
     systemdata_dir = os.path.join(basepath, 'data/daemon')
     media_dir = os.path.join(basepath, 'data/media')
-    module_dir1 = None # always using default
-    module_dir2 = None # always using default
+    module_dir1 = None  # always using default
+    module_dir2 = None  # always using default
 
     # that's where the daemon launcher is present
     daemon_exec_dir = os.path.join(basepath, 'bin')

@@ -2,7 +2,8 @@
 Tests for accomplishments daemon.
 """
 import unittest
-import sys, os
+import sys
+import os
 import tempfile
 import shutil
 import subprocess
@@ -378,7 +379,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         info = a.get_accom_needs_info("%s/first" % self.ACCOM_SET)
         self.assertEqual(len(info), 2)
         for i in info:
-           self.assertTrue(i in ["info", "info2"])
+            self.assertTrue(i in ["info", "info2"])
         self.assertEqual(a.get_accom_needs_info("%s/second" % self.ACCOM_SET),
                          [])
         self.assertEqual(a.get_accom_needs_info("%s/third" % self.ACCOM_SET),
@@ -401,7 +402,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         categories = a.get_accom_categories("%s/third" % self.ACCOM_SET)
         self.assertEqual(len(info), 2)
         for category in categories:
-           self.assertTrue(category in ["testing", "unit test"])
+            self.assertTrue(category in ["testing", "unit test"])
         self.assertRaises(KeyError, a.get_accom_categories, "wrong")
 
     def test_get_block_ubuntuone_notification_bubbles(self):
@@ -433,7 +434,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
     def test_get_media_file(self):
         a = api.Accomplishments(None, None, True)
         mf = a.get_media_file("non-existant.jpg")
-        self.assertTrue(mf == None)
+        self.assertTrue(mf is None)
 
         mf = a.get_media_file("lock.png")
         self.assertTrue(mf.endswith("lock.png"))
@@ -500,8 +501,8 @@ extrainfo_seen = 1""" % (self.td, self.td))
 
         # add a new accomp
         self.util_write_file(self.accom_dir, "fourth.accomplishment",
-                             "[accomplishment]\n"\
-                             "title=My Fourth Accomplishment\n"\
+                             "[accomplishment]\n"
+                             "title=My Fourth Accomplishment\n"
                              "description=An example accomplishment for the test suite\n")
         self.assertEqual(len(a.list_accoms()), 3)
         a.reload_accom_database()
@@ -531,7 +532,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         a = api.Accomplishments(None, None, True)
         self.assertEqual(len(a.list_accoms()), 1)
         self.util_write_file(self.accom_dir, "bad.accomplishment",
-                             "[accomplishment]\n"\
+                             "[accomplishment]\n"
                              "descriptionbad desc\n")
         a.reload_accom_database()
         self.assertEqual(len(a.list_accoms()), 1)
@@ -591,14 +592,14 @@ extrainfo_seen = 1""" % (self.td, self.td))
         # we have only 2 authors because dupes are removed
         self.assertEqual(len(authors), 2)
         for author in authors:
-           self.assertTrue(author in ["Someone", "Tester <tester@tester>"])
+            self.assertTrue(author in ["Someone", "Tester <tester@tester>"])
         self.assertRaises(KeyError, a.get_collection_authors, "wrong")
 
         # get_collection_categories
         categories = a.get_collection_categories(collections[0])
         self.assertEqual(len(categories), 2)
         for category in categories:
-           self.assertTrue(category in ["testing", "unit test"])
+            self.assertTrue(category in ["testing", "unit test"])
         self.assertRaises(KeyError, a.get_collection_categories, "wrong")
 
         # get_collection_data
@@ -631,7 +632,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         # so lets remove it (if present and force it to)
         extrainfo_path = os.path.join(a.trophies_path, ".extrainformation")
         if os.path.exists(extrainfo_path):
-           shutil.rmtree(extrainfo_path)
+            shutil.rmtree(extrainfo_path)
 
         a.write_extra_information_file("whatever", "abcdefg")
         path = os.path.join(extrainfo_path, "whatever")

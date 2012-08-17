@@ -930,4 +930,3 @@ class AccomplishmentsDBusService(service.DBusExportService):
     @dbus.service.signal(dbus_interface='org.ubuntu.accomplishments')
     def accoms_collections_reloaded(self):
         pass
-
