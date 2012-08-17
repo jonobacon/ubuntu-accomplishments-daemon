@@ -610,7 +610,7 @@ class Accomplishments(object):
         for s in shares:
             if s["other_username"] == self.matrix_username:
                 if s["subscribed"] == "True":
-                    matchingshares.append( { "name" : s["name"], "share_id" : s["volume_id"] } )
+                    matchingshares.append({"name": s["name"], "share_id": s["volume_id"]})
 
         if len(matchingshares) > 1:
             log.msg("Could not find unique active share.")
@@ -696,8 +696,7 @@ class Accomplishments(object):
             # get the path to the directory of accomplishments set's
             # "extrainformation" dir - it is useful, because it contains
             # translated labels and descriptions
-            accomextrainfo = os.path.join(self.accomDB[accom]['base-path']
-                , "extrainformation")
+            accomextrainfo = os.path.join(self.accomDB[accom]['base-path'], "extrainformation")
 
             # a temporary variable, representing a single entry of the list this function returns
             d = {}
@@ -728,23 +727,23 @@ class Accomplishments(object):
                         value = value.rstrip() # get rid of the tailing newline
                         # and build up the dictionary of all data for a single ExtraInformation field
                         d = {
-                            "collection" : collection,
-                            "needs-information" : i,
-                            "label" : label,
-                            "description" : desc,
-                            "example" : example,
-                            "regex" : regex,
-                            "value" : value}
+                            "collection": collection,
+                            "needs-information": i,
+                            "label": label,
+                            "description": desc,
+                            "example": example,
+                            "regex": regex,
+                            "value": value}
                     except IOError as e:
                         # we got an exception, so it seems that the file is not present - we'll use "" as the value, to indicate that it's empty
                         d = {
-                            "collection" : collection,
-                            "needs-information" : i,
-                            "label" : label,
-                            "description" : desc,
-                            "example" : example,
-                            "regex" : regex,
-                            "value" : ""}
+                            "collection": collection,
+                            "needs-information": i,
+                            "label": label,
+                            "description": desc,
+                            "example": example,
+                            "regex": regex,
+                            "value": ""}
 
                     # since the collected all data related to this particular ExtraInformation field, append it to the list
                     infoneeded.append(d)
@@ -905,10 +904,10 @@ class Accomplishments(object):
         try:
             f = open(authfile, "r")
             data = f.read()
-            final = [{item : data, "label" : label}]
+            final = [{item: data, "label": label}]
         except IOError as e:
             #print "No data."
-            final = [{item : "", "label" : label}]
+            final = [{item: "", "label": label}]
         return final
 
     # =================================================================
@@ -1145,7 +1144,7 @@ class Accomplishments(object):
                             }
 
                 # Store data about this colection
-                collectiondata = {'langdefault': langdefault, 'name': collectionname, 'acc_num': accno, 'type': "collection", 'base-path': collpath, 'categories' : collcategories, 'extra-information': extrainfo, 'authors': collauthors}
+                collectiondata = {'langdefault': langdefault, 'name': collectionname, 'acc_num': accno, 'type': "collection", 'base-path': collpath, 'categories': collcategories, 'extra-information': extrainfo, 'authors': collauthors}
                 self.accomDB[collection] = collectiondata
 
         self._update_all_locked_and_completed_statuses()
@@ -1551,16 +1550,16 @@ class Accomplishments(object):
         db = []
         for accom in accoms:
             db.append({ 
-                'title' :           self.get_accom_title(accom),
-                'accomplished' :    self.get_accom_is_completed(accom),
-                'locked' :      not self.get_accom_is_unlocked(accom),
-                'date-completed' :      self.get_accom_date_completed(accom),
-                'iconpath' :        self.get_accom_icon_path(accom),
-                'collection' :      self.get_accom_collection(accom),
-                'collection-human' : self.get_collection_name(
-                                        self.get_accom_collection(accom) ),
-                'categories' :      self.get_accom_categories(accom),
-                'id' :              accom
+                'title':           self.get_accom_title(accom),
+                'accomplished':    self.get_accom_is_completed(accom),
+                'locked':      not self.get_accom_is_unlocked(accom),
+                'date-completed':      self.get_accom_date_completed(accom),
+                'iconpath':        self.get_accom_icon_path(accom),
+                'collection':      self.get_accom_collection(accom),
+                'collection-human': self.get_collection_name(
+                                        self.get_accom_collection(accom)),
+                'categories':      self.get_accom_categories(accom),
+                'id':              accom
                 })
         return db
 
@@ -1760,7 +1759,7 @@ NoDisplay=true"
             n = Notify.Notification.new(
                 _("You have accomplished something!"),
                 self.get_accom_title(accomID),
-                self.get_accom_icon_path(accomID) )
+                self.get_accom_icon_path(accomID))
             n.set_hint_string('append', 'allowed')
             n.show()
 
