@@ -1,7 +1,7 @@
 import os
 
 scriptpath = os.path.abspath(__file__)
-# okay, so as we have the full path, we're ready to analise it...    
+# okay, so as we have the full path, we're ready to analise it...
 
 # start by looking 2 levels higher. This is either the branch directory,
 # or the python2.7/...-packages directory, if the application is run installed.
@@ -28,7 +28,7 @@ if installed:
 
     # these two may need to be set for the accomplismhents scripts, so that they
     # can use OUR accomplishments module, using this installation.
-    module_dir1    = os.path.join(basepath, 'lib/python2.7/site-packages') 
+    module_dir1    = os.path.join(basepath, 'lib/python2.7/site-packages')
     module_dir2    = os.path.join(basepath, 'lib/python2.7/dist-packages')
 
     # that's where the daemon launcher is present

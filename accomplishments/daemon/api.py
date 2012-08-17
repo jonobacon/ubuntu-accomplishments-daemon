@@ -87,9 +87,9 @@ class AsyncAPI(object):
 
         self.parent = parent
 
-        # The following variable represents state of scripts.Its state 
+        # The following variable represents state of scripts.Its state
         # can be either RUNNING or NOT_RUNNING.
-        # The use of this flag is to aviod running several instances of 
+        # The use of this flag is to aviod running several instances of
         # start_scriptrunner, which might result in undefined, troubleful
         # behavior. The flags are NOT_RUNNING by default, and are set to
         # RUNNING when the start_scriptrunner runs, and back to
@@ -214,7 +214,7 @@ class AsyncAPI(object):
             # user does not have gnome-session running or isn't logged in at
             # all
             log.msg("No gnome-session process for user %s" % username)
-            self.scripts_state = NOT_RUNNING #unmarking to avoid dead-lock
+            self.scripts_state = NOT_RUNNING  # unmarking to avoid dead-lock
             return
         # XXX this is a blocking call and can't be here if we want to take
         # advantage of deferreds; instead, rewrite this so that the blocking
@@ -228,7 +228,7 @@ class AsyncAPI(object):
             # user does not have gnome-session running or isn't logged in at
             # all
             log.msg("No gnome-session environment for user %s" % username)
-            self.scripts_state = NOT_RUNNING #unmarking to avoid dead-lock
+            self.scripts_state = NOT_RUNNING  # unmarking to avoid dead-lock
             return
         fp.close()
 
@@ -617,7 +617,7 @@ class Accomplishments(object):
             self.share_found = False
         elif len(matchingshares) == 0:
             log.msg("Could not find unique active share.")
-            self.share_found = False            
+            self.share_found = False
         else:
             self.share_name = matchingshares[0]["name"]
             self.share_id = matchingshares[0]["share_id"]
@@ -681,12 +681,12 @@ class Accomplishments(object):
         accoms = self.list_accoms()
 
         infoneeded = []
-        # and prepend the path to the directory, where all extra-information 
+        # and prepend the path to the directory, where all extra-information
         # is stored [like: ~/.local/share/accomplishments/trophies/.extrainformation/]
         trophyextrainfo = os.path.join(
             self.trophies_path, ".extrainformation/")
 
-        # in case this directory does not exist, create it 
+        # in case this directory does not exist, create it
         # this may happen if user hadn't yet set any ExtraInformation field
         if not os.path.isdir(trophyextrainfo):
             os.makedirs(trophyextrainfo)
@@ -751,8 +751,8 @@ class Accomplishments(object):
         # at this moment the infoneeded list will be ready, but full of duplicates,
         # for the items have been added multiple times, if they are mentioned in more then one .accomplishment file
         final = []
-        for x in infoneeded:   #for each item in the original list...
-            if x not in final: #...add it to the outputted list only if it hadn't been added yet.
+        for x in infoneeded:  # for each item in the original list...
+            if x not in final:  # ...add it to the outputted list only if it hadn't been added yet.
                 final.append(x)
 
         return final
@@ -774,10 +774,10 @@ class Accomplishments(object):
         #now we need to unsort the data just to output these entries, that have value == ""
         #this way we can return a list of ExtraInformation fields, that have not been write_config_file_item
         result = []
-        for i in data: #for each ExtraInformation in the full list
-            if not i['value']: #if the value string is empty, so this ExtraInformation field have not been yet set
-                i.pop('value') #remove the 'value' field (it's empty anyway)
-                result.append(i) #add this entry to the resulting list
+        for i in data:  # for each ExtraInformation in the full list
+            if not i['value']:  # if the value string is empty, so this ExtraInformation field have not been yet set
+                i.pop('value')  # remove the 'value' field (it's empty anyway)
+                result.append(i)  # add this entry to the resulting list
             #do not add these fields, that have some value
 
         return result
@@ -794,7 +794,7 @@ class Accomplishments(object):
         if not os.path.isdir(extrainfodir):
             os.makedirs(extrainfodir)
         try:
-            open(os.path.join(extrainfodir, item)) #if the file already exists, do not overwrite it
+            open(os.path.join(extrainfodir, item))  # if the file already exists, do not overwrite it
             pass
         except IOError as e:
             f = open(os.path.join(extrainfodir, item), 'w')
@@ -829,7 +829,7 @@ class Accomplishments(object):
             os.makedirs(extrainfodir)
 
         if data:
-            f = open(os.path.join(extrainfodir, item), 'w') #will trunkate the file, in case it exist
+            f = open(os.path.join(extrainfodir, item), 'w')  # will trunkate the file, in case it exist
             f.write(data)
             f.close()
         else:
@@ -1549,7 +1549,7 @@ class Accomplishments(object):
         accoms = self.list_accoms()
         db = []
         for accom in accoms:
-            db.append({ 
+            db.append({
                 'title':           self.get_accom_title(accom),
                 'accomplished':    self.get_accom_is_completed(accom),
                 'locked':      not self.get_accom_is_unlocked(accom),
@@ -1580,12 +1580,12 @@ class Accomplishments(object):
         log.msg("Accomplishing: %s" % accomID)
         if not self.get_accom_exists(accomID):
             log.msg("There is no such accomplishment.")
-            return False #failure
+            return False  # failure
 
         # Check if is hasn't been already completed
         if self.get_accom_is_completed(accomID):
             log.msg("Not accomplishing " + accomID + ", it has already been completed.")
-            return True #success
+            return True  # success
 
         # Check if this accomplishment is unlocked
         if not self.get_accom_is_unlocked(accomID):
@@ -1620,14 +1620,14 @@ class Accomplishments(object):
         # If it does, then we'll try to avoid overwriting it in case it
         # needs-signing - if we would, a U1 notification bubble would
         # appear everytime scripts are run for all accomplishments that
-        # the validation server refuses to sign - such notifications 
+        # the validation server refuses to sign - such notifications
         # are quite annoying.
         overwrite = True
         if needssigning and os.path.exists(trophypath):
             overwrite = False
             # Okay, there is a .trophy file already present. We will
             # overwrite it anyway if there was a change in extrainformation
-            # provided by the user. To recognise this situation, we'll 
+            # provided by the user. To recognise this situation, we'll
             # need to read this file.
             cfg = ConfigParser.RawConfigParser()
             cfg.read(trophypath)

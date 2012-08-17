@@ -28,7 +28,7 @@ def daemon_is_registered():
 
 # XXX as a function, this needs to be renamed to a lower-case function name and
 # not use the class naming convention of upper-case.
-# 
+#
 # Hrm, on second thought... this is:
 #  * a singleton object (SessionBus)
 #  * obtaining an object indicated by string constants
@@ -49,7 +49,7 @@ def Accomplishments():
 class AccomplishmentsDBusService(service.DBusExportService):
     """
     """
-    def __init__(self, bus_name, session_bus, object_path="/", 
+    def __init__(self, bus_name, session_bus, object_path="/",
                  show_notifications=True):
         super(AccomplishmentsDBusService, self).__init__(bus_name, session_bus)
         bus_name = dbus.service.BusName(bus_name, bus=session_bus)
@@ -263,7 +263,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         Example:
             >>> obj.get_collection_authors("config", "has_u1")
             True
-        """        
+        """
         return self.api.get_config_value(section, item)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
@@ -313,7 +313,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         return self.api.get_accom_data(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-        in_signature="s", out_signature="b")   
+        in_signature="s", out_signature="b")
     def get_accom_exists(self, accomID):
         """
         Returns whether the specified accomplishment is recognized on the system.
@@ -475,7 +475,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         Every accomplishment has a unique identifier called an `Accomplishment ID` that is comprised of the collection
         and the name of the accomplishment itself (e.g. `ubuntu-community` collection and `registered-in-launchpad`
         accomplishment has an accomplishment ID of `ubuntu-community/registered-on-launchpad`). You pass this function this
-        `Accomplishment ID` as it's parameter.        
+        `Accomplishment ID` as it's parameter.
 
         Accomplishments can depend on other accomplishments before they are completed: if an accomplishment has not had it's
         dependency satisfied, it should be shown in clients as locked. This function checks whether such dependencies have been
@@ -506,7 +506,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         Every accomplishment has a unique identifier called an `Accomplishment ID` that is comprised of the collection
         and the name of the accomplishment itself (e.g. `ubuntu-community` collection and `registered-in-launchpad`
         accomplishment has an accomplishment ID of `ubuntu-community/registered-on-launchpad`). You pass this function this
-        `Accomplishment ID` as it's parameter.                
+        `Accomplishment ID` as it's parameter.
 
         Args:
             * **accomID** - (str) the `Accomplishment ID` for a given accomplishment (e.g. `ubuntu-community/registered-on-launchpad`).
@@ -545,7 +545,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
         Every accomplishment has a unique identifier called an `Accomplishment ID` that is comprised of the collection
         and the name of the accomplishment itself (e.g. `ubuntu-community` collection and `registered-in-launchpad`
         accomplishment has an accomplishment ID of `ubuntu-community/registered-on-launchpad`). You pass this function this
-        `Accomplishment ID` as it's parameter.        
+        `Accomplishment ID` as it's parameter.
 
         Many accomplishments have corrosponding scripts (although not all do), and this function returns a full path to the
         script.
@@ -583,7 +583,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
             >>> obj.get_accom_icon("ubuntu-community/registered-on-launchpad")
             default.png
         """
-        return self.api.get_accom_icon(accomID)        
+        return self.api.get_accom_icon(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="s", out_signature="s")
@@ -894,7 +894,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="s")
     def get_share_id(self):
-        return self.api.get_share_id()    
+        return self.api.get_share_id()
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
         in_signature="", out_signature="s")
