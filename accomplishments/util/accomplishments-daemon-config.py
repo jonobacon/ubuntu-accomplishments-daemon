@@ -12,7 +12,7 @@ __all__ = [
     'project_path_not_found',
     'get_data_file',
     'get_data_path',
-    ]
+]
 
 # Where your project will look for your data (for instance, images and ui
 # files). By default, this is ../data, relative your trunk layout
@@ -25,6 +25,7 @@ import os
 import gettext
 from gettext import gettext as _
 gettext.textdomain('ubuntu-accomplishments-daemon')
+
 
 class project_path_not_found(Exception):
     """Raised when we can't find the project directory."""

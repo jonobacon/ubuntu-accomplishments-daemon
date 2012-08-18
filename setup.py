@@ -16,7 +16,8 @@ except ImportError:
     sys.exit(1)
 assert DistUtilsExtra.auto.__version__ >= '2.18', 'needs DistUtilsExtra.auto >= 2.18'
 
-def update_config(values = {}):
+
+def update_config(values={}):
 
     oldvalues = {}
     try:
@@ -24,7 +25,7 @@ def update_config(values = {}):
         fout = file(fin.name + '.new', 'w')
 
         for line in fin:
-            fields = line.split(' = ') # Separate variable from value
+            fields = line.split(' = ')  # Separate variable from value
             if fields[0] in values:
                 oldvalues[fields[0]] = fields[1].strip()
                 line = "%s = %s\n" % (fields[0], values[fields[0]])
@@ -49,11 +50,9 @@ class InstallAndUpdateDataDirectory(DistUtilsExtra.auto.install_auto):
         update_config(previous_values)
 
 
-        
 ##################################################################################
 ###################### YOU SHOULD MODIFY ONLY WHAT IS BELOW ######################
 ##################################################################################
-
 DistUtilsExtra.auto.setup(
     name='accomplishments-daemon',
     version='0.1',
@@ -66,5 +65,4 @@ DistUtilsExtra.auto.setup(
     url='https://launchpad.net/ubuntu-accomplishments-daemon',
     cmdclass={'install': InstallAndUpdateDataDirectory},
     data_files=[('share/accomplishments-daemon', ['data/daemon/validation-key.pub'])]
-    )
-
+)

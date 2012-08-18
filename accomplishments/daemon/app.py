@@ -44,5 +44,5 @@ def applicationFactory(app_name="", bus_name="", main_loop=None,
     timer_service = service.ScriptRunnerService(
         update_interval, dbus_export_service.api)
     timer_service.setServiceParent(top_level_service)
-    
+
     return application
