@@ -462,7 +462,6 @@ class Accomplishments(object):
                     except Exception, (msg):
                         log.msg(msg)
 
-    # XXX - NEEDS UNIT TEST
     def _create_reduced_opacity_trophy_icon(self, im, opacity):
         """Returns an image with reduced opacity."""
 
@@ -500,7 +499,6 @@ class Accomplishments(object):
         else:
             return "NoOption"
 
-    # XXX - NEEDS UNIT TEST
     def verify_ubuntu_one_account(self):
         self.asyncapi.verify_ubuntu_one_account()
 
@@ -524,15 +522,16 @@ class Accomplishments(object):
 
         self._load_config_file()
 
-    # XXX - NEEDS UNIT TEST
     def _write_config_file(self):
         """Write the values held in various configuration state variables
         to the main daemon configuration file, which should be located
-        in ~/.config/accomplishments/.accomplishments."""
+        in .config/accomplishments/.accomplishments (relative to ~ or $
+        {ACCOMPLISHMENETS_ROOT_DIR} and it provides a ConfigParser in
+        ~/.config/accomplishments/.accomplishments."""
 
         log.msg("Writing the configuration file")
         config = ConfigParser.RawConfigParser()
-        cfile = self.dir_config + "/.accomplishments"
+        cfile = os.path.join(self.dir_config, ".accomplishments")
 
         # The following sets self.has_u1
         self.verify_ubuntu_one_account()
@@ -624,14 +623,12 @@ class Accomplishments(object):
             self.share_id = matchingshares[0]["share_id"]
             self.share_found = True
 
-    # XXX - NEEDS UNIT TEST
     def get_share_name(self):
         if self.share_found:
             return self.share_name
         else:
             return ""
 
-    # XXX - NEEDS UNIT TEST
     def get_share_id(self):
         if self.share_found:
             return self.share_id
@@ -783,13 +780,15 @@ class Accomplishments(object):
 
         return result
 
+    # XXX - NEEDS UNIT TEST
     def create_extra_information_file(self, item, data):
-        """Does exactly the same as write_extra_information_file(), but it does not
-           overwrite any existing data"""
+        """
+        Does exactly the same as write_extra_information_file(), but it
+        does not overwrite any existing data
+        """
 
         # XXX this should be removed as we are using write_extra_information_file
-        log.msg(
-            "Creating Extra Information file: %s, %s" % (item, data))
+        log.msg("Creating Extra Information file: %s, %s" % (item, data))
         extrainfodir = os.path.join(self.trophies_path, ".extrainformation/")
 
         if not os.path.isdir(extrainfodir):
@@ -1775,7 +1774,6 @@ NoDisplay=true"
                     self.get_media_file("unlocked.png"))
                 n.show()
 
-    # XXX - NEEDS UNIT TEST
     def accomslist(self):
         for k in self.accomDB:
             if self.accomDB[k]['type'] is "accomplishment":

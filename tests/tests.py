@@ -10,21 +10,24 @@ import subprocess
 import ConfigParser
 import datetime
 import time
+import Image
 from collections import deque
+from types import GeneratorType
 
 sys.path.insert(0, os.path.join(os.path.split(__file__)[0], ".."))
 from accomplishments.daemon import app, api
 
 # future tests:
 # create extra information files - marked for removal in the code
-# get published status
-# publish and unpublish trophies online
-# get_share_name, get_share_id
 
 # These tests will modify the user's envrionment, outside of the test
 # dir and so are not written/skipped:
 #  - set daemon session start
 #  - set block u1 notification bubbles
+
+# These tests will require a running daemon and U1 account:
+#  - get published status
+#  - publish and unpublish trophies online
 
 # Debugging:
 # To debug tests, the following changes are recommended:
@@ -112,6 +115,11 @@ extrainfo_seen = 1""" % (self.td, self.td))
         if not os.path.exists(self.extrainfo_dir):
             os.makedirs(self.extrainfo_dir)
 
+        # /tmp/foo/accomplishments/accomplishments/testaccom/trophyimages
+        self.trophyimages_dir = os.path.join(self.accom_root, "trophyimages")
+        if not os.path.exists(self.trophyimages_dir):
+            os.makedirs(self.trophyimages_dir)
+
         # /tmp/foo/accomplishments/accomplishments/scripts
         self.scripts_root = os.path.join(self.td, "accomplishments", "scripts")
         if not os.path.exists(self.scripts_root):
@@ -137,6 +145,96 @@ extrainfo_seen = 1""" % (self.td, self.td))
     def tearDown(self):
         del os.environ['ACCOMPLISHMENTS_ROOT_DIR']
         shutil.rmtree(self.td)
+
+    # also tests _load_config_file()
+    def test_write_config_file(self):
+        a = api.Accomplishments(None, None, True)
+        config_path = os.path.join(a.dir_config, ".accomplishments")
+        a._write_config_file()
+        self.assertTrue(os.path.exists(config_path))
+        a._load_config_file()
+
+        # load_config will create the config file if it doesn't exist
+        os.remove(config_path)
+        a._load_config_file()
+        self.assertTrue(os.path.exists(config_path))
+
+    def test_create_all_trophy_icons(self):
+        a = api.Accomplishments(None, None, True)
+        gen_path = os.path.join(self.td,
+            "accomplishments/.cache/accomplishments/trophyimages/%s"
+            % self.ACCOM_SET)
+        src_path = os.path.join(self.td,
+            "accomplishments/accomplishments/%s/trophyimages/"
+            % self.ACCOM_SET)
+
+        testdir = os.path.dirname(__file__)
+        src = os.path.join(testdir, "icons", "test.png")
+        shutil.copyfile(src, os.path.join(src_path, "test.png"))
+
+        a._create_all_trophy_icons()
+        self.assertTrue(os.path.exists(gen_path))
+        self.assertTrue(os.path.exists(os.path.join(gen_path, "test.png")))
+        self.assertTrue(os.path.exists(os.path.join(gen_path,
+            "test-locked.png")))
+        self.assertTrue(os.path.exists(os.path.join(gen_path,
+            "test-opportunity.png")))
+
+    def test_create_reduced_opacity_trpohy_image(self):
+        a = api.Accomplishments(None, None, True)
+        path = os.path.join(self.td,
+            "accomplishments/.cache/accomplishments/trophyimages/%s"
+            % self.ACCOM_SET)
+        testdir = os.path.dirname(__file__)
+        src = os.path.join(testdir, "icons", "test.png")
+        shutil.copyfile(src, os.path.join(path, "test.png"))
+        im = Image.open(os.path.join(path, "test.png"))
+        new_im = a._create_reduced_opacity_trophy_icon(im, 0.0)
+        self.assertTrue(new_im is not None)
+        new_im = a._create_reduced_opacity_trophy_icon(im, 0.01)
+        self.assertTrue(new_im is not None)
+        new_im = a._create_reduced_opacity_trophy_icon(im, 0.99)
+        self.assertTrue(new_im is not None)
+
+        self.assertRaises(AssertionError,
+            a._create_reduced_opacity_trophy_icon, im, -1)
+        self.assertRaises(AssertionError,
+            a._create_reduced_opacity_trophy_icon, im, 1.01)
+        self.assertRaises(AssertionError,
+            a._create_reduced_opacity_trophy_icon, im, 100)
+
+    def test_verify_ubuntu_one_account(self):
+        # this just makes sure it doesn't crash, we don't know if this
+        # system will have one or not
+        a = api.Accomplishments(None, None, True)
+        a.verify_ubuntu_one_account()
+
+    def test_accomslist(self):
+        a = api.Accomplishments(None, None, True)
+        accomslist = a.accomslist()
+        self.assertTrue(isinstance(accomslist, GeneratorType))
+        for accom in accomslist:
+            # the list should be empty so we should never hit this
+            self.assertTrue(False)
+        self.util_copy_accom(self.accom_dir, "first")
+        self.util_copy_accom(self.accom_dir, "second")
+        self.util_copy_accom(self.accom_dir, "third")
+        a.reload_accom_database()
+        accomslist = a.accomslist()
+        for accom in accomslist:
+            self.assertTrue(accom in ["%s/first" % self.ACCOM_SET,
+                                      "%s/second" % self.ACCOM_SET,
+                                      "%s/third" % self.ACCOM_SET])
+
+    # tests get_share_name and get_share_id
+    def test_get_share_all(self):
+        a = api.Accomplishments(None, None, True)
+        sid = a.get_share_id()
+        self.assertTrue(isinstance(sid, str))
+        self.assertTrue(sid is not None)
+        sid = a.get_share_id()
+        self.assertTrue(isinstance(sid, str))
+        self.assertTrue(sid is not None)
 
     def test_run_scripts(self):
         # due to LP1030208, if the daemon is running (like on a dev box)
@@ -215,7 +313,8 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.assertEqual(len(opps), 3)
         for accom in opps:
             self.assertTrue(accom in ["%s/first" % self.ACCOM_SET,
-                                      "%s/second" % self.ACCOM_SET, "%s/third" % self.ACCOM_SET])
+                                      "%s/second" % self.ACCOM_SET,
+                                      "%s/third" % self.ACCOM_SET])
 
         unlocked = a.list_unlocked()
         self.assertEqual(len(unlocked), 2)
