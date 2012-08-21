@@ -17,9 +17,6 @@ from types import GeneratorType
 sys.path.insert(0, os.path.join(os.path.split(__file__)[0], ".."))
 from accomplishments.daemon import app, api
 
-# future tests:
-# create extra information files - marked for removal in the code
-
 # These tests will modify the user's envrionment, outside of the test
 # dir and so are not written/skipped:
 #  - set daemon session start
@@ -293,6 +290,54 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.assertTrue(isinstance(d3, basestring))
         dt3 = datetime.datetime.strptime(d3, "%Y-%m-%d %H:%M")
         self.assertTrue(dt3 is not None)
+
+    def test_check_if_accom_is_locked(self):
+        self.util_remove_all_accoms(self.accom_dir)
+        self.util_copy_accom(self.accom_dir, "first")
+        self.util_copy_accom(self.accom_dir, "second")
+        self.util_copy_accom(self.accom_dir, "third")
+        self.util_copy_extrainfo(self.extrainfo_dir, "info")
+        self.util_copy_extrainfo(self.extrainfo_dir, "info2")
+        a = api.Accomplishments(None, None, True)
+        a.write_extra_information_file("info", "whatever")
+        a.write_extra_information_file("info2", "whatever2")
+
+        self.assertFalse(a._check_if_accom_is_locked("%s/first"
+                                                     % self.ACCOM_SET))
+        self.assertTrue(a._check_if_accom_is_locked("%s/second"
+                                                    % self.ACCOM_SET))
+        self.assertFalse(a._check_if_accom_is_locked("%s/third"
+                                                     % self.ACCOM_SET))
+        self.assertTrue(a.accomplish("%s/first" % self.ACCOM_SET))
+        self.assertFalse(a._check_if_accom_is_locked("%s/second"
+                                                     % self.ACCOM_SET))
+
+    @unittest.skip("foo")
+    def test_check_if_accom_is_completed(self):
+        self.util_remove_all_accoms(self.accom_dir)
+        self.util_copy_accom(self.accom_dir, "first")
+        self.util_copy_accom(self.accom_dir, "second")
+        self.util_copy_accom(self.accom_dir, "third")
+        self.util_copy_extrainfo(self.extrainfo_dir, "info")
+        self.util_copy_extrainfo(self.extrainfo_dir, "info2")
+        a = api.Accomplishments(None, None, True)
+        a.write_extra_information_file("info", "whatever")
+        a.write_extra_information_file("info2", "whatever2")
+
+        self.assertFalse(a._check_if_accom_is_completed("%s/first"
+                                                        % self.ACCOM_SET))
+        self.assertFalse(a._check_if_accom_is_completed("%s/second"
+                                                        % self.ACCOM_SET))
+        self.assertFalse(a._check_if_accom_is_completed("%s/third"
+                                                        % self.ACCOM_SET))
+        self.assertTrue(a.accomplish("%s/first" % self.ACCOM_SET))
+        a = api.Accomplishments(None, None, True)
+        self.assertTrue(a._check_if_accom_is_completed("%s/first"
+                                                       % self.ACCOM_SET))
+        self.assertFalse(a._check_if_accom_is_completed("%s/second"
+                                                        % self.ACCOM_SET))
+        self.assertFalse(a._check_if_accom_is_completed("%s/third"
+                                                        % self.ACCOM_SET))
 
     # this tests:
     # accomplish()
@@ -741,6 +786,50 @@ extrainfo_seen = 1""" % (self.td, self.td))
         a.write_extra_information_file("whatever", None)
         self.assertFalse(os.path.exists(path))
 
+    def test_get_is_asc_correct(self):
+        a = api.Accomplishments(None, None, True)
+
+        testdir = os.path.dirname(__file__)
+        a_src = os.path.join(testdir, "trophies", "good.trophy.asc")
+        a_dest = os.path.join(self.td, "good.trophy.asc")
+        shutil.copyfile(a_src, a_dest)
+        t_src = os.path.join(testdir, "trophies", "good.trophy")
+        t_dest = os.path.join(self.td, "good.trophy")
+        shutil.copyfile(t_src, t_dest)
+        self.assertTrue(a._get_is_asc_correct(a_dest))
+
+        testdir = os.path.dirname(__file__)
+        a_src = os.path.join(testdir, "trophies", "bad.trophy.asc")
+        a_dest = os.path.join(self.td, "bad.trophy.asc")
+        shutil.copyfile(a_src, a_dest)
+        t_src = os.path.join(testdir, "trophies", "bad.trophy")
+        t_dest = os.path.join(self.td, "bad.trophy")
+        shutil.copyfile(t_src, t_dest)
+        self.assertFalse(a._get_is_asc_correct(a_dest))
+
+        # bad path should return false, not an exception
+        self.assertFalse(a._get_is_asc_correct("abcdefg"))
+
+    def test_create_extra_information_file(self):
+        a = api.Accomplishments(None, None, True)
+
+        # write extra information will make the directory for us if needed,
+        # so lets remove it (if present and force it to)
+        extrainfo_path = os.path.join(a.trophies_path, ".extrainformation")
+        if os.path.exists(extrainfo_path):
+            shutil.rmtree(extrainfo_path)
+
+        a.create_extra_information_file("whatever", "abcdefg")
+        path = os.path.join(extrainfo_path, "whatever")
+        self.assertTrue(os.path.exists(path))
+        statinfo = os.stat(path)
+
+        # create extra info will refuse to overwrite an existing file
+        time.sleep(1)
+        a.create_extra_information_file("whatever", "123456")
+        statinfo_after = os.stat(path)
+        self.assertTrue(statinfo_after.st_ctime == statinfo.st_ctime)
+
     # tests:
     # get_extra_information()
     # get_all_extra_information()
@@ -778,7 +867,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.assertEqual(ei[0]['info2'], '')
         self.assertEqual(ei[0]['label'], 'More info')
 
-        # write some data out and reload the DB
+        # write some data out
         a.write_extra_information_file("info", "whatever")
         ei = a.get_extra_information(self.ACCOM_SET, "info")
         self.assertEqual(ei[0]['info'], 'whatever')

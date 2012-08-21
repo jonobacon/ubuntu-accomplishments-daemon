@@ -412,7 +412,6 @@ class Accomplishments(object):
         final = "file:///" + media_filename
         return final
 
-    # XXX - NEEDS UNIT TEST
     def _create_all_trophy_icons(self):
         """Iterate through each of the accomplishments on the system
         and generate all of the required icons that we provide to
@@ -780,7 +779,6 @@ class Accomplishments(object):
 
         return result
 
-    # XXX - NEEDS UNIT TEST
     def create_extra_information_file(self, item, data):
         """
         Does exactly the same as write_extra_information_file(), but it
@@ -1779,13 +1777,25 @@ NoDisplay=true"
             if self.accomDB[k]['type'] is "accomplishment":
                 yield k
 
-    # XXX - NEEDS UNIT TEST
     def _get_is_asc_correct(self, filepath):
-        if os.path.exists(filepath):
+        if not os.path.exists(filepath):
+            log.msg("Cannot check if signature is correct, because file"\
+                    "%s does not exist" % filepath)
+            return False
+        elif not os.path.exists(filepath[:-4]):
+            log.msg("Cannot check if signature is correct, because file"\
+                    "%s does not exist" % filepath[:-4])
+            return False
+        else:
             # the .asc signed file exists, so let's verify that it is correctly
             # signed by the Matrix
-            trophysigned = open(filepath, "r")
-            trophy = open(filepath[:-4], "r")
+            try:
+                trophysigned = open(filepath, "r")
+                trophy = open(filepath[:-4], "r")
+            except IOError, e:
+                log.msg("Cannot validate signature due to exception: %s" % e)
+                return False
+
             c = gpgme.Context()
 
             signed = StringIO(trophysigned.read())
@@ -1803,11 +1813,7 @@ NoDisplay=true"
                 # Correct!
                 # result = {'timestamp': sig[0].timestamp, 'signer': sig[0].fpr}
                 return True
-        else:
-            log.msg("Cannot check if signature is correct, because file %s does not exist" % filepath)
-            return False
 
-    # XXX - NEEDS UNIT TEST
     def _check_if_accom_is_completed(self, accomID):
         trophypath = self.get_trophy_path(accomID)
         if not os.path.exists(trophypath):
@@ -1824,7 +1830,6 @@ NoDisplay=true"
             else:
                 return self._get_is_asc_correct(ascpath)
 
-    # XXX - NEEDS UNIT TEST
     def _check_if_accom_is_locked(self, accomID):
         dep = self.get_accom_depends(accomID)
         if not dep:
