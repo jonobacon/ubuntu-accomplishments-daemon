@@ -16,16 +16,15 @@ except ImportError:
     sys.exit(1)
 assert DistUtilsExtra.auto.__version__ >= '2.18', 'needs DistUtilsExtra.auto >= 2.18'
 
-
-def update_config(values={}):
+def update_config(values = {}):
 
     oldvalues = {}
     try:
-        fin = file('accomplishments/accomplishments_daemonconfig.py', 'r')
+        fin = file('accomplishments_daemon/accomplishments_daemonconfig.py', 'r')
         fout = file(fin.name + '.new', 'w')
 
         for line in fin:
-            fields = line.split(' = ')  # Separate variable from value
+            fields = line.split(' = ') # Separate variable from value
             if fields[0] in values:
                 oldvalues[fields[0]] = fields[1].strip()
                 line = "%s = %s\n" % (fields[0], values[fields[0]])
@@ -50,6 +49,7 @@ class InstallAndUpdateDataDirectory(DistUtilsExtra.auto.install_auto):
         update_config(previous_values)
 
 
+        
 ##################################################################################
 ###################### YOU SHOULD MODIFY ONLY WHAT IS BELOW ######################
 ##################################################################################

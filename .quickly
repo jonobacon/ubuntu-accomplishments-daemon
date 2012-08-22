@@ -1,4 +1,4 @@
 project = accomplishments-daemon
 version = 12.03
 template = ubuntu-cli
-version_ubuntu-application = 12.08
+version_ubuntu-application = 12.08.1
