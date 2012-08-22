@@ -11,6 +11,7 @@ import ConfigParser
 import datetime
 import time
 import Image
+import gpgme
 from collections import deque
 from types import GeneratorType
 
@@ -32,6 +33,17 @@ from accomplishments.daemon import app, api
 # 2) in setUp, set self.td to a known place, like /tmp/foo (you will need
 #    to create this directory as well)
 
+def accoms_public_key_present():
+    """
+    Determines if the Ubuntu Accomplishments public key is available.
+    On systems like build servers it will not be.
+    """
+    ctx = gpgme.Context()
+    for key in ctx.keylist():
+        for uid in key.uids:
+            if uid.uid == "Ubuntu Accomplishments <jono@ubuntu.com>":
+                return True
+    return False
 
 class TestDaemon(unittest.TestCase):
 
@@ -785,7 +797,8 @@ extrainfo_seen = 1""" % (self.td, self.td))
         a.write_extra_information_file("whatever", None)
         self.assertFalse(os.path.exists(path))
 
-    @unittest.skip("won't work on the build server, under investigation")
+    @unittest.skipUnless(accoms_public_key_present(),
+        "Ubuntu Accomplishments public key is not available, skipping test")
     def test_get_is_asc_correct(self):
         a = api.Accomplishments(None, None, True)
 
