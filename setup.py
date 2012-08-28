@@ -20,7 +20,7 @@ def update_config(values = {}):
 
     oldvalues = {}
     try:
-        fin = file('accomplishments_daemon/accomplishments_daemonconfig.py', 'r')
+        fin = file('accomplishments/accomplishments_daemonconfig.py', 'r')
         fout = file(fin.name + '.new', 'w')
 
         for line in fin:
