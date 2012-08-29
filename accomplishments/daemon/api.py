@@ -61,7 +61,7 @@ gettext.textdomain('accomplishments-daemon')
 
 os.environ["PYTHONPATH"] = "$PYTHONPATH:."
 # The directories with accomplishment.* modules, that are being used by scripts,
-# may happen to be in a completelly different directory, if the daemon was
+# may happen to be in a completely different directory, if the daemon was
 # installed using a non-default prefix.
 if installed:
     os.environ["PYTHONPATH"] = module_dir1 + ":" + module_dir2 + ":" + os.environ["PYTHONPATH"]
@@ -272,14 +272,15 @@ class AsyncAPI(object):
             accomID = self.parent.scripts_queue.popleft()
             log.msg("Running %s, left on queue: %d" % (accomID, queuesize - 1))
 
-            # First ensure that the acccomplishemt has not yet completed.
+            # First ensure that the acccomplishemt has not yet
+            # accomplished.
             # It happens that the .asc file is present, but we miss the
             # signal it triggers - so here we can re-check if it is not
             # present.
-            if self.parent._check_if_accom_is_completed(accomID):
+            if self.parent._check_if_accom_is_accomplished(accomID):
                 self.parent.accomplish(accomID)
             else:
-                # Okay, this one hasn't been yet completed.
+                # Okay, this one hasn't been yet accomplished.
                 # Run the accom script and determine exit code.
                 scriptpath = self.parent.get_accom_script_path(accomID)
                 if scriptpath is None:
@@ -814,8 +815,8 @@ class Accomplishments(object):
                 self.service.trophy_received(accomID)
                 self._display_accomplished_bubble(accomID)
                 self._display_unlocked_bubble(accomID)
-                # Mark as completed and get list of new opportunities
-                just_unlocked = self._mark_as_completed(accomID)
+                # Mark as accomplished and get list of new opportunities
+                just_unlocked = self._mark_as_accomplished(accomID)
                 self.run_scripts(just_unlocked)
 
     def write_extra_information_file(self, item, data):
@@ -918,7 +919,7 @@ class Accomplishments(object):
 
         All results are stored in an internal variable, *self.accomDB*. They can be accessed afterwards using get_acc_* functions.
 
-        Running this function also calls _update_all_locked_and_completed_statuses(), which completes initialising the *accomDB*, as it fills in it's "completed" and "locked" fields.
+        Running this function also calls _update_all_locked_and_accomplished_statuses(), which completes initialising the *accomDB*, as it fills in it's "accomplished" and "locked" fields.
 
         .. note::
             There is no need for clients to run this method manually when the daemon is started - this function is called by this class' __init__.
@@ -1145,7 +1146,7 @@ class Accomplishments(object):
                 collectiondata = {'langdefault': langdefault, 'name': collectionname, 'acc_num': accno, 'type': "collection", 'base-path': collpath, 'categories': collcategories, 'extra-information': extrainfo, 'authors': collauthors}
                 self.accomDB[collection] = collectiondata
 
-        self._update_all_locked_and_completed_statuses()
+        self._update_all_locked_and_accomplished_statuses()
 
         if not self.test_mode:
             self.service.accoms_collections_reloaded()
@@ -1194,7 +1195,7 @@ class Accomplishments(object):
 
     def get_accom_needs_signing(self, accomID):
         """
-        This function states whether an accomplishment needs verification by external server. It does not state, hoewver, whether this trophy has been already signed or not, use get_accom_is_completed instead.
+        This function states whether an accomplishment needs verification by external server. It does not state, hoewver, whether this trophy has been already signed or not, use get_accom_is_accomplished instead.
 
         Args:
             * **accomID** - (str) The accomplishmentID.
@@ -1217,13 +1218,14 @@ class Accomplishments(object):
 
     def get_accom_depends(self, accomID):
         """
-        Returns a list of accomplishments a chosen accomplishment depends on (meaning: they all need to be completed in order to unlock the given one).
+        Returns a list of accomplishments a chosen accomplishment depends on (meaning: they all need to be accomplished in order to unlock the given one).
 
         Args:
             * **accomID** - (str) The accomplishmentID.
 
         Returns:
-            * **(list[str])** - List of accomplishmentIDs of accomplishments that need to be completed before this one is unlocked.
+            * **(list[str])** - List of accomplishmentIDs of
+            * accomplishments that need to be accomplished before this one is unlocked.
 
         Example:
             >>> acc.get_accom_depends("ubuntu-community/registered-on-launchpad")
@@ -1253,10 +1255,10 @@ class Accomplishments(object):
             False
             >>> acc.get_accom_depends("ubuntu-community/askubuntu-teacher")
             ["ubuntu-community/registered-on-askubuntu"]
-            >>> acc.get_accom_is_completed("ubuntu-community/registered-on-askubuntu")
+            >>> acc.get_accom_is_accomplished("ubuntu-community/registered-on-askubuntu")
             False
             >>> acc.accomplish("ubuntu-community/registered-on-askubuntu")
-            >>> acc.get_accom_is_completed("ubuntu-community/registered-on-askubuntu")
+            >>> acc.get_accom_is_accomplished("ubuntu-community/registered-on-askubuntu")
             True
             >>> acc.get_accom_is_unlocked("ubuntu-community/askubuntu-teacher")
             True
@@ -1283,24 +1285,24 @@ class Accomplishments(object):
         else:
             return os.path.join(self.trophies_path, accomID + ".trophy")
 
-    def get_accom_is_completed(self, accomID):
+    def get_accom_is_accomplished(self, accomID):
         """
-        Returns whether this accomplishment is completed (if it needs to be verified by the external server, this will return False if the .asc signature is not present)
+        Returns whether this accomplishment is accomplished (if it needs to be verified by the external server, this will return False if the .asc signature is not present)
 
         Args:
             * **accomID** - (str) The accomplishmentID.
 
         Returns:
-            * **(bool)** - Whether this accomplishment is completed.
+            * **(bool)** - Whether this accomplishment is accomplished.
 
         Example:
-            >>> acc.get_accom_is_completed("ubuntu-community/registered-on-askubuntu")
+            >>> acc.get_accom_is_accomplished("ubuntu-community/registered-on-askubuntu")
             False
             >>> acc.accomplish("ubuntu-community/registered-on-askubuntu")
-            >>> acc.get_accom_is_completed("ubuntu-community/registered-on-askubuntu")
+            >>> acc.get_accom_is_accomplished("ubuntu-community/registered-on-askubuntu")
             True
         """
-        return self.accomDB[accomID]['completed']
+        return self.accomDB[accomID]['accomplished']
 
     def get_accom_script_path(self, accomID):
         res = self.accomDB[accomID]['script-path']
@@ -1323,7 +1325,7 @@ class Accomplishments(object):
             iconfileext = ""
         if not self.get_accom_is_unlocked(accomID):
             iconfilename = iconfilename + '-locked'
-        elif not self.get_accom_is_completed(accomID):
+        elif not self.get_accom_is_accomplished(accomID):
             iconfilename = iconfilename + '-opportunity'
         iconfile = iconfilename + iconfileext
         return os.path.join(imagesdir, iconfile)
@@ -1366,21 +1368,21 @@ class Accomplishments(object):
 
         return self.accomDB[accomID]['categories']
 
-    def get_accom_date_completed(self, accomID):
+    def get_accom_date_accomplished(self, accomID):
         """
         Returns the date that the accomplishment specified by 'accomID' was
-        completed.
+        accomplished.
 
         Args:
             accomID (str):  The Accomplishment ID (e.g. 'ubuntu-community/registered-on-launchpad')
         Returns:
-            (string) The completed date
+            (string) The accomplished date
         Example:
-            >>> obj.get_accom_date_completed("ubuntu-community/registered-on-launchpad")
+            >>> obj.get_accom_date_accomplished("ubuntu-community/registered-on-launchpad")
             "2012-06-15 12:32"
         """
 
-        return self.accomDB[accomID]['date-completed']
+        return self.accomDB[accomID]['date-accomplished']
 
     def get_trophy_data(self, accomID):
         """
@@ -1390,13 +1392,14 @@ class Accomplishments(object):
             * **accomID** - (str) The accomplishmendID.
 
         Returns:
-            - None - in case this accomplishment hasn't been completed.
+            - None - in case this accomplishment hasn't been
+              accomplished.
             - **dict(str:str)** - in case this accomplishment has been awarded. It represents all keys and it's values in a .trophy file.
         Example:
             >>> acc.get_trophy_data("ubuntu-community/registered-on-launchpad")
             {'needs-signing': 'true', 'date-accomplished': '1990-04-12 02:22', 'needs-information': 'launchpad-email', 'version': '0.2', '__name__': 'trophy', 'launchpad-email': 'launchpaduser@ubuntu.com', 'id': 'ubuntu-community/registered-on-launchpad'}
         """
-        if not self.get_accom_is_completed(accomID):
+        if not self.get_accom_is_accomplished(accomID):
             return None
         else:
             cfg = ConfigParser.RawConfigParser()
@@ -1497,10 +1500,10 @@ class Accomplishments(object):
         return [accom for accom in self.accomslist()]
 
     def list_trophies(self):
-        return [accom for accom in self.accomslist() if self.get_accom_is_completed(accom)]
+        return [accom for accom in self.accomslist() if self.get_accom_is_accomplished(accom)]
 
     def list_opportunities(self):
-        return [accom for accom in self.accomslist() if not self.get_accom_is_completed(accom)]
+        return [accom for accom in self.accomslist() if not self.get_accom_is_accomplished(accom)]
 
     def list_depending_on(self, accomID):
         return [accom for accom in self.accomslist() if accomID in self.get_accom_depends(accom)]
@@ -1508,8 +1511,8 @@ class Accomplishments(object):
     def list_unlocked(self):
         return [accom for accom in self.accomslist() if self.get_accom_is_unlocked(accom)]
 
-    def list_unlocked_not_completed(self):
-        return [accom for accom in self.accomslist() if self.get_accom_is_unlocked(accom) and not self.get_accom_is_completed(accom)]
+    def list_unlocked_not_accomplished(self):
+        return [accom for accom in self.accomslist() if self.get_accom_is_unlocked(accom) and not self.get_accom_is_accomplished(accom)]
 
     def list_collections(self):
         return [col for col in self.accomDB if self.accomDB[col]['type'] == 'collection']
@@ -1525,10 +1528,10 @@ class Accomplishments(object):
         if isinstance(which, list):
             to_schedule = which
         elif which is None:
-            to_schedule = self.list_unlocked_not_completed()
+            to_schedule = self.list_unlocked_not_accomplished()
         else:
             log.msg("Note: This call to run_scripts is incorrect, run_scripts takes (optionally) a list of accomID to run their scripts")
-            to_schedule = self.list_unlocked_not_completed()
+            to_schedule = self.list_unlocked_not_accomplished()
 
         if len(to_schedule) == 0:
             log.msg("No scripts to run, returning without starting "
@@ -1549,9 +1552,9 @@ class Accomplishments(object):
         for accom in accoms:
             db.append({
                 'title': self.get_accom_title(accom),
-                'accomplished': self.get_accom_is_completed(accom),
+                'accomplished': self.get_accom_is_accomplished(accom),
                 'locked': not self.get_accom_is_unlocked(accom),
-                'date-completed': self.get_accom_date_completed(accom),
+                'date-accomplished': self.get_accom_date_accomplished(accom),
                 'iconpath': self.get_accom_icon_path(accom),
                 'collection': self.get_accom_collection(accom),
                 'collection-human': self.get_collection_name(
@@ -1580,14 +1583,14 @@ class Accomplishments(object):
             log.msg("There is no such accomplishment.")
             return False  # failure
 
-        # Check if is hasn't been already completed
-        if self.get_accom_is_completed(accomID):
-            log.msg("Not accomplishing " + accomID + ", it has already been completed.")
+        # Check if is hasn't been already accomplished
+        if self.get_accom_is_accomplished(accomID):
+            log.msg("Not accomplishing " + accomID + ", it has already been accomplished.")
             return True  # success
 
         # Check if this accomplishment is unlocked
         if not self.get_accom_is_unlocked(accomID):
-            log.msg("This accomplishment cannot be completed; it's locked.")
+            log.msg("This accomplishment cannot be accomplished; it's locked.")
             return False
 
         # Create .trophy file
@@ -1599,8 +1602,8 @@ class Accomplishments(object):
                 self.service.trophy_received(accomID)
             self._display_accomplished_bubble(accomID)
             self._display_unlocked_bubble(accomID)
-            # Mark as completed and get list of new opportunities
-            just_unlocked = self._mark_as_completed(accomID)
+            # Mark as accomplished and get list of new opportunities
+            just_unlocked = self._mark_as_accomplished(accomID)
             self.run_scripts(just_unlocked)
 
         return True
@@ -1814,7 +1817,7 @@ NoDisplay=true"
                 # result = {'timestamp': sig[0].timestamp, 'signer': sig[0].fpr}
                 return True
 
-    def _check_if_accom_is_completed(self, accomID):
+    def _check_if_accom_is_accomplished(self, accomID):
         trophypath = self.get_trophy_path(accomID)
         if not os.path.exists(trophypath):
             # There is no trophy file
@@ -1837,25 +1840,25 @@ NoDisplay=true"
         else:
             locked = False
             for d in dep:
-                # If at least one dependency is not completed...
-                if not self.get_accom_is_completed(d):
+                # If at least one dependency is not accomplished...
+                if not self.get_accom_is_accomplished(d):
                     locked = True
                     break
             return locked
 
-    def _update_all_locked_and_completed_statuses(self):
+    def _update_all_locked_and_accomplished_statuses(self):
         accoms = self.list_accoms()
         for accom in accoms:
-            self.accomDB[accom]['completed'] = self._check_if_accom_is_completed(accom)
-            if self.accomDB[accom]['completed'] == True:
-                self.accomDB[accom]['date-completed'] = self._get_trophy_date_completed(accom)
+            self.accomDB[accom]['accomplished'] = self._check_if_accom_is_accomplished(accom)
+            if self.accomDB[accom]['accomplished'] == True:
+                self.accomDB[accom]['date-accomplished'] = self._get_trophy_date_accomplished(accom)
             else:
-                self.accomDB[accom]['date-completed'] = "None"
+                self.accomDB[accom]['date-accomplished'] = "None"
         for accom in accoms:
             self.accomDB[accom]['locked'] = self._check_if_accom_is_locked(accom)
 
     # XXX - NEEDS UNIT TEST
-    def _get_trophy_date_completed(self, accomID):
+    def _get_trophy_date_accomplished(self, accomID):
         trophypath = self.get_trophy_path(accomID)
         if not os.path.exists(trophypath):
             # There is no trophy file
@@ -1869,11 +1872,11 @@ NoDisplay=true"
             return config.get("trophy", "date-accomplished")
 
     # XXX - NEEDS UNIT TEST
-    def _mark_as_completed(self, accomID):
-        # Marks accomplishments as completed int the accomDB, and returns a list
-        # of accomIDs that just got unlocked.
-        self.accomDB[accomID]['completed'] = True
-        self.accomDB[accomID]['date-completed'] = self._get_trophy_date_completed(accomID)
+    def _mark_as_accomplished(self, accomID):
+        # Marks accomplishments as accomplished in the accomDB, and
+        # returns a list of accomIDs that just got unlocked.
+        self.accomDB[accomID]['accomplished'] = True
+        self.accomDB[accomID]['date-accomplished'] = self._get_trophy_date_accomplished(accomID)
         accoms = self.list_depending_on(accomID)
         res = []
         for accom in accoms:

@@ -274,7 +274,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
 
         self.assertEqual(a.run_script("%s/third" % self.ACCOM_SET), None)
 
-    def test_get_accom_date_completed(self):
+    def test_get_accom_date_accomplished(self):
         self.util_remove_all_accoms(self.accom_dir)
         self.util_copy_accom(self.accom_dir, "first")
         self.util_copy_accom(self.accom_dir, "second")
@@ -293,12 +293,12 @@ extrainfo_seen = 1""" % (self.td, self.td))
         # since "second" requires signing, it shouldn't be listed
         self.assertEqual(len(trophies), 2)
 
-        d1 = a.get_accom_date_completed("%s/first" % self.ACCOM_SET)
+        d1 = a.get_accom_date_accomplished("%s/first" % self.ACCOM_SET)
         self.assertTrue(isinstance(d1, basestring))
         dt1 = datetime.datetime.strptime(d1, "%Y-%m-%d %H:%M")
         self.assertTrue(dt1 is not None)
 
-        d3 = a.get_accom_date_completed("%s/third" % self.ACCOM_SET)
+        d3 = a.get_accom_date_accomplished("%s/third" % self.ACCOM_SET)
         self.assertTrue(isinstance(d3, basestring))
         dt3 = datetime.datetime.strptime(d3, "%Y-%m-%d %H:%M")
         self.assertTrue(dt3 is not None)
@@ -324,7 +324,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.assertFalse(a._check_if_accom_is_locked("%s/second"
                                                      % self.ACCOM_SET))
 
-    def test_check_if_accom_is_completed(self):
+    def test_check_if_accom_is_accomplished(self):
         self.util_remove_all_accoms(self.accom_dir)
         self.util_copy_accom(self.accom_dir, "first")
         self.util_copy_accom(self.accom_dir, "second")
@@ -335,19 +335,19 @@ extrainfo_seen = 1""" % (self.td, self.td))
         a.write_extra_information_file("info", "whatever")
         a.write_extra_information_file("info2", "whatever2")
 
-        self.assertFalse(a._check_if_accom_is_completed("%s/first"
+        self.assertFalse(a._check_if_accom_is_accomplished("%s/first"
                                                         % self.ACCOM_SET))
-        self.assertFalse(a._check_if_accom_is_completed("%s/second"
+        self.assertFalse(a._check_if_accom_is_accomplished("%s/second"
                                                         % self.ACCOM_SET))
-        self.assertFalse(a._check_if_accom_is_completed("%s/third"
+        self.assertFalse(a._check_if_accom_is_accomplished("%s/third"
                                                         % self.ACCOM_SET))
         self.assertTrue(a.accomplish("%s/first" % self.ACCOM_SET))
         a = api.Accomplishments(None, None, True)
-        self.assertTrue(a._check_if_accom_is_completed("%s/first"
+        self.assertTrue(a._check_if_accom_is_accomplished("%s/first"
                                                        % self.ACCOM_SET))
-        self.assertFalse(a._check_if_accom_is_completed("%s/second"
+        self.assertFalse(a._check_if_accom_is_accomplished("%s/second"
                                                         % self.ACCOM_SET))
-        self.assertFalse(a._check_if_accom_is_completed("%s/third"
+        self.assertFalse(a._check_if_accom_is_accomplished("%s/third"
                                                         % self.ACCOM_SET))
 
     # this tests:
@@ -355,7 +355,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
     # list_opportunities
     # list_trophies
     # list_unlocked
-    # list_unlocked_not_completed
+    # list_unlocked_not_accomplished
     # get_trophy_data
     def test_accomplish(self):
         self.util_remove_all_accoms(self.accom_dir)
@@ -378,7 +378,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
             self.assertTrue(accom in ["%s/first" % self.ACCOM_SET,
                                       "%s/third" % self.ACCOM_SET])
 
-        unlocked_nc = a.list_unlocked_not_completed()
+        unlocked_nc = a.list_unlocked_not_accomplished()
         self.assertEqual(len(unlocked_nc), 2)
         for accom in unlocked_nc:
             self.assertTrue(accom in ["%s/first" % self.ACCOM_SET,
@@ -414,7 +414,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
                                       "%s/second" % self.ACCOM_SET,
                                       "%s/third" % self.ACCOM_SET])
 
-        unlocked_nc = a.list_unlocked_not_completed()
+        unlocked_nc = a.list_unlocked_not_accomplished()
         self.assertEqual(len(unlocked_nc), 2)
         for accom in unlocked_nc:
             self.assertTrue(accom in ["%s/second" % self.ACCOM_SET,
@@ -451,7 +451,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
     # tests all the get_accom_* functions, except for:
     # get_accom_icon
     # get_accom_icon_path
-    # get_date_completed
+    # get_date_accomplished
     def test_get_accom_all_funcs(self):
         self.util_remove_all_accoms(self.accom_dir)
         self.util_copy_accom(self.accom_dir, "first")
@@ -512,13 +512,13 @@ extrainfo_seen = 1""" % (self.td, self.td))
         self.assertTrue(a.get_accom_is_unlocked("%s/third" % self.ACCOM_SET))
         self.assertRaises(KeyError, a.get_accom_is_unlocked, "wrong")
 
-        # get_accom_is_completed
+        # get_accom_is_accomplished
         # XXX - when we get the accomplish() code working, make some of these
         # true
-        self.assertFalse(a.get_accom_is_completed("%s/first" % self.ACCOM_SET))
-        self.assertFalse(a.get_accom_is_completed("%s/second" % self.ACCOM_SET))
-        self.assertFalse(a.get_accom_is_completed("%s/third" % self.ACCOM_SET))
-        self.assertRaises(KeyError, a.get_accom_is_completed, "wrong")
+        self.assertFalse(a.get_accom_is_accomplished("%s/first" % self.ACCOM_SET))
+        self.assertFalse(a.get_accom_is_accomplished("%s/second" % self.ACCOM_SET))
+        self.assertFalse(a.get_accom_is_accomplished("%s/third" % self.ACCOM_SET))
+        self.assertRaises(KeyError, a.get_accom_is_accomplished, "wrong")
 
         # get_accom_script_path
         self.assertEqual(a.get_accom_script_path("%s/first" % self.ACCOM_SET),
