@@ -26,6 +26,7 @@ def main():
     mode.add_argument('--start',action='store_true',help="Launch the accomplishments daemon (default option when run without arguments).")
     mode.add_argument('--stop',action='store_true',help="Stop the daemon gracefully.")
     mode.add_argument('--kill',action='store_true',help="Kill the daemon process.")
+    mode.add_argument('--restart','-r',action='store_true',help="Restart the daemon.")
     mode.add_argument('--reload',action='store_true',help="Reload accomplishments collections.")
     parser.add_argument('-f','--foreground',action='store_true',help="When starting the daemon, run it in the foreground, with logs directed to stdout.")
     args = parser.parse_args()
@@ -41,40 +42,19 @@ def main():
             
     global pidfile_path
     pidfile_path = os.path.join(cache_dir,"accomplishments-daemon.pid")
+    
+    launchdaemon = False    
+    if args.start or not (args.start or args.stop or args.kill or args.reload or args.restart):
+        # Start the daemon.
         
-    if args.start or not (args.start or args.stop or args.kill or args.reload):
-        # Start the daemon
         from accomplishments.util.paths import daemon_exec_dir
-        
         # Check if the daemon is already running.
         if is_daemon_running():
             print "The daemon is already running."
             return
         
         # The daemon is not running.
-        print "Launching the daemon..."
-        
-        # Create the cache directories.
-        if not os.path.exists(cache_dir):
-            os.makedirs(cache_dir)
-        if not os.path.exists(os.path.join(cache_dir,"logs")):
-            os.makedirs(os.path.join(cache_dir,"logs"))
-        
-        # Remove the pid file if for some reasons it's still present.
-        # Try killing the process though, maybe it hung or DBus died.
-        if os.path.exists(pidfile_path):
-            if kill_daemon_process() is not 0:
-                # Successfully killed daemon removes the pidfile himself.
-                os.remove(pidfile_path)
-        
-        if not args.foreground:
-            command = "twistd -y " + os.path.join(daemon_exec_dir, "accomplishments-daemon") + " --logfile=" + os.path.join(cache_dir, "logs", "daemon.log") + " --pidfile=" + pidfile_path
-        else:
-            command = "twistd -noy " + os.path.join(daemon_exec_dir, "accomplishments-daemon") + " --pidfile=" + pidfile_path
-        
-        print command
-        
-        os.system(command)
+        launchdaemon = True
     
     elif args.stop:
         # Stop the daemon
@@ -109,6 +89,43 @@ def main():
         from accomplishments.daemon import dbusapi
         api = dbusapi.Accomplishments()
         api.reload_accom_database()
+        
+    elif args.restart:
+        from accomplishments.util.paths import daemon_exec_dir
+        # Check if the daemon is already running.
+        if not is_daemon_running():
+            print "The daemon is not running."
+            return
+        print "Stopping the daemon..."
+        from accomplishments.daemon import dbusapi
+        api = dbusapi.Accomplishments()
+        api.stop_daemon()
+        
+        launchdaemon = True
+        
+    if launchdaemon:
+        print "Launching the daemon..."
+        # Create the cache directories.
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+        if not os.path.exists(os.path.join(cache_dir,"logs")):
+            os.makedirs(os.path.join(cache_dir,"logs"))
+        
+        # Remove the pid file if for some reasons it's still present.
+        # Try killing the process though, maybe it hung or DBus died.
+        if os.path.exists(pidfile_path):
+            if kill_daemon_process() is not 0:
+                # Successfully killed daemon removes the pidfile himself.
+                os.remove(pidfile_path)
+        
+        if not args.foreground:
+            command = "twistd -y " + os.path.join(daemon_exec_dir, "accomplishments-daemon") + " --logfile=" + os.path.join(cache_dir, "logs", "daemon.log") + " --pidfile=" + pidfile_path
+        else:
+            command = "twistd -noy " + os.path.join(daemon_exec_dir, "accomplishments-daemon") + " --pidfile=" + pidfile_path
+        
+        #print command
+        
+        os.system(command)
         
     
 def kill_daemon_process():

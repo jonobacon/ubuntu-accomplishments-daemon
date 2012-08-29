@@ -22,3 +22,4 @@ Next Version Target: 0.3
  * Bug #1036961: Potential non-starter issue with trophy publishing share check (Jono Bacon)
  * Bug #947271: daemon code clean-up to meet pep8 guidelines (Matt Fischer)
  * Bug #1040248: Re-purpose code for new version of quickly (Jono Bacon)
+ * Bug #1033685: Daemon launcher should have a --restart option (Rafał Cieślak)
