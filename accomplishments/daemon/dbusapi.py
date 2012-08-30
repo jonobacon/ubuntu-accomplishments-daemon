@@ -499,7 +499,7 @@ class AccomplishmentsDBusService(service.DBusExportService):
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
                          in_signature="s", out_signature="b")
-    def get_accom_is_completed(self, accomID):
+    def get_accom_is_accomplished(self, accomID):
         """
         Returns whether the specified accomplishment is accomplished or not.
 
@@ -513,11 +513,11 @@ class AccomplishmentsDBusService(service.DBusExportService):
         Returns:
             * **(bool)** - `True` if the accomplishment has been completed, `False` if not.
         Example:
-            >>> obj.get_accom_is_completed("ubuntu-community/registered-on-launchpad")
+            >>> obj.get_accom_is_accomplished("ubuntu-community/registered-on-launchpad")
             True
         """
 
-        return self.api.get_accom_is_completed(accomID)
+        return self.api.get_accom_is_accomplished(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
                          in_signature="", out_signature="b")
