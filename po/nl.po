@@ -8,19 +8,19 @@ msgstr ""
 "Project-Id-Version: ubuntu-accomplishments-daemon\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-08-22 14:05+0000\n"
-"PO-Revision-Date: 2012-05-25 13:03+0000\n"
-"Last-Translator: Arthur Moore <Unknown>\n"
+"PO-Revision-Date: 2012-08-30 21:06+0000\n"
+"Last-Translator: xatr0z <xatr0z@users.sourceforge.net>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-28 10:22+0000\n"
-"X-Generator: Launchpad (build 15864)\n"
+"X-Launchpad-Export-Date: 2012-08-31 05:14+0000\n"
+"X-Generator: Launchpad (build 15887)\n"
 
 #: ../accomplishments/util/__init__.py:94
 msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
 msgstr ""
-"Foutopsporingsberichten weergeven (-vv zal ook accopmplishments_daemon_lib "
+"Foutopsporingsberichten weergeven (-vv zal ook accomplishments_daemon_lib "
 "debuggen)"
 
 #: ../accomplishments/util/__init__.py:97
@@ -29,13 +29,13 @@ msgstr "Collectie van trofeeën leegmaken"
 
 #: ../accomplishments/daemon/api.py:1758
 msgid "You have accomplished something!"
-msgstr "Je hebt iets bereikt!"
+msgstr "U heeft iets bereikt!"
 
 #: ../accomplishments/daemon/api.py:1769
 #, python-format
 msgid "You have unlocked %s new opportunity."
-msgstr "Je hebt %s nieuwe mogelijkheden ontgrendeld"
+msgstr "U heeft %s nieuwe kans ontgrendeld."
 
 #: ../accomplishments/daemon/api.py:1771
 msgid "Opportunities Unlocked!"
-msgstr "Mogelijkheden ontgrendeld"
+msgstr "Kansen ontgrendeld!"
