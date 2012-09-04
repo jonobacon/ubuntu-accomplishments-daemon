@@ -181,7 +181,7 @@ extrainfo_seen = 1""" % (self.td, self.td))
         src = os.path.join(testdir, "icons", "test.png")
         shutil.copyfile(src, os.path.join(src_path, "test.png"))
 
-        a._create_all_trophy_icons()
+        a.create_all_trophy_icons()
         self.assertTrue(os.path.exists(gen_path))
         self.assertTrue(os.path.exists(os.path.join(gen_path, "test.png")))
         self.assertTrue(os.path.exists(os.path.join(gen_path,
