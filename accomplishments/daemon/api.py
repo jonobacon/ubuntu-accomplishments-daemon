@@ -400,8 +400,6 @@ class Accomplishments(object):
         if not self.test_mode:
             self.sd.connect_signal("DownloadFinished", self._process_recieved_asc_file)
 
-        self._create_all_trophy_icons()
-
         self._refresh_share_data()
 
     def get_media_file(self, media_file_name):
@@ -413,7 +411,7 @@ class Accomplishments(object):
         final = "file:///" + media_filename
         return final
 
-    def _create_all_trophy_icons(self):
+    def create_all_trophy_icons(self):
         """Iterate through each of the accomplishments on the system
         and generate all of the required icons that we provide to
         clients."""
@@ -1148,6 +1146,8 @@ class Accomplishments(object):
 
         self._update_all_locked_and_accomplished_statuses()
 
+        self.create_all_trophy_icons()
+        
         if not self.test_mode:
             self.service.accoms_collections_reloaded()
         # Uncomment following for debugging

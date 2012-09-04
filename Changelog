@@ -25,3 +25,4 @@ Next Version Target: 0.3
  * Bug #1033685: Daemon launcher should have a --restart option (Rafał Cieślak)
  * Bug #1024085: Rename the api from *_completed() to *_accomplished() for
  better consistency. (Matt Fischer)
+ * Bug #1031908: Daemon doesn't have the opportunity to recreate the config directories if they are deleted when it is already running (Rafał Cieślak)
