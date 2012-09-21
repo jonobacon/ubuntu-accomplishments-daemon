@@ -203,57 +203,7 @@ class AsyncAPI(object):
             return
 
         self.scripts_state = RUNNING
-
-        uid = os.getuid()
-        # Is the user currently logged in and running a gnome session?
-        # XXX use deferToThread
-        username = pwd.getpwuid(uid).pw_name
-        try:
-            # XXX since we're using Twisted, let's use it here too and use the
-            # deferred-returning call
-            proc = subprocess.check_output(
-                ["pgrep", "-u", username, "gnome-session"]).strip()
-        except subprocess.CalledProcessError:
-            # user does not have gnome-session running or isn't logged in at
-            # all
-            log.msg("No gnome-session process for user %s" % username)
-            self.scripts_state = NOT_RUNNING  # unmarking to avoid dead-lock
-            return
-        # XXX this is a blocking call and can't be here if we want to take
-        # advantage of deferreds; instead, rewrite this so that the blocking
-        # call occurs in a separate thread (e.g., deferToThread)
-        fp = open("/proc/%s/environ" % proc)
-        try:
-            envars = dict(
-                [line.split("=", 1) for line in fp.read().split("\0")
-                 if line.strip()])
-        except IOError:
-            # user does not have gnome-session running or isn't logged in at
-            # all
-            log.msg("No gnome-session environment for user %s" % username)
-            self.scripts_state = NOT_RUNNING  # unmarking to avoid dead-lock
-            return
-        fp.close()
-
-        # XXX use deferToThread
-        os.seteuid(uid)
-
-        required_envars = ['DBUS_SESSION_BUS_ADDRESS']
-        env = dict([kv for kv in envars.items() if kv[0] in required_envars])
-        # XXX use deferToThread
-        oldenviron = os.environ
-        os.environ.update(env)
-        # XXX note that for many of these deferredToThread changes, we can put
-        # them all in a DeferredList and once they're all done and we have the
-        # results for all of them, a callback can be fired to continue.
-
-        # XXX this next call, a DBus check, happens in the middle of this
-        # method; it would be better if this check was done at a higher level,
-        # for instance, where this class is initiated: if the daemon isn't
-        # registered at the time of instantiation, simply abort then instead of
-        # making all the way here and then aborting. (Note that moving this
-        # check to that location will also eliminate an obvious circular
-        # import.)
+        
         if not dbusapi.daemon_is_registered():
             return
 
@@ -307,9 +257,7 @@ class AsyncAPI(object):
             queuesize = len(self.parent.scripts_queue)
 
         log.msg("The queue is now empty - stopping the scriptrunner.")
-
-        os.environ = oldenviron
-
+        
         # XXX eventually the code in this method will be rewritten using
         # deferreds; as such, we're going to have to be more clever regarding
         # timing things...
