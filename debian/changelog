@@ -6,7 +6,7 @@ accomplishments-daemon (0.3) precise; urgency=low
     (LP: #1036961)
   * Re-purpose code for new version of quickly (LP: #1040248)
 
-  [Rafal Cieślak]
+  [Rafał Cieślak]
   * The daemon needs a more elgant way to launch/stop  (LP: #1033453)
   * Fix for pynotify when daemon alsi run deamonized
   * Client and Developer documentation added
@@ -16,7 +16,7 @@ accomplishments-daemon (0.3) precise; urgency=low
   * Removed need for running gnome-session process, which enables distros not
     based on gnome to run the daemon successfully.
 
-  [Matt Fischer]
+  [Matthew Fischer]
   * parsing errors in an accomplishment file will crash the daemon 
     (LP: #1024041)
   * run_script(s) unit tests succeed in pbuilder/build system but fail when
