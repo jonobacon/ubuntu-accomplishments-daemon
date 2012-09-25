@@ -5,25 +5,17 @@ Please add items to this changelog that are:
 
 Add items using the following format:
 
+   [Name]
+   * What you did 
+   * If a bug (LP: #BUGNUMBER)
+
+   For example:
+
+   [Matt Fischer]
+   * Fixed this format section (LP: #000000000)
+
 -------------------------------------------------------------------------
 
-Next Version Target: 0.3
+Next Version Target: 0.4
 
 -------------------------------------------------------------------------
-
- * Bug #1033453: The daemon needs a more elgant way to launch/stop (Rafal Cieślak)
- * Bug #1031913: Get Ubuntu One setting from daemon for hiding notification (Brian Mastell)
- * Bug #1011903: The "Hide Ubuntu One notifications" preference has no *immediate* effect. (Jason Robinson)
- * Fix for pynotify when daemon run deamonized (Rafal Cieślak)
- * Bug #1024041: parsing errors in an accomplishment file will crash the daemon (Matt Fischer)
- * Bug #1030208: run_script(s) unit tests succeed in pbuilder/build system but fail when run from the command line (Matt Fischer)
- * Unit Tests added. (Matt Fischer)
- * Client and Developer documentation added (Jono Bacon / Rafal Cieślak)
- * Bug #1036961: Potential non-starter issue with trophy publishing share check (Jono Bacon)
- * Bug #947271: daemon code clean-up to meet pep8 guidelines (Matt Fischer)
- * Bug #1040248: Re-purpose code for new version of quickly (Jono Bacon)
- * Bug #1033685: Daemon launcher should have a --restart option (Rafał Cieślak)
- * Bug #1024085: Rename the api from *_completed() to *_accomplished() for
- better consistency. (Matt Fischer)
- * Bug #1031908: Daemon doesn't have the opportunity to recreate the config directories if they are deleted when it is already running (Rafał Cieślak)
- * Removed need for running gnome-session process, which enables distros not based on gnome to run the daemon successfully (Rafał Cieślak).
