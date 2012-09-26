@@ -1,4 +1,10 @@
-accomplishments-daemon (0.3) precise; urgency=low
+accomplishments-daemon (0.3~quantal2) quantal; urgency=low
+
+  * Redoing the upload to fix the incorrect distroseries, no other changes 
+
+ -- Matthew Fischer <matthew.fischer@ubuntu.com>  Wed, 26 Sep 2012 16:28:23 -0600
+
+accomplishments-daemon (0.3~precise1) precise; urgency=low
 
   [Jono Bacon]
   * Client and Developer documentation added
@@ -33,7 +39,7 @@ accomplishments-daemon (0.3) precise; urgency=low
   * The "Hide Ubuntu One notifications" preference has no immediate effect.
     (LP: #1011903)
 
- -- Matthew Fischer <matthew.fischer@ubuntu.com>  Tue, 25 Sep 2012 12:34:09 -0600
+ -- Matthew Fischer <matthew.fischer@ubuntu.com>  Wed, 26 Sep 2012 16:19:36 -0600
 
 accomplishments-daemon (0.2) precise; urgency=low
 
