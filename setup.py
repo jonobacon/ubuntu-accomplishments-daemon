@@ -55,7 +55,7 @@ class InstallAndUpdateDataDirectory(DistUtilsExtra.auto.install_auto):
 ##################################################################################
 DistUtilsExtra.auto.setup(
     name='accomplishments-daemon',
-    version='0.1',
+    version='0.3',
     license='GPL-3',
     author='Jono Bacon',
     author_email='jono@ubuntu.com',

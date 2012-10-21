@@ -1,0 +1,45 @@
+.\" Copyright (c) 2012 - Matthew Fischer
+.TH accomplishments-daemon 1 "20 October 2012"
+.SH NAME
+accomplishments-daemon \- the daemon for the Ubuntu Accomplishments system
+.SH SYNOPSIS
+.B accomplishments-daemon
+[
+.I OPTION
+]
+.SH DESCRIPTION
+.B accomplishments-daemon
+the daemon for the Ubuntu Accomplishments system,  The daemon is automatically
+started by the Accomplishments Viewer and so normally users do not need to
+manually run the daemon.
+.SH OPTIONS
+.TP
+.B \-h, \-\-help
+Show help options
+.TP
+.B \-\-start
+Start the daemon.  This is also the default option that is used when the
+accomplishments-daemon is started without arguments.
+.TP
+.B  \-\-stop
+Stop the daemon gracefully.
+.TP
+.B \-\-kill
+Kill the daemon (not gracefully).  Use if --stop does not work.
+.TP
+.B \-r, \-\-restart
+Restart the daemon.  This can also be used to run an updated copy of the
+daemon if the user wants to avoid a logout or reboot to restart it.
+.TP
+.B \-\-reload
+Reload the accomplishments collections.  This option is useful to run after the
+the accomplishments collections are updated.
+.TP
+.B \-f, \-\-foreground
+Run the daemon in the foreground and log everything to stdout.  This is only 
+useful when starting the daemon.
+.SH SEE ALSO
+.TP
+.B accomplishments-viewer (1)
+.sp
+.LP

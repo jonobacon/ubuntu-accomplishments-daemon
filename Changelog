@@ -20,5 +20,6 @@ Next Version Target: 0.4
 
    [Matt Fischer]
    * Fix lintian warnings
+   * Added a manpage (LP: #1069263)
 
 -------------------------------------------------------------------------
