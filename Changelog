@@ -18,4 +18,7 @@ Add items using the following format:
 
 Next Version Target: 0.4
 
+   [Matt Fischer]
+   * Fix lintian warnings
+
 -------------------------------------------------------------------------
