@@ -1140,6 +1140,12 @@ class Accomplishments(object):
 
     def get_accom_description(self, accomID):
         return self.accomDB[accomID]['description']
+        
+    def get_accom_keywords(self, accomID):
+        if not 'keywords' in self.accomDB[accomID]:
+            return [""]
+        else:
+            return [a.rstrip().lstrip() for a in self.accomDB[accomID]['keywords'].split(",")]
 
     def get_accom_needs_signing(self, accomID):
         """
@@ -1508,6 +1514,7 @@ class Accomplishments(object):
                 'collection-human': self.get_collection_name(
                 self.get_accom_collection(accom)),
                 'categories': self.get_accom_categories(accom),
+                'keywords': self.get_accom_keywords(accom),
                 'id': accom
             })
         return db

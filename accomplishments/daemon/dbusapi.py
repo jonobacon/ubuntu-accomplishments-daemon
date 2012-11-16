@@ -408,6 +408,11 @@ class AccomplishmentsDBusService(service.DBusExportService):
             ["Launchpad"]
         """
         return self.api.get_accom_categories(accomID)
+        
+    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
+                         in_signature="s", out_signature="as")
+    def get_accom_keywords(self,accomID):
+        return self.api.get_accom_keywords(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
                          in_signature="s", out_signature="b")
