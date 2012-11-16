@@ -18,6 +18,9 @@ Add items using the following format:
 
 Next Version Target: 0.4
 
+   [Rafał Cieślak]
+   * Added support for 'keywords' fieldk (LP: #1076555)
+
    [Matt Fischer]
    * Fix lintian warnings
    * Added a manpage (LP: #1069263)
