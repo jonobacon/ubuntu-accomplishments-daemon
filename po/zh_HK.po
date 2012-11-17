@@ -1,0 +1,39 @@
+# Chinese (Hong Kong) translation for ubuntu-accomplishments-daemon
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
+# This file is distributed under the same license as the ubuntu-accomplishments-daemon package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ubuntu-accomplishments-daemon\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-08-22 14:05+0000\n"
+"PO-Revision-Date: 2012-11-16 13:16+0000\n"
+"Last-Translator: Howard Chan <smartboyhw@gmail.com>\n"
+"Language-Team: Chinese (Hong Kong) <zh_HK@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2012-11-17 05:07+0000\n"
+"X-Generator: Launchpad (build 16278)\n"
+
+#: ../accomplishments/util/__init__.py:94
+msgid "Show debug messages (-vv debugs accomplishments_daemon_lib also)"
+msgstr "顯示除錯信息(-vv 會同時除錯 accomplishments_daemon_lib)"
+
+#: ../accomplishments/util/__init__.py:97
+msgid "Clear your trophies collection"
+msgstr "清除您的獎杯系列"
+
+#: ../accomplishments/daemon/api.py:1758
+msgid "You have accomplished something!"
+msgstr "您成功達成了一項東西!"
+
+#: ../accomplishments/daemon/api.py:1769
+#, python-format
+msgid "You have unlocked %s new opportunity."
+msgstr "您解鎖了%s新機會."
+
+#: ../accomplishments/daemon/api.py:1771
+msgid "Opportunities Unlocked!"
+msgstr "機會解鎖了!"
