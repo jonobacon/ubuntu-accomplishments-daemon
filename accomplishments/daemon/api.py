@@ -773,7 +773,10 @@ class Accomplishments(object):
             else:
                 # process unsigned trophies
                 log.msg("Processing unsigned trophy: " + path)
-                self._process_valid_trophy_received(path)
+                if self.get_accom_needs_signing():
+                    log.msg("Trophy needs signing, skipping")
+                else:
+                    self._process_valid_trophy_received(path)
 
     def write_extra_information_file(self, item, data):
         log.msg(
