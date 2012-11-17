@@ -750,15 +750,13 @@ class Accomplishments(object):
         log.msg("Valid trophy received...")
         if path.endswith(".asc"):
             accomID = path[len(self.trophies_path) + 1:-11]
-        else:
-            accomID = path[len(self.trophies_path) + 1:-7]
-        self.service.trophy_received(accomID)
-        # don't pop-up a notification on synced trophy files
-        if path.endswith(".asc"):
             self._display_accomplished_bubble(accomID)
             self._display_unlocked_bubble(accomID)
+        else:
+            accomID = path[len(self.trophies_path) + 1:-7]
         # Mark as accomplished and get list of new opportunities
         just_unlocked = self._mark_as_accomplished(accomID)
+        self.service.trophy_received(accomID)
         self.run_scripts(just_unlocked)
 
     def _process_received_trophy_file(self, path, info):
