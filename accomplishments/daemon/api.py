@@ -346,7 +346,7 @@ class Accomplishments(object):
         self.reload_accom_database()
 
         if not self.test_mode:
-            self.sd.connect_signal("DownloadFinished", self._process_recieved_asc_file)
+            self.sd.connect_signal("DownloadFinished", self._process_received_trophy_file)
 
         self._refresh_share_data()
 
@@ -746,24 +746,34 @@ class Accomplishments(object):
             f.write(data)
             f.close()
 
-    def _process_recieved_asc_file(self, path, info):
-        log.msg("Trophy signature recieved...")
-        log.msg("Processing signature: " + path)
+    def _process_valid_trophy_received(self, path):
+        log.msg("Valid trophy received...")
+        if path.endswith(".asc"):
+            accomID = path[len(self.trophies_path) + 1:-11]
+        else:
+            accomID = path[len(self.trophies_path) + 1:-7]
+        self.service.trophy_received(accomID)
+        self._display_accomplished_bubble(accomID)
+        self._display_unlocked_bubble(accomID)
+        # Mark as accomplished and get list of new opportunities
+        just_unlocked = self._mark_as_accomplished(accomID)
+        self.run_scripts(just_unlocked)
 
-        if path.startswith(self.trophies_path) and path.endswith(".asc"):
-            valid = self._get_is_asc_correct(path)
+    def _process_received_trophy_file(self, path, info):
+        log.msg("Trophy file received: validating...")
 
-            if not valid:
-                log.msg("WARNING: invalid .asc signature recieved from the server!")
-
-            if valid == True:
-                accomID = path[len(self.trophies_path) + 1:-11]
-                self.service.trophy_received(accomID)
-                self._display_accomplished_bubble(accomID)
-                self._display_unlocked_bubble(accomID)
-                # Mark as accomplished and get list of new opportunities
-                just_unlocked = self._mark_as_accomplished(accomID)
-                self.run_scripts(just_unlocked)
+        if path.startswith(self.trophies_path):
+            if path.endswith(".asc"):
+                log.msg("Processing signature: " + path)
+                valid = self._get_is_asc_correct(path)
+                if not valid:
+                    log.msg("WARNING: invalid .asc signature received from the server!")
+                else:
+                    self._process_valid_trophy_received(path)
+            else:
+                # process unsigned trophies
+                log.msg("Processing unsigned trophy: " + path)
+                self._process_valid_trophy_received(path)
 
     def write_extra_information_file(self, item, data):
         log.msg(
@@ -1140,7 +1150,7 @@ class Accomplishments(object):
 
     def get_accom_description(self, accomID):
         return self.accomDB[accomID]['description']
-        
+
     def get_accom_keywords(self, accomID):
         if not 'keywords' in self.accomDB[accomID]:
             return [""]

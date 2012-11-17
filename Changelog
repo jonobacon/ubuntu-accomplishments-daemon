@@ -24,5 +24,6 @@ Next Version Target: 0.4
    [Matt Fischer]
    * Fix lintian warnings
    * Added a manpage (LP: #1069263)
+   * The daemon is not reacting on .trophy files being sent (LP: #1079868)
 
 -------------------------------------------------------------------------
