@@ -16,9 +16,9 @@ __all__ = [
 
 # Where your project will look for your data (for instance, images and ui
 # files). By default, this is ../data, relative your trunk layout
-__accomplishments_daemon_data_directory__ = '../data/'
+__accomplishments_daemon_data_directory__ = '/usr/share/accomplishments-daemon/'
 __license__ = ''
-__version__ = 'VERSION'
+__version__ = '0.3'
 
 import os
 
