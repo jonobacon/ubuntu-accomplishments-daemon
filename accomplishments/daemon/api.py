@@ -14,8 +14,6 @@ import gettext
 from gettext import gettext as _
 from gettext import ngettext as N_
 import ConfigParser
-import Image
-import ImageEnhance
 from StringIO import StringIO
 import datetime
 import getpass
@@ -358,68 +356,6 @@ class Accomplishments(object):
 
         final = "file:///" + media_filename
         return final
-
-    def create_all_trophy_icons(self):
-        """Iterate through each of the accomplishments on the system
-        and generate all of the required icons that we provide to
-        clients."""
-        cols = self.list_collections()
-
-        for col in cols:
-            col_imagespath = os.path.join(self.accomDB[col]['base-path'],
-                                          "trophyimages")
-            cache_trophyimagespath = os.path.join(
-                self.dir_cache, "trophyimages", col)
-            lock_image_path = os.path.join(media_dir, "lock.png")
-            if not os.path.exists(cache_trophyimagespath):
-                os.makedirs(cache_trophyimagespath)
-
-            # First, delete all cached images:
-            cachedlist = glob.glob(cache_trophyimagespath + "/*")
-            for c in cachedlist:
-                os.remove(c)
-
-            mark = Image.open(lock_image_path)
-            for root, dirs, files in os.walk(col_imagespath):
-                for name in files:
-                    try:
-                        im = Image.open(os.path.join(root, name))
-                        filename = os.path.join(cache_trophyimagespath, name)
-                        filecore = os.path.splitext(filename)[0]
-                        filetype = os.path.splitext(filename)[1]
-
-                        im.save(filename)
-
-                        # Opacity set to 1.0 until we figure out a better way of
-                        # showing opportunities
-                        reduced = self._create_reduced_opacity_trophy_icon(im,
-                                                                           1.0)
-                        reduced.save(filecore + "-opportunity" + filetype)
-
-                        if im.mode != 'RGBA':
-                            im = im.convert('RGBA')
-                        layer = Image.new('RGBA', im.size, (0, 0, 0, 0))
-                        position = (
-                            im.size[0] - mark.size[0], im.size[1] - mark.size[1])
-                        layer.paste(mark, position)
-                        img = Image.composite(layer, reduced, layer)
-                        img.save(filecore + "-locked" + filetype)
-
-                    except Exception, (msg):
-                        log.msg(msg)
-
-    def _create_reduced_opacity_trophy_icon(self, im, opacity):
-        """Returns an image with reduced opacity."""
-
-        assert opacity >= 0 and opacity <= 1
-        if im.mode != 'RGBA':
-            im = im.convert('RGBA')
-        else:
-            im = im.copy()
-        alpha = im.split()[3]
-        alpha = ImageEnhance.Brightness(alpha).enhance(opacity)
-        im.putalpha(alpha)
-        return im
 
     def get_config_value(self, section, item):
         """Return a configuration value from the .accomplishments file"""
@@ -1106,8 +1042,6 @@ class Accomplishments(object):
                 self.accomDB[collection] = collectiondata
 
         self._update_all_locked_and_accomplished_statuses()
-
-        self.create_all_trophy_icons()
         
         if not self.test_mode:
             self.service.accoms_collections_reloaded()
@@ -1282,8 +1216,8 @@ class Accomplishments(object):
         return self.accomDB[accomID]['icon']
 
     def get_accom_icon_path(self, accomID):
-        imagesdir = os.path.join(self.dir_cache, 'trophyimages')
-        imagesdir = os.path.join(imagesdir, self.get_accom_collection(accomID))
+        imagesdir = self.get_collection_data(self.get_accom_collection(accomID))['base-path'];
+        imagesdir = os.path.join(imagesdir, 'trophyimages')
         iconfile = self.get_accom_icon(accomID)
         iconfilename, iconfileext = os.path.splitext(iconfile)
 
@@ -1291,11 +1225,28 @@ class Accomplishments(object):
         if not iconfileext:
             iconfileext = ""
         if not self.get_accom_is_unlocked(accomID):
-            iconfilename = iconfilename + '-locked'
+            iconfile_path = os.path.join(imagesdir ,iconfilename + '-locked' + iconfileext)
+            if os.path.exists(iconfile_path):
+                return iconfile_path
+            iconfile_path = os.path.join(imagesdir ,iconfilename + '-locked_auto' + iconfileext)
+            if os.path.exists(iconfile_path):
+                return iconfile_path
+            iconfile_path = os.path.join(imagesdir ,iconfilename + iconfileext)
+            if os.path.exists(iconfile_path):
+                return iconfile_path
         elif not self.get_accom_is_accomplished(accomID):
-            iconfilename = iconfilename + '-opportunity'
-        iconfile = iconfilename + iconfileext
-        return os.path.join(imagesdir, iconfile)
+            iconfile_path = os.path.join(imagesdir ,iconfilename + '-opportunity' + iconfileext)
+            if os.path.exists(iconfile_path):
+                return iconfile_path
+            iconfile_path = os.path.join(imagesdir ,iconfilename + '-opportunity_auto' + iconfileext)
+            if os.path.exists(iconfile_path):
+                return iconfile_path
+            iconfile_path = os.path.join(imagesdir ,iconfilename + iconfileext)
+            if os.path.exists(iconfile_path):
+                return iconfile_path
+        else:
+            iconfile_path = os.path.join(imagesdir ,iconfilename + iconfileext)
+            return iconfile_path
 
     def get_accom_needs_info(self, accomID):
         if not 'needs-information' in self.accomDB[accomID]:

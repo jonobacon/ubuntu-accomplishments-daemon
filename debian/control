@@ -10,7 +10,6 @@ Build-Depends: debhelper (>= 8),
  python-gi,
  python-xdg,
  python-dbus,
- python-imaging,
  python-gobject-2,
  python-gpgme,
  ubuntuone-couch,
@@ -36,7 +35,6 @@ Depends: ${misc:Depends},
  gir1.2-notify-0.7,
  python-gobject-2,
  ubuntuone-client,
- python-imaging,
  python-gpgme
 Description: Background daemon for running the Ubuntu Accomplishments system.
  This is the background daemon process that is required to run the Ubuntu

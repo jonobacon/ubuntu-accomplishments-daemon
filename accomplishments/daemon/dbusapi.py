@@ -906,12 +906,6 @@ class AccomplishmentsDBusService(service.DBusExportService):
     def get_share_name(self):
         return self.api.get_share_name()
 
-    @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
-                         in_signature="", out_signature="")
-    def create_all_trophy_icons(self):
-        return self.api.create_all_trophy_icons()
-
-
     # XXX this looks like an unintentional duplicate of the "other"
     # trophy_received... I've moved them here together so that someone in the
     # know (Jono?) can clarify and remove the one that's not needed
