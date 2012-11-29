@@ -19,9 +19,7 @@ Add items using the following format:
 Next Version Target: 0.4
 
    [Rafał Cieślak]
-   * Added support for 'keywords' field (LP: #1076555)
-   * Removed scripts that were generating trophy icons variations & implemented
-     pointing to right image variation within it's collection (LP: #1084481)
+   * Added support for 'keywords' fieldk (LP: #1076555)
 
    [Matt Fischer]
    * Fix lintian warnings
