@@ -68,7 +68,7 @@ if installed:
 
 LOCAL_USERNAME = getpass.getuser()
 SCRIPT_DELAY = 900
-ONLINETROPHIESHOST = "213.138.100.229:8000"
+ONLINETROPHIESHOST = "91.189.93.66"
 STAGING_ID = "openiduser204307"  # staging ID
 PRODUCTION_ID = "openiduser155707"  # production ID
 
