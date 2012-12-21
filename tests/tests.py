@@ -6,17 +6,14 @@ import sys
 import os
 import tempfile
 import shutil
-import subprocess
-import ConfigParser
 import datetime
 import time
 import Image
 import gpgme
-from collections import deque
 from types import GeneratorType
 
 sys.path.insert(0, os.path.join(os.path.split(__file__)[0], ".."))
-from accomplishments.daemon import app, api
+from accomplishments.daemon import api
 
 # These tests will modify the user's envrionment, outside of the test
 # dir and so are not written/skipped:
