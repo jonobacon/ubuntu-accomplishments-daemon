@@ -20,22 +20,14 @@ from StringIO import StringIO
 import datetime
 import getpass
 import glob
-#import gobject
+# import gobject
 import gpgme
-import json
 import os
-import pwd
-import subprocess
 import time
 import locale
 from collections import deque
 
-import dbus
-import dbus.service
-
 from twisted.internet import defer, reactor
-from twisted.internet.protocol import ProcessProtocol
-from twisted.python import filepath
 from twisted.python import log
 
 import xdg.BaseDirectory
@@ -53,7 +45,7 @@ from ubuntuone.couch import auth
 import accomplishments
 from accomplishments import exceptions
 from accomplishments.daemon import dbusapi
-from accomplishments.util import get_data_file, SubprocessReturnCodeProtocol
+from accomplishments.util import SubprocessReturnCodeProtocol
 from accomplishments.util.paths import daemon_exec_dir, media_dir, module_dir1, module_dir2, installed, locale_dir
 
 gettext.bindtextdomain('accomplishments-daemon', locale_dir)
@@ -64,7 +56,8 @@ os.environ["PYTHONPATH"] = "$PYTHONPATH:."
 # may happen to be in a completely different directory, if the daemon was
 # installed using a non-default prefix.
 if installed:
-    os.environ["PYTHONPATH"] = module_dir1 + ":" + module_dir2 + ":" + os.environ["PYTHONPATH"]
+    os.environ["PYTHONPATH"] = module_dir1 + ":" + module_dir2 + ":" + \
+        os.environ["PYTHONPATH"]
 
 LOCAL_USERNAME = getpass.getuser()
 SCRIPT_DELAY = 900
@@ -72,7 +65,7 @@ ONLINETROPHIESHOST = "91.189.93.66"
 STAGING_ID = "openiduser204307"  # staging ID
 PRODUCTION_ID = "openiduser155707"  # production ID
 
-#flags used for scripts_state
+# flags used for scripts_state
 NOT_RUNNING = 0
 RUNNING = 1
 
@@ -156,7 +149,8 @@ class AsyncAPI(object):
                 signal_ok='FolderCreated', success_filter=success_filter)
 
             self.parent.sd.offer_share(
-                trophydir, self.parent.matrix_username, LOCAL_USERNAME + " Trophies Folder"
+                trophydir, self.parent.matrix_username, LOCAL_USERNAME +
+                " Trophies Folder"
                 + " (" + timeid + ")", "Modify")
             log.msg(
                 "...share has been offered (" + trophydir + "" + ", "
@@ -180,7 +174,8 @@ class AsyncAPI(object):
             # XXX let's break this out into a separate folder-sharing method
             log.msg("...the '%s' folder is not shared" % trophydir)
             self.parent.sd.offer_share(
-                trophydir, self.parent.matrix_username, LOCAL_USERNAME + " Trophies Folder"
+                trophydir, self.parent.matrix_username, LOCAL_USERNAME +
+                " Trophies Folder"
                 + " (" + timeid + ")", "Modify")
             log.msg("...share has been offered (" + trophydir + "" + ", "
                     + self.parent.matrix_username + ", " + LOCAL_USERNAME + ")")
@@ -203,7 +198,7 @@ class AsyncAPI(object):
             return
 
         self.scripts_state = RUNNING
-        
+
         if not dbusapi.daemon_is_registered():
             return
 
@@ -213,7 +208,8 @@ class AsyncAPI(object):
 
         queuesize = len(self.parent.scripts_queue)
 
-        log.msg("--- Starting Running Scripts - %d items on the queue ---" % (queuesize))
+        log.msg("--- Starting Running Scripts - %d items on the queue ---" %
+                (queuesize))
         timestart = time.time()
         if not self.parent.test_mode:
             self.parent.service.scriptrunner_start()
@@ -257,7 +253,7 @@ class AsyncAPI(object):
             queuesize = len(self.parent.scripts_queue)
 
         log.msg("The queue is now empty - stopping the scriptrunner.")
-        
+
         # XXX eventually the code in this method will be rewritten using
         # deferreds; as such, we're going to have to be more clever regarding
         # timing things...
@@ -291,7 +287,7 @@ class Accomplishments(object):
         self.lang = locale.getdefaultlocale()[0]
 
         # use this to override the language for testing
-        #self.lang = "pt_BR"
+        # self.lang = "pt_BR"
         self.accomlangs = []
         self.service = service
         self.asyncapi = AsyncAPI(self)
@@ -346,7 +342,8 @@ class Accomplishments(object):
         self.reload_accom_database()
 
         if not self.test_mode:
-            self.sd.connect_signal("DownloadFinished", self._process_received_trophy_file)
+            self.sd.connect_signal(
+                "DownloadFinished", self._process_received_trophy_file)
 
         self._refresh_share_data()
 
@@ -556,7 +553,8 @@ class Accomplishments(object):
         for s in shares:
             if s["other_username"] == self.matrix_username:
                 if s["subscribed"] == "True":
-                    matchingshares.append({"name": s["name"], "share_id": s["volume_id"]})
+                    matchingshares.append(
+                        {"name": s["name"], "share_id": s["volume_id"]})
 
         if len(matchingshares) > 1:
             log.msg("Could not find unique active share.")
@@ -626,7 +624,8 @@ class Accomplishments(object):
 
         infoneeded = []
         # and prepend the path to the directory, where all extra-information
-        # is stored [like: ~/.local/share/accomplishments/trophies/.extrainformation/]
+        # is stored [like:
+        # ~/.local/share/accomplishments/trophies/.extrainformation/]
         trophyextrainfo = os.path.join(
             self.trophies_path, ".extrainformation/")
 
@@ -640,9 +639,11 @@ class Accomplishments(object):
             # get the path to the directory of accomplishments set's
             # "extrainformation" dir - it is useful, because it contains
             # translated labels and descriptions
-            accomextrainfo = os.path.join(self.accomDB[accom]['base-path'], "extrainformation")
+            accomextrainfo = os.path.join(
+                self.accomDB[accom]['base-path'], "extrainformation")
 
-            # a temporary variable, representing a single entry of the list this function returns
+            # a temporary variable, representing a single entry of the list
+            # this function returns
             d = {}
 
             # Get collection name from accomOD
@@ -653,23 +654,30 @@ class Accomplishments(object):
 
                 # For each needed piece of information:
                 for i in ei:
-                    label = self.accomDB[collection]['extra-information'][i]['label']
-                    desc = self.accomDB[collection]['extra-information'][i]['description']
-                    example = self.accomDB[collection]['extra-information'][i].get('example')
+                    label = self.accomDB[collection][
+                        'extra-information'][i]['label']
+                    desc = self.accomDB[collection][
+                        'extra-information'][i]['description']
+                    example = self.accomDB[collection][
+                        'extra-information'][i].get('example')
                     if example is None:
                         example = ''
-                    regex = self.accomDB[collection]['extra-information'][i].get('regex')
+                    regex = self.accomDB[collection][
+                        'extra-information'][i].get('regex')
                     if regex is None:
                         regex = ''
                     # we also need to know whether user has already set this item's value.
-                    # to do this, simply check whether trophies/.extrainformation/<item> file exists.
+                    # to do this, simply check whether
+                    # trophies/.extrainformation/<item> file exists.
                     try:
                         valuefile = open(os.path.join(trophyextrainfo, i))
                         # if we got here without an exception, it means that the file exists
                         # so, we can read it's value
                         value = valuefile.readline()
-                        value = value.rstrip()  # get rid of the tailing newline
-                        # and build up the dictionary of all data for a single ExtraInformation field
+                        value = value.rstrip(
+                        )  # get rid of the tailing newline
+                        # and build up the dictionary of all data for a single
+                        # ExtraInformation field
                         d = {
                             "collection": collection,
                             "needs-information": i,
@@ -679,7 +687,9 @@ class Accomplishments(object):
                             "regex": regex,
                             "value": value}
                     except IOError as e:
-                        # we got an exception, so it seems that the file is not present - we'll use "" as the value, to indicate that it's empty
+                        # we got an exception, so it seems that the file is not
+                        # present - we'll use "" as the value, to indicate that
+                        # it's empty
                         d = {
                             "collection": collection,
                             "needs-information": i,
@@ -689,11 +699,13 @@ class Accomplishments(object):
                             "regex": regex,
                             "value": ""}
 
-                    # since the collected all data related to this particular ExtraInformation field, append it to the list
+                    # since the collected all data related to this particular
+                    # ExtraInformation field, append it to the list
                     infoneeded.append(d)
 
         # at this moment the infoneeded list will be ready, but full of duplicates,
-        # for the items have been added multiple times, if they are mentioned in more then one .accomplishment file
+        # for the items have been added multiple times, if they are mentioned
+        # in more then one .accomplishment file
         final = []
         for x in infoneeded:  # for each item in the original list...
             if x not in final:  # ...add it to the outputted list only if it hadn't been added yet.
@@ -713,16 +725,17 @@ class Accomplishments(object):
             [{"collection" : "ubuntu-community", "needs-information" : "askubuntu-user-url", "label" : "AskUbuntu user profile URL", "description" : "The URL of your AskUbuntu usr profile page", "example" : "http://askubuntu.com/users/42/nick", "regex" : "", "value" : ""}]
 
         """
-        #fetch a full list of ExtraInformation
+        # fetch a full list of ExtraInformation
         data = self.get_all_extra_information()
-        #now we need to unsort the data just to output these entries, that have value == ""
-        #this way we can return a list of ExtraInformation fields, that have not been write_config_file_item
+        # now we need to unsort the data just to output these entries, that have value == ""
+        # this way we can return a list of ExtraInformation fields, that have
+        # not been write_config_file_item
         result = []
         for i in data:  # for each ExtraInformation in the full list
             if not i['value']:  # if the value string is empty, so this ExtraInformation field have not been yet set
                 i.pop('value')  # remove the 'value' field (it's empty anyway)
                 result.append(i)  # add this entry to the resulting list
-            #do not add these fields, that have some value
+            # do not add these fields, that have some value
 
         return result
 
@@ -732,14 +745,16 @@ class Accomplishments(object):
         does not overwrite any existing data
         """
 
-        # XXX this should be removed as we are using write_extra_information_file
+        # XXX this should be removed as we are using
+        # write_extra_information_file
         log.msg("Creating Extra Information file: %s, %s" % (item, data))
         extrainfodir = os.path.join(self.trophies_path, ".extrainformation/")
 
         if not os.path.isdir(extrainfodir):
             os.makedirs(extrainfodir)
         try:
-            open(os.path.join(extrainfodir, item))  # if the file already exists, do not overwrite it
+            open(os.path.join(extrainfodir, item))
+                 # if the file already exists, do not overwrite it
             pass
         except IOError as e:
             f = open(os.path.join(extrainfodir, item), 'w')
@@ -787,11 +802,12 @@ class Accomplishments(object):
             os.makedirs(extrainfodir)
 
         if data:
-            f = open(os.path.join(extrainfodir, item), 'w')  # will trunkate the file, in case it exist
+            f = open(os.path.join(extrainfodir, item), 'w')
+                     # will trunkate the file, in case it exist
             f.write(data)
             f.close()
         else:
-            #file would be empty, remove it instead
+            # file would be empty, remove it instead
             os.remove(os.path.join(extrainfodir, item))
 
     # Returns True if all extra information is available for an accom,
@@ -864,7 +880,7 @@ class Accomplishments(object):
             data = f.read()
             final = [{item: data, "label": label}]
         except IOError as e:
-            #print "No data."
+            # print "No data."
             final = [{item: "", "label": label}]
         return final
 
@@ -905,7 +921,8 @@ class Accomplishments(object):
             for collection in collections:
                 # For each collection...
                 if collection in self.accomDB:
-                    # This collection has already been loaded from another install path!
+                    # This collection has already been loaded from another
+                    # install path!
                     continue
 
                 collpath = os.path.join(path, collection)
@@ -917,7 +934,8 @@ class Accomplishments(object):
 
                 if not (cfg.has_option("general", "langdefault") and cfg.has_option("general", "name")):
                     print aboutpath
-                    raise LookupError("Accomplishment collection with invalid ABOUT file ")
+                    raise LookupError(
+                        "Accomplishment collection with invalid ABOUT file ")
 
                 langdefault = cfg.get("general", "langdefault")
                 collectionname = cfg.get("general", "name")
@@ -934,14 +952,16 @@ class Accomplishments(object):
                         accompath = os.path.join(langdefaultpath, accomset)
                         accomcfg = ConfigParser.RawConfigParser()
                         # check if there is a translated version...
-                        translatedpath = os.path.join(os.path.join(collpath, self.lang), accomset)
+                        translatedpath = os.path.join(
+                            os.path.join(collpath, self.lang), accomset)
                         if os.path.exists(translatedpath):
                             # yes, so use the translated file
                             readpath = translatedpath
                             langused = self.lang
                         else:
                             # no. maybe there is a shorter language code?
-                            translatedpath = os.path.join(os.path.join(collpath, self.lang.split("_")[0]), accomset)
+                            translatedpath = os.path.join(os.path.join(
+                                collpath, self.lang.split("_")[0]), accomset)
                             if os.path.exists(translatedpath):
                                 readpath = translatedpath
                                 langused = self.lang.split("_")[0]
@@ -975,7 +995,8 @@ class Accomplishments(object):
                             accomdata['categories'] = []
                             for cat in cats:
                                 catsplitted = cat.rstrip().lstrip().split(":")
-                                accomdata['categories'].append(cat.rstrip().lstrip())
+                                accomdata['categories'].append(
+                                    cat.rstrip().lstrip())
                                 if catsplitted[0] in collcategories:
                                     pass
                                 else:
@@ -983,7 +1004,8 @@ class Accomplishments(object):
                                 if len(catsplitted) > 1:
                                     # category + subcategory
                                     if catsplitted[1] not in collcategories[catsplitted[0]]:
-                                        collcategories[catsplitted[0]].append(catsplitted[1])
+                                        collcategories[catsplitted[
+                                            0]].append(catsplitted[1])
                             del accomdata['category']
                         else:
                             accomdata['categories'] = []
@@ -1025,7 +1047,8 @@ class Accomplishments(object):
                                         "Parse error is: %s" % (readpath, e.message))
                                 continue
 
-                            accomdata = dict(accomcfg._sections["accomplishment"])
+                            accomdata = dict(
+                                accomcfg._sections["accomplishment"])
                             accomID = collection + "/" + accomfile[:-15]
                             if 'author' in accomdata:
                                 collauthors.add(accomdata['author'])
@@ -1041,8 +1064,10 @@ class Accomplishments(object):
                                 categories = []
                                 accomdata['categories'] = []
                                 for cat in cats:
-                                    catsplitted = cat.rstrip().lstrip().split(":")
-                                    accomdata['categories'].append(cat.rstrip().lstrip())
+                                    catsplitted = cat.rstrip(
+                                    ).lstrip().split(":")
+                                    accomdata['categories'].append(
+                                        cat.rstrip().lstrip())
                                     if catsplitted[0] in collcategories:
                                         pass
                                     else:
@@ -1050,7 +1075,8 @@ class Accomplishments(object):
                                     if len(catsplitted) > 1:
                                         # category + subcategory
                                         if catsplitted[1] not in collcategories[catsplitted[0]]:
-                                            collcategories[catsplitted[0]].append(catsplitted[1])
+                                            collcategories[catsplitted[
+                                                0]].append(catsplitted[1])
                                 del accomdata['category']
                             else:
                                 accomdata['categories'] = []
@@ -1076,7 +1102,8 @@ class Accomplishments(object):
                     if eicfg.has_option("description", self.lang):
                         description = eicfg.get("description", self.lang)
                     elif eicfg.has_option("description", self.lang.split("_")[0]):
-                        description = eicfg.get("description", self.lang.split("_")[0])
+                        description = eicfg.get(
+                            "description", self.lang.split("_")[0])
                     else:
                         description = eicfg.get("description", langdefault)
 
@@ -1108,7 +1135,7 @@ class Accomplishments(object):
         self._update_all_locked_and_accomplished_statuses()
 
         self.create_all_trophy_icons()
-        
+
         if not self.test_mode:
             self.service.accoms_collections_reloaded()
         # Uncomment following for debugging
@@ -1553,7 +1580,8 @@ class Accomplishments(object):
 
         # Check if is hasn't been already accomplished
         if self.get_accom_is_accomplished(accomID):
-            log.msg("Not accomplishing " + accomID + ", it has already been accomplished.")
+            log.msg("Not accomplishing " + accomID +
+                    ", it has already been accomplished.")
             return True  # success
 
         # Check if this accomplishment is unlocked
@@ -1641,23 +1669,28 @@ class Accomplishments(object):
         log.msg(type(value))
         if value == True:
             log.msg("setting")
-            command = os.path.join(daemon_exec_dir, "accomplishments-daemon") + " --start"
+            command = os.path.join(
+                daemon_exec_dir, "accomplishments-daemon") + " --start"
             filetext = "[Desktop Entry]\n\
 Type=Application\n\
 Encoding=UTF-8\n\
 Name=Accomplishments Daemon\n\
 Exec=" + command + "\n\
 NoDisplay=true"
-            filename = os.path.join(self.dir_autostart, "accomplishments-daemon.desktop")
+            filename = os.path.join(
+                self.dir_autostart, "accomplishments-daemon.desktop")
             file = open(filename, "w")
             file.write(filetext)
             file.close
-            self.write_config_file_item("config", "daemon_sessionstart", "true")
+            self.write_config_file_item(
+                "config", "daemon_sessionstart", "true")
         elif value == False:
-            filename = os.path.join(self.dir_autostart, "accomplishments-daemon.desktop")
+            filename = os.path.join(
+                self.dir_autostart, "accomplishments-daemon.desktop")
             if os.path.exists(filename):
                 os.remove(filename)
-            self.write_config_file_item("config", "daemon_sessionstart", "false")
+            self.write_config_file_item(
+                "config", "daemon_sessionstart", "false")
 
     def get_daemon_session_start(self):
         return self.get_config_value("config", "daemon_sessionstart")
@@ -1685,7 +1718,8 @@ NoDisplay=true"
         with open(cfile, 'wb') as configfile:
             config.write(configfile)
 
-        # restart SyncDaemonTool to use new settings immediately, fixes LP#1011903
+        # restart SyncDaemonTool to use new settings immediately, fixes
+        # LP#1011903
         self.ubuntuone_restart_syncdaemontool()
 
     # XXX - NEEDS UNIT TEST
@@ -1724,7 +1758,7 @@ NoDisplay=true"
 
     def _display_accomplished_bubble(self, accomID):
         if self.show_notifications == True and useNotify and (
-            Notify.is_initted() or Notify.init("icon-summary-body")):
+                Notify.is_initted() or Notify.init("icon-summary-body")):
             n = Notify.Notification.new(
                 _("You have accomplished something!"),
                 self.get_accom_title(accomID),
@@ -1736,7 +1770,7 @@ NoDisplay=true"
         unlocked = len(self.list_depending_on(accomID))
         if unlocked is not 0:
             if self.show_notifications == True and useNotify and (
-                Notify.is_initted() or Notify.init("icon-summary-body")):
+                    Notify.is_initted() or Notify.init("icon-summary-body")):
                 message = (N_("You have unlocked %s new opportunity.", "You have unlocked %s new opportunities.", unlocked) % str(unlocked))
                 n = Notify.Notification.new(
                     _("Opportunities Unlocked!"), message,
@@ -1750,11 +1784,11 @@ NoDisplay=true"
 
     def _get_is_asc_correct(self, filepath):
         if not os.path.exists(filepath):
-            log.msg("Cannot check if signature is correct, because file"\
+            log.msg("Cannot check if signature is correct, because file"
                     "%s does not exist" % filepath)
             return False
         elif not os.path.exists(filepath[:-4]):
-            log.msg("Cannot check if signature is correct, because file"\
+            log.msg("Cannot check if signature is correct, because file"
                     "%s does not exist" % filepath[:-4])
             return False
         else:
@@ -1782,7 +1816,8 @@ NoDisplay=true"
                 return False
             else:
                 # Correct!
-                # result = {'timestamp': sig[0].timestamp, 'signer': sig[0].fpr}
+                # result = {'timestamp': sig[0].timestamp, 'signer':
+                # sig[0].fpr}
                 return True
 
     def _check_if_accom_is_accomplished(self, accomID):
@@ -1817,13 +1852,15 @@ NoDisplay=true"
     def _update_all_locked_and_accomplished_statuses(self):
         accoms = self.list_accoms()
         for accom in accoms:
-            self.accomDB[accom]['accomplished'] = self._check_if_accom_is_accomplished(accom)
+            self.accomDB[accom][
+                'accomplished'] = self._check_if_accom_is_accomplished(accom)
             if self.accomDB[accom]['accomplished'] == True:
                 self.accomDB[accom]['date-accomplished'] = self._get_trophy_date_accomplished(accom)
             else:
                 self.accomDB[accom]['date-accomplished'] = "None"
         for accom in accoms:
-            self.accomDB[accom]['locked'] = self._check_if_accom_is_locked(accom)
+            self.accomDB[accom][
+                'locked'] = self._check_if_accom_is_locked(accom)
 
     # XXX - NEEDS UNIT TEST
     def _get_trophy_date_accomplished(self, accomID):
@@ -1844,18 +1881,20 @@ NoDisplay=true"
         # Marks accomplishments as accomplished in the accomDB, and
         # returns a list of accomIDs that just got unlocked.
         self.accomDB[accomID]['accomplished'] = True
-        self.accomDB[accomID]['date-accomplished'] = self._get_trophy_date_accomplished(accomID)
+        self.accomDB[accomID][
+            'date-accomplished'] = self._get_trophy_date_accomplished(accomID)
         accoms = self.list_depending_on(accomID)
         res = []
         for accom in accoms:
             before = self.accomDB[accom]['locked']
-            self.accomDB[accom]['locked'] = self._check_if_accom_is_locked(accom)
+            self.accomDB[accom][
+                'locked'] = self._check_if_accom_is_locked(accom)
             # If it just got unlocked...
             if (before == True and self.accomDB[accom]['locked'] == False):
                 res.append(accom)
         return res
 
-    #Other significant system functions
+    # Other significant system functions
 
     def get_API_version(self):
         return "0.2"

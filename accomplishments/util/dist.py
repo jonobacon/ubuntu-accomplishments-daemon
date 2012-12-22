@@ -21,7 +21,8 @@ elif DistUtilsExtra.auto.__version__ < '2.18':
 def update_config(values={}):
     oldvalues = {}
     try:
-        fin = file('accomplishments/util/accomplishments-daemon-config.py', 'r')
+        fin = file(
+            'accomplishments/util/accomplishments-daemon-config.py', 'r')
         fout = file(fin.name + '.new', 'w')
 
         for line in fin:

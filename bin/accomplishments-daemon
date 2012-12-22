@@ -3,12 +3,13 @@
 import sys
 import os
 
-# Importing from accomplishments.{daemon,util} would fail, if the path 
+# Importing from accomplishments.{daemon,util} would fail, if the path
 # is set incorrectly.
 # We need to ensure that the script will load the correct version of
 # accomplishment.* that is installed with this script.
 scriptpath = os.path.abspath(__file__)
-# basepaths shall be equal to prefix used while installing - if the application is run from source, it does not really matter.
+# basepaths shall be equal to prefix used while installing - if the
+# application is run from source, it does not really matter.
 basepath = os.path.split(os.path.split(scriptpath)[0])[0]
 sys.path.insert(0, basepath)
 sys.path.insert(0, basepath + "/lib/python2.7")
@@ -18,18 +19,23 @@ sys.path.insert(0, basepath + "/lib/python2.7/dist-packages")
 # This is a global variable
 pidfile_path = None
 
+
 def main():
     # This part of code is executed if the script is run directly.
     import argparse
-    parser = argparse.ArgumentParser(description='Launches the accomplishments daemon.')
+    parser = argparse.ArgumentParser(
+        description='Launches the accomplishments daemon.')
     mode = parser.add_mutually_exclusive_group()
-    mode.add_argument('--start',action='store_true',help="Launch the accomplishments daemon (default option when run without arguments).")
-    mode.add_argument('--stop',action='store_true',help="Stop the daemon gracefully.")
-    mode.add_argument('--restart','-r',action='store_true',help="Restart the daemon.")
-    mode.add_argument('--reload',action='store_true',help="Reload accomplishments collections.")
-    parser.add_argument('-f','--foreground',action='store_true',help="When starting the daemon, run it in the foreground, with logs directed to stdout.")
+    mode.add_argument('--start', action='store_true', help="Launch the accomplishments daemon (default option when run without arguments).")
+    mode.add_argument(
+        '--stop', action='store_true', help="Stop the daemon gracefully.")
+    mode.add_argument(
+        '--restart', '-r', action='store_true', help="Restart the daemon.")
+    mode.add_argument('--reload', action='store_true',
+                      help="Reload accomplishments collections.")
+    parser.add_argument('-f', '--foreground', action='store_true', help="When starting the daemon, run it in the foreground, with logs directed to stdout.")
     args = parser.parse_args()
-    
+
     import xdg.BaseDirectory
     try:
         rootdir = os.environ['ACCOMPLISHMENTS_ROOT_DIR']
@@ -38,44 +44,44 @@ def main():
     except KeyError:
         cache_dir = os.path.join(
             xdg.BaseDirectory.xdg_cache_home, "accomplishments")
-            
+
     global pidfile_path
-    pidfile_path = os.path.join(cache_dir,"accomplishments-daemon.pid")
-    
-    launchdaemon = False    
+    pidfile_path = os.path.join(cache_dir, "accomplishments-daemon.pid")
+
+    launchdaemon = False
     if args.start or not (args.start or args.stop or args.reload or args.restart):
         # Start the daemon.
-        
+
         from accomplishments.util.paths import daemon_exec_dir
         # Check if the daemon is already running.
         if is_daemon_running():
             print "The daemon is already running."
             return
-        
+
         # The daemon is not running.
         launchdaemon = True
-    
+
     elif args.stop:
         # Stop the daemon
         if not is_daemon_running():
             print "The daemon is not running."
             return
         print "Stopping the daemon..."
-        
+
         from accomplishments.daemon import dbusapi
         api = dbusapi.Accomplishments()
         api.stop_daemon()
-    
+
     elif args.reload:
         if not is_daemon_running():
             print "The daemon is not running."
             return
         print "Reloading accomplishments collections."
-        
+
         from accomplishments.daemon import dbusapi
         api = dbusapi.Accomplishments()
         api.reload_accom_database()
-        
+
     elif args.restart:
         from accomplishments.util.paths import daemon_exec_dir
         # Check if the daemon is already running.
@@ -86,54 +92,55 @@ def main():
         from accomplishments.daemon import dbusapi
         api = dbusapi.Accomplishments()
         api.stop_daemon()
-        
+
         launchdaemon = True
-        
+
     if launchdaemon:
         print "Launching the daemon..."
         # Create the cache directories.
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
-        if not os.path.exists(os.path.join(cache_dir,"logs")):
-            os.makedirs(os.path.join(cache_dir,"logs"))
-        
+        if not os.path.exists(os.path.join(cache_dir, "logs")):
+            os.makedirs(os.path.join(cache_dir, "logs"))
+
         # Remove the pid file if for some reasons it's still present.
         if os.path.exists(pidfile_path):
-			os.remove(pidfile_path)
-        
+            os.remove(pidfile_path)
+
         if not args.foreground:
             command = "twistd -y " + os.path.join(daemon_exec_dir, "accomplishments-daemon") + " --logfile=" + os.path.join(cache_dir, "logs", "daemon.log") + " --pidfile=" + pidfile_path
         else:
             command = "twistd -noy " + os.path.join(daemon_exec_dir, "accomplishments-daemon") + " --pidfile=" + pidfile_path
-        
-        #print command
-        
+
+        # print command
+
         os.system(command)
-    
+
+
 def is_daemon_running():
     from accomplishments.daemon.dbusapi import daemon_is_registered
     return daemon_is_registered()
-    
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     # If run directly...
     main()
-    
-if __name__=="__builtin__":
+
+if __name__ == "__builtin__":
     # This part of code is executed only if the script is run by twistd.
     # It is responsible for setting up and launching the twistd daemon.
-    
+
     # This piece of code cannot be wrapped inside a function, as silly
     # twistd blindly searches fora global variable named "application",
     # and therefore while this code must be exposed.
-    
+
     # Reactor has to be installed before any import statements.
     from twisted.internet import gireactor
     gireactor.install()
 
     from accomplishments.daemon import app
     from accomplishments.util import paths
-    
+
     # Ensure the sync daemon is running. The following command can be run in the
     # background (&), because it would block the daemon from running for few
     # seconds, while the syncdaemon will not be needed immediatelly after
