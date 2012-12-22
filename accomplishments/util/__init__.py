@@ -1,4 +1,3 @@
-import logging
 import optparse
 import os
 
@@ -21,36 +20,6 @@ gettext.textdomain('accomplishments-daemon')
 
 def get_version():
     return config.__version__
-
-
-class NullHandler(logging.Handler):
-    """
-    """
-    def emit(self, record):
-        pass
-
-
-def set_up_logging(opts):
-    # add a handler to prevent basicConfig
-    root = logging.getLogger()
-    null_handler = NullHandler()
-    root.addHandler(null_handler)
-
-    formatter = logging.Formatter(
-        "%(levelname)s:%(name)s: %(funcName)s() '%(message)s'")
-
-    logger = logging.getLogger('accomplishments-daemon')
-    logger_sh = logging.StreamHandler()
-    logger_sh.setFormatter(formatter)
-    logger.addHandler(logger_sh)
-
-    # Set the logging level to show debug messages.
-    if opts.verbose:
-        logger.setLevel(logging.DEBUG)
-        logger.debug('logging enabled')
-    if opts.verbose > 1:
-        logger.setLevel(logging.DEBUG)
-
 
 def get_data_path():
     # XXX: NOTE: This function will most likely work incorrectly when daemon is installed in non-default path.
