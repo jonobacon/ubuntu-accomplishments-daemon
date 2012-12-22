@@ -18,7 +18,7 @@ __all__ = [
 # files). By default, this is ../data, relative your trunk layout
 __accomplishments_daemon_data_directory__ = '../data/'
 __license__ = ''
-__version__ = '0.1'
+__version__ = '0.3'
 
 import os
 

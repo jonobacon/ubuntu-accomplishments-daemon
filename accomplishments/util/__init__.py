@@ -1,4 +1,3 @@
-import logging
 import optparse
 import os
 
@@ -22,40 +21,11 @@ gettext.textdomain('accomplishments-daemon')
 def get_version():
     return config.__version__
 
-
-class NullHandler(logging.Handler):
-    """
-    """
-    def emit(self, record):
-        pass
-
-
-def set_up_logging(opts):
-    # add a handler to prevent basicConfig
-    root = logging.getLogger()
-    null_handler = NullHandler()
-    root.addHandler(null_handler)
-
-    formatter = logging.Formatter(
-        "%(levelname)s:%(name)s: %(funcName)s() '%(message)s'")
-
-    logger = logging.getLogger('accomplishments-daemon')
-    logger_sh = logging.StreamHandler()
-    logger_sh.setFormatter(formatter)
-    logger.addHandler(logger_sh)
-
-    # Set the logging level to show debug messages.
-    if opts.verbose:
-        logger.setLevel(logging.DEBUG)
-        logger.debug('logging enabled')
-    if opts.verbose > 1:
-        logger.setLevel(logging.DEBUG)
-
-
 def get_data_path():
     # XXX: NOTE: This function will most likely work incorrectly when daemon is installed in non-default path.
     # Luckily, this function is no longer used anywhere.
-    # If you feel you need to get this path, please refer to utils/paths.py instead.
+    # If you feel you need to get this path, please refer to utils/paths.py
+    # instead.
     """Retrieve accomplishments-daemon data path
 
     This path is by default <accomplishments_daemon_lib_path>/../data/ in trunk
@@ -64,7 +34,8 @@ def get_data_path():
     """
 
     # Get pathname absolute or relative.
-    path = os.path.join(accomplishments.__path__[0], config.__accomplishments_daemon_data_directory__)
+    path = os.path.join(accomplishments.__path__[0],
+                        config.__accomplishments_daemon_data_directory__)
     abs_data_path = os.path.abspath(path)
     log.msg("MODULE DIR")
     log.msg(accomplishments.__path__[0])

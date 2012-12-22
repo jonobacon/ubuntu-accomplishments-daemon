@@ -11,11 +11,7 @@ get involved.
 """
 
 import dbus
-
-from twisted.python import log
-
 from accomplishments.daemon import service
-
 
 def daemon_is_registered():
     try:
@@ -408,10 +404,10 @@ class AccomplishmentsDBusService(service.DBusExportService):
             ["Launchpad"]
         """
         return self.api.get_accom_categories(accomID)
-        
+
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
                          in_signature="s", out_signature="as")
-    def get_accom_keywords(self,accomID):
+    def get_accom_keywords(self, accomID):
         return self.api.get_accom_keywords(accomID)
 
     @dbus.service.method(dbus_interface='org.ubuntu.accomplishments',
@@ -911,12 +907,11 @@ class AccomplishmentsDBusService(service.DBusExportService):
     def create_all_trophy_icons(self):
         return self.api.create_all_trophy_icons()
 
-
     # XXX this looks like an unintentional duplicate of the "other"
     # trophy_received... I've moved them here together so that someone in the
     # know (Jono?) can clarify and remove the one that's not needed
     #@dbus.service.signal(dbus_interface='org.ubuntu.accomplishments')
-    #def trophy_received(self, trophy):
+    # def trophy_received(self, trophy):
     #    pass
     @dbus.service.signal(dbus_interface='org.ubuntu.accomplishments')
     def trophy_received(self, trophy):
